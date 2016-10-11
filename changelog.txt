@@ -1,0 +1,13 @@
+##0.1.1##
++ Initial release
+
+##0.1.2##
++ Added a special case system to solve a recipe naming problem
++ Translations for vanilla virtual recipes
+
+##0.1.3##
+* Recipe for combinator is enabled when the mod is added to the game
+
+##0.1.4##
+* Changed to work with any and all (hopefully) crafting machine (chemplants, refineries too)
++ Added locale for some mods
