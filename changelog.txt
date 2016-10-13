@@ -11,3 +11,6 @@
 ##0.1.4##
 * Changed to work with any and all (hopefully) crafting machine (chemplants, refineries too)
 + Added locale for some mods
+
+##0.2.0##
++ Added recipe combinator
