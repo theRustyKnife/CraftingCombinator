@@ -14,4 +14,7 @@
 
 ##0.2.0##
 * Moved localisation into another mod
-+ Added recipe combinator
++ Added recipe combinator (thanks to [Igie](https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/4421))
+
+##0.2.1##
+* Fixed a crash when removing a recipe combinator in a new game ([4644](https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/4644))

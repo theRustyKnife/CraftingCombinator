@@ -169,10 +169,10 @@ local function on_destroyed(event)
 	--recipe-combinator
 	if entity.name == "recipe-combinator" then
 		for i = 0, refresh_rate - 1 do
-			for ei, v in pairs(global.recipe_combinators) do
+			for ei, v in pairs(global.recipe_combinators[i]) do
 				if v.entity == entity then
 					table.remove(global.recipe_combinators[i], ei)
-					break
+					return
 				end
 			end
 		end
