@@ -13,4 +13,5 @@
 + Added locale for some mods
 
 ##0.2.0##
+* Moved localisation into another mod
 + Added recipe combinator
