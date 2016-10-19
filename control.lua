@@ -130,6 +130,8 @@ local function on_tick(event)
 				if tonumber(ing.amount) % 1 > 0 then r = 1 end
 				table.insert(params, {signal = {type = ing.type, name = ing.name}, count = math.floor(tonumber(ing.amount)) + r, index = i})
 			end
+			
+			table.insert(params, {signal = {type = "virtual", name = "recipe-time"}, count = tonumber(recipe.energy) * 10, index = 20})
 		end
 		combinator.entity.get_or_create_control_behavior().parameters = {enabled = true, parameters = params}
 	end

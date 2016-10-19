@@ -18,3 +18,6 @@
 
 ##0.2.1##
 * Fixed a crash when removing a recipe combinator in a new game ([4644](https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/4644))
+
+##0.2.2##
++ Added crafting time to recipe combinator output (thanks to [LuziferSenpai](https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/4654))

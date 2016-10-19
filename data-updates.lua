@@ -43,4 +43,12 @@ table.insert(data.raw.technology["circuit-network"].effects,
 	}
 )
 
-data:extend({combi_entity, combi_item, combi_recipe, recipe_combi_out, recipe_combi_item, recipe_combi_recipe})
+data:extend({combi_entity, combi_item, combi_recipe, recipe_combi_out, recipe_combi_item, recipe_combi_recipe,
+	{
+		type = "virtual-signal",
+		name = "recipe-time",
+		icon = "__core__/graphics/clock-icon.png",
+		subgroup = "virtual-signal-recipe",
+		order = "c[recipe-time]"
+	},
+})
