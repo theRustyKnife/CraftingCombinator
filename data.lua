@@ -1,16 +1,20 @@
+local config = require "script.config"
+
+
 -- define entities here, only name and slot ite_slot_count needed, rest is from constant-combinator
 local entities = {
 	{
-		name = "crafting-combinator",
+		name = config.CC_NAME,
 		item_slot_count = 0,
 	},
 	{
-		name = "recipe-combinator",
+		name = config.RC_NAME,
 		item_slot_count = 20,
 	}
 }
 
--- we create our entities with all the necessary stuff too
+
+-- here we create our entities with all the necessary stuff
 for _, e in ipairs(entities) do
 	-- entity
 	local te = util.table.deepcopy(data.raw["constant-combinator"]["constant-combinator"])

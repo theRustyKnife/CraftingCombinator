@@ -2,6 +2,7 @@ crafting_combinator_data = crafting_combinator_data or {}
 crafting_combinator_data.overrides = crafting_combinator_data.overrides or {}
 crafting_combinator_data.icons = crafting_combinator_data.icons or {}
 
+
 local function is_result(recipe, item) -- LuaRecipe recipe, string item
 -- is the item one of the results?
 	if recipe.result and recipe.result == item then return true -- result is item... simple
@@ -13,7 +14,6 @@ local function is_result(recipe, item) -- LuaRecipe recipe, string item
 	return false                                                -- everything failed, recipe is named differently
 end
 
--- 
 local function needs_signal(recipe) -- string recipe
 -- does it?
 	local name = recipe
@@ -38,6 +38,7 @@ local function get_icon(recipe) -- LuaRecipe recipe
 	end
 	return "__crafting-combinator__/graphics/no-icon.png"                                                                                      -- no icon found - use the default one
 end
+
 
 -- create the subgroup for virtual recipes
 data:extend{
