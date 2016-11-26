@@ -1,11 +1,11 @@
 {
-	"name": "crafting_combinator",
-	"version": "0.2.2",
+	"name": "crafting-combinator",
+	"version": "0.3.0",
 	"factorio_version": "0.14",
 	"title": "Crafting Combinator",
-	"author": "LuziferSenpai (and theRustyKnife)",
-	"description": "A combinator that can change an assembler's recipe. Now supports all the machines!",
+	"author": "LuziferSenpai and theRustyKnife",
+	"description": "A combinator that can change an assembler's recipe.",
 	"homepage": "https://mods.factorio.com/mods/theRustyKnife/crafting_combinator",
-	"date": "19.10.2016",
-	"dependencies": []
+	"date": "26.11.2016",
+	"dependencies": ["base", "?crafting-combinator-locale"]
 }
