@@ -13,6 +13,17 @@ local entities = {
 	}
 }
 
+-- the crafting time signal
+data:extend{
+	{
+		type = "virtual-signal",
+		name = "recipe-time",
+		icon = "__core__/graphics/clock-icon.png",
+		subgroup = "virtual-signal-recipe",
+		order = "c[recipe-time]"
+	},
+}
+
 
 -- here we create our entities with all the necessary stuff
 for _, e in ipairs(entities) do

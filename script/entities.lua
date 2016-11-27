@@ -60,7 +60,20 @@ function entities.RecipeCombinator:get_index()
 end
 
 function entities.RecipeCombinator:update()
-	--TODO: implement
+	local recipe = recipe_selector.get_recipe(self.control_behavior, self.recipe)
+	local params = {}
+	if recipe then
+		recipe = self.entity.force.recipes[recipe]
+		self.recipe = recipe
+		for i, ing in pairs(recipe.ingredients) do
+			local r = 0
+			if tonumber(ing.amount) % 1 > 0 then r = 1 end
+			table.insert(params, {signal = {type = ing.type, name = ing.name}, count = math.floor(tonumber(ing.amount)) + r, index = i})
+		end
+		
+		table.insert(params, {signal = {type = "virtual", name = "recipe-time"}, count = tonumber(recipe.energy) * 10, index = 20})
+	end
+	self.control_behavior.parameters = {enabled = true, parameters = params}
 end
 
 entities.CraftingCombinator = entities.RecipeCombinator:extend()
