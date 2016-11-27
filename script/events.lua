@@ -1,5 +1,4 @@
 local config = require ".config"
-local migration = require ".migration"
 local entities = require ".entities"
 
 
@@ -35,14 +34,10 @@ end
 local function on_rotated(event)
 	local entity = event.entity
 	if entity.name == config.CC_NAME then
-		find_in_global(entity):get_assembler()
+		entities.find_in_global(entity):get_assembler()
 	end
 end
 
-
-script.on_init(migration.init)
-
-script.on_configuration_changed(migration.migrate)
 
 script.on_event(defines.events.on_built_entity, on_built)
 script.on_event(defines.events.on_robot_built_entity, on_built)

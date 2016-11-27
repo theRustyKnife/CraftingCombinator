@@ -1,5 +1,6 @@
 local config = require ".config"
 local util = require ".util"
+local recipe_selector = require ".recipe-selector"
 
 
 local entities = {}
@@ -67,7 +68,7 @@ entities.CraftingCombinator = entities.RecipeCombinator:extend()
 function entities.CraftingCombinator.update_assemblers_around(surface, position)
 	local combinators = surface.find_entities_filtered{area = util.get_area(position, config.CC_SEARCH_DISTANCE), name = config.CC_NAME}
 	for _, combinator in pairs(combinators) do
-		find_in_global(combinator):get_assembler()
+		entities.find_in_global(combinator):get_assembler()
 	end
 end
 
@@ -83,17 +84,16 @@ function entities.CraftingCombinator:new(entity)
 end
 
 function entities.CraftingCombinator:get_assembler()
-	local position = self.entity.position
-	local direction = self.entity.direction
-	
 	self.assembler = self.entity.surface.find_entities_filtered{
-		area = util.get_directional_search_area(position, direction, config.CC_ASSEMBLER_SEARCH_DISTANCE, config.CC_ASSEMBLER_SEARCH_OFFSET),
+		area = util.get_directional_search_area(self.entity.position, self.entity.direction, config.CC_ASSEMBLER_SEARCH_DISTANCE, config.CC_ASSEMBLER_SEARCH_OFFSET),
 		type = "assembling-machine",
 	}[1]
 end
 
 function entities.CraftingCombinator:update()
-	--TODO: implement
+	if self.assembler and self.assembler.valid then
+		self.assembler.recipe = recipe_selector.get_recipe(self.control_behavior)
+	end
 end
 
 return entities

@@ -1,13 +1,39 @@
 local config = require ".config"
 
 
+local function get_special_cases()
+	local INTERFACE_NAME = "crafting-combinator_init"
+	
+	local res = {}
+	
+	local i = 1
+	while true do -- call all the interfaces
+		if not remote.interfaces[INTERFACE_NAME .. i] then break; end
+		local data = remote.call(INTERFACE_NAME .. i, "init")
+		
+		for i, v in pairs(data.overrides) do -- add the reverse of data to the result table
+			if not (DATA_PRIORITY == "low" and res[v]) then
+				res[v] = i
+			end
+		end
+		
+		i = i + 1
+	end
+	
+	return res
+end
+
+
 local migration = {}
 
 function migration.init()
+	global.special_cases = get_special_cases()
+	
 	global.combinators = global.combinators or {}
 	global.combinators.next_index = global.next_index or 1
-	global.combinators.get_next_index = global.combinators.get_next_index or function() 
-		-- returns the next most suitable index
+	global.combinators.get_next_index = global.combinators.get_next_index or
+	function() 
+	-- returns the next most suitable index
 		best_i = 0
 		best = #global.combinators[0]
 		
@@ -20,6 +46,7 @@ function migration.init()
 		
 		return best_i
 	end
+	
 	
 	for i = 0, config.REFRESH_RATE - 1 do
 		global.combinators[i] = global.combinators[i] or {}
