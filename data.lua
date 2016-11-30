@@ -10,6 +10,12 @@ local entities = {
 	{
 		name = config.RC_NAME,
 		item_slot_count = 20,
+	},
+	{
+		type = "active-provider",
+		name = config.CHEST_NAME,
+		item_slot_count = 1000,
+		hidden = true,
 	}
 }
 
@@ -28,25 +34,44 @@ data:extend{
 -- here we create our entities with all the necessary stuff
 for _, e in ipairs(entities) do
 	-- entity
-	local te = util.table.deepcopy(data.raw["constant-combinator"]["constant-combinator"])
-	te.name = e.name
-	te.minable.result = e.name
-	te.item_slot_count = e.item_slot_count
+	local te
+	if not e.type or e.type == "constant-combinator" then -- default type to constant-combinator
+		te = util.table.deepcopy(data.raw["constant-combinator"]["constant-combinator"])
+		te.name = e.name
+		te.minable.result = e.name
+		te.item_slot_count = e.item_slot_count
+		
+	elseif e.type == "active-provider" then
+		te = util.table.deepcopy(data.raw["logistic-container"]["logistic-chest-active-provider"])
+		te.name = e.name
+		te.minable.result = e.mine_res
+		te.iventory_size = e.item_slot_count
+		
+		if e.hidden then
+			te.order = "?"
+			te.collision_mask = {}
+			te.selection_box = {{0, 0}, {0, 0}}
+		end
+	end
 	
-	-- item
-	local ti = util.table.deepcopy(data.raw["item"]["constant-combinator"])
-	ti.name = e.name
-	ti.place_result = e.name
-	ti.order = "b[combinators]-cb[crafting-combinator]"
-	
-	-- recipe
-	local tr = util.table.deepcopy(data.raw["recipe"]["constant-combinator"])
-	tr.name = e.name
-	tr.result = e.name
+	local ti
+	local tr
+	if not e.hidden then
+		-- item
+		ti = util.table.deepcopy(data.raw["item"]["constant-combinator"])
+		ti.name = e.name
+		ti.place_result = e.name
+		ti.order = "b[combinators]-cb[crafting-combinator]"
+		
+		-- recipe
+		tr = util.table.deepcopy(data.raw["recipe"]["constant-combinator"])
+		tr.name = e.name
+		tr.result = e.name
+		
+		-- tech
+		table.insert(data.raw.technology["circuit-network"].effects, {type = "unlock-recipe", recipe = e.name})
+	end
 	
 	-- add to data
 	data:extend{te, ti, tr}
-	
-	-- tech
-	table.insert(data.raw.technology["circuit-network"].effects, {type = "unlock-recipe", recipe = e.name})
 end

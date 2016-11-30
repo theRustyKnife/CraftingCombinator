@@ -92,8 +92,15 @@ function entities.CraftingCombinator:new(entity)
 	self.__index = self
 	
 	res:get_assembler()
+	res.overflow = entity.surface.create_entity{name = config.CHEST_NAME, position = entity.position, force = entity.force} -- create the overflow chest
+	res.overflow.destructible = false
 	
 	return res
+end
+
+function entities.CraftingCombinator:destroy()
+	self.overflow.destroy()
+	entities.RecipeCombinator.destroy(self)
 end
 
 function entities.CraftingCombinator:get_assembler()
@@ -105,7 +112,28 @@ end
 
 function entities.CraftingCombinator:update()
 	if self.assembler and self.assembler.valid then
-		self.assembler.recipe = recipe_selector.get_recipe(self.control_behavior)
+		local recipe = recipe_selector.get_recipe(self.control_behavior) -- get the recipe selected by the cn
+		
+		-- if there was an active recipe and it has changed, copy the items from the assembler into the overflow chest
+		if self.control_behavior.enabled and self.assembler.recipe and ((not recipe) or recipe ~= self.assembler.recipe.name) then
+			local input_inv = self.assembler.get_inventory(defines.inventory.assembling_machine_input)
+			local output_inv = self.assembler.get_inventory(config.ASSEMBLING_MACHINE_OUTPUT_INDEX)
+			
+			for i = 1, #output_inv do -- copy output inventory
+				local s = output_inv[i]
+				if s.valid_for_read and self.overflow.can_insert(s) then
+					self.overflow.insert(s)
+				end
+			end
+			for i = 1, #input_inv do -- copy input inventory
+				local s = input_inv[i]
+				if s.valid_for_read and self.overflow.can_insert(s) then
+					self.overflow.insert(s)
+				end
+			end
+		end
+		
+		self.assembler.recipe = recipe
 	end
 end
 
