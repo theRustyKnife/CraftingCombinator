@@ -1,7 +1,7 @@
 local config = require "script.config"
 
 
--- define entities here, only name and slot ite_slot_count needed, rest is from constant-combinator
+-- define entities here, only name and slot item_slot_count needed, rest is from constant-combinator
 local entities = {
 	{
 		name = config.CC_NAME,
@@ -51,7 +51,7 @@ for _, e in ipairs(entities) do
 			te.order = "?"
 			te.collision_mask = {}
 			te.selection_box = {{0, 0}, {0, 0}}
-			te.picture.filename = "__crafting-combinator__/graphics/trans.png"
+			te.picture.filename = "__crafting_combinator__/graphics/trans.png"
 			te.picture.width = 1
 			te.picture.height = 1
 		end

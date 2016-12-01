@@ -1,5 +1,4 @@
 ##0.3.0##
-* Changed name
 * Completely rewritten code
 * Moved special cases to the locale mod
 + Added support for external special case and icon definitions

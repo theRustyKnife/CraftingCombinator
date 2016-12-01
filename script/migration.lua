@@ -38,8 +38,10 @@ function migration.load()
 				elseif v.type == "crafting-combinator" then
 					mt = entities.CraftingCombinator
 				end
-				setmetatable(v, mt)
-				mt.__index = mt
+				if mt then
+					setmetatable(v, mt)
+					mt.__index = mt
+				end
 			end
 		end
 	end
@@ -86,11 +88,20 @@ end
 
 function migration.migrate(data)
 	if data.mod_changes["crafting_combinator"] then
+		local old_v = data.mod_changes["crafting_combinator"].old_version
+		local new_v = data.mod_changes["crafting_combinator"].new_version
 		for _, force in pairs(game.forces) do
 			if force.technologies["circuit-network"].researched then
 				force.recipes["crafting-combinator"].enabled = true
 				force.recipes["recipe-combinator"].enabled = true
 			end
+		end
+		
+		if old_v < "0.3.0" then -- the code has changed a lot in 0.3 - re-register everything again
+			global.combinators = nil
+			global.recipe_combinators = nil
+			
+			migration.init()
 		end
 	end
 end
