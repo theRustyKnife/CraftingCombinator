@@ -32,13 +32,14 @@ function migration.load()
 	for _, tab in pairs(global.combinators) do
 		if type(tab) == "table" then
 			for _, v in pairs(tab) do
+				local mt
 				if v.type == "recipe-combinator" then
-					setmetatable(v, entities.RecipeCombinator)
-					entities.RecipeCombinator.__index = entities.RecipeCombinator
+					mt = entities.RecipeCombinator
 				elseif v.type == "crafting-combinator" then
-					setmetatable(v, entities.CraftingCombinator)
-					entities.CraftingCombinator.__index = entities.CraftingCombinator
+					mt = entities.CraftingCombinator
 				end
+				setmetatable(v, mt)
+				mt.__index = mt
 			end
 		end
 	end
@@ -71,15 +72,7 @@ function migration.init()
 	end
 end
 
-function migration.migrate(data) --TODO: update, disabled for now
-	migration.init()
-	--[[global.combinators = global.combinators or {}
-	global.recipe_combinators = global.recipe_combinators or {}
-	for i = 0, refresh_rate - 1 do
-		global.combinators[i] = global.combinators[i] or {}
-		global.recipe_combinators[i] = global.recipe_combinators[i] or {}
-	end
-	
+function migration.migrate(data)
 	if data.mod_changes["crafting_combinator"] then
 		for _, force in pairs(game.forces) do
 			if force.technologies["circuit-network"].researched then
@@ -87,7 +80,7 @@ function migration.migrate(data) --TODO: update, disabled for now
 				force.recipes["recipe-combinator"].enabled = true
 			end
 		end
-	end]]
+	end
 end
 
 return migration

@@ -1,8 +1,9 @@
 ##0.3.0##
-* Changed name (backwards compatible?)
-* Completely rewritten code (backwards compatible?)
+* Changed name
+* Completely rewritten code (not backwards compatible)
 * Moved special cases to the locale mod
 + Added support for external special case and icon definitions
++ Added an invisible active provider chest where the items from the assembler are put when recipe changes
 
 ##0.2.2##
 + Added crafting time to recipe combinator output (thanks to [LuziferSenpai](https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/4654))

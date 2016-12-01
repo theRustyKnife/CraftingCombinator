@@ -6,6 +6,6 @@
 	"author": "LuziferSenpai and theRustyKnife",
 	"description": "A combinator that can change the recipe of an assembler or any other crafting machine. Also included a combinator that can determine the ingredients of a recipe.",
 	"homepage": "https://mods.factorio.com/mods/theRustyKnife/crafting_combinator",
-	"date": "27.11.2016",
+	"date": "01.12.2016",
 	"dependencies": ["base"]
 }
