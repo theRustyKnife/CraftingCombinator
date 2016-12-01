@@ -24,9 +24,11 @@ All vanilla "virtual recipes" should be localised (English only for now) but if 
 -------------
 
 #Changelog#
+##0.3.1##
+* Fixed wrong path for no-icon icon and an error in migration script ([5869](https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/5869))
+
 ##0.3.0##
-* Changed name
-* Completely rewritten code (not backwards compatible)
+* Completely rewritten code
 * Moved special cases to the locale mod
 + Added support for external special case and icon definitions
 + Added an invisible active provider chest where the items from the assembler are put when recipe changes
@@ -54,3 +56,4 @@ All vanilla "virtual recipes" should be localised (English only for now) but if 
 
 ##0.1.1##
 + Initial release
+
