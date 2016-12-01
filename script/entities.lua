@@ -32,6 +32,7 @@ function entities.RecipeCombinator:new(entity)
 		tab = global.combinators[global.combinators.get_next_index()],
 		entity = entity,
 		control_behavior = entity.get_or_create_control_behavior(),
+		type = "recipe-combinator",
 	}
 	
 	setmetatable(res, self)
@@ -87,6 +88,7 @@ end
 
 function entities.CraftingCombinator:new(entity)
 	local res = entities.RecipeCombinator:new(entity)
+	res.type = "crafting-combinator"
 	
 	setmetatable(res, self)
 	self.__index = self

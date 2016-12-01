@@ -1,4 +1,5 @@
 local config = require ".config"
+local entities = require ".entities"
 
 
 local function get_special_cases()
@@ -25,6 +26,23 @@ end
 
 
 local migration = {}
+
+function migration.load()
+-- sets up the metatables after load
+	for _, tab in pairs(global.combinators) do
+		if type(tab) == "table" then
+			for _, v in pairs(tab) do
+				if v.type == "recipe-combinator" then
+					setmetatable(v, entities.RecipeCombinator)
+					entities.RecipeCombinator.__index = entities.RecipeCombinator
+				elseif v.type == "crafting-combinator" then
+					setmetatable(v, entities.CraftingCombinator)
+					entities.CraftingCombinator.__index = entities.CraftingCombinator
+				end
+			end
+		end
+	end
+end
 
 function migration.init()
 	global.special_cases = get_special_cases()

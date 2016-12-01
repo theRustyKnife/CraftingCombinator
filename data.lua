@@ -51,6 +51,9 @@ for _, e in ipairs(entities) do
 			te.order = "?"
 			te.collision_mask = {}
 			te.selection_box = {{0, 0}, {0, 0}}
+			te.picture.filename = "__crafting-combinator__/graphics/trans.png"
+			te.picture.width = 1
+			te.picture.height = 1
 		end
 	end
 	
