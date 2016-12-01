@@ -1,8 +1,5 @@
-#0.3 important notes#
-****
-
 #Description#
-**A combinator that can set the recipe of an assembler (or other machine) based on signal inputs for any and all of your automation needs. Now with a combinator to get recipe ingredients!**
+**A combinator that can set the recipe of an assembler (or other machine) based on signal inputs for any and all of your automation needs. There's also a combinator to get recipe ingredients.**
 
 -------------
 
