@@ -66,9 +66,21 @@ function migration.init()
 		return best_i
 	end
 	
-	
 	for i = 0, config.REFRESH_RATE - 1 do
 		global.combinators[i] = global.combinators[i] or {}
+	end
+	
+	-- find any entities potentially left by the old mod and register them into the system
+	for _, surface in pairs(game.surfaces) do
+		local ccs = surface.find_entities_filtered{name = config.CC_NAME}
+		local rcs = surface.find_entities_filtered{name = config.RC_NAME}
+		
+		for _, cc in pairs(ccs) do
+			entities.CraftingCombinator:new(cc):get_assembler()
+		end
+		for _, rc in pairs(rcs) do
+			entities.RecipeCombinator:new(rc)
+		end
 	end
 end
 

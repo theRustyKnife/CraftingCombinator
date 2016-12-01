@@ -1,6 +1,6 @@
 ##0.3.0##
 * Changed name
-* Completely rewritten code (not backwards compatible)
+* Completely rewritten code
 * Moved special cases to the locale mod
 + Added support for external special case and icon definitions
 + Added an invisible active provider chest where the items from the assembler are put when recipe changes
