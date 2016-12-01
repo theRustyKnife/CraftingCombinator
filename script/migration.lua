@@ -97,7 +97,7 @@ function migration.migrate(data)
 			end
 		end
 		
-		if old_v < "0.3.0" then -- the code has changed a lot in 0.3 - re-register everything again
+		if old_v and old_v < "0.3.0" then -- the code has changed a lot in 0.3 - re-register everything again
 			global.combinators = nil
 			global.recipe_combinators = nil
 			

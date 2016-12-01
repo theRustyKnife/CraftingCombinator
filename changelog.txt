@@ -1,3 +1,6 @@
+##0.3.1##
+* Fixed wrong path for no-icon icon and an error in migration script ([5869](https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/5869))
+
 ##0.3.0##
 * Completely rewritten code
 * Moved special cases to the locale mod

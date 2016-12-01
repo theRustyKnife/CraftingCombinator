@@ -36,7 +36,7 @@ local function get_icon(recipe) -- LuaRecipe recipe
 			if v.name == recipe.name and data.raw.item[v.name] and data.raw.item[v.name].icon then return data.raw.item[v.name].icon; end      -- there's a matching item in the results table with an icon
 		end
 	end
-	return "__crafting-combinator__/graphics/no-icon.png"                                                                                      -- no icon found - use the default one
+	return "__crafting_combinator__/graphics/no-icon.png"                                                                                      -- no icon found - use the default one
 end
 
 
