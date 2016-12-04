@@ -24,6 +24,9 @@ All vanilla "virtual recipes" should be localised (English only for now) but if 
 -------------
 
 #Changelog#
+##0.3.2##
+* Fixed crash when placing a combinator after reloading a game ([5908](https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/5908))
+
 ##0.3.1##
 * Fixed wrong path for no-icon icon and an error in migration script ([5869](https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/5869))
 
