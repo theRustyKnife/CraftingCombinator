@@ -25,11 +25,26 @@ function entities.find_in_global(entity)
 	end
 end
 
+function entities.get_next_index()
+	-- returns the next most suitable index
+	best_i = 0
+	best = #global.combinators[0]
+
+	for i = 1, config.REFRESH_RATE - 1 do
+		if #global.combinators[i] < best then
+			best_i = i
+			best = #global.combinators[i]
+		end
+	end
+
+	return best_i
+end
+
 entities.RecipeCombinator = {}
 -------------------------------------------------------
 function entities.RecipeCombinator:new(entity)
 	local res = {
-		tab = global.combinators[global.combinators.get_next_index()],
+		tab = global.combinators[entities.get_next_index()],
 		entity = entity,
 		control_behavior = entity.get_or_create_control_behavior(),
 		type = "recipe-combinator",

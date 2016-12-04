@@ -52,21 +52,6 @@ function migration.init()
 	
 	global.combinators = global.combinators or {}
 	global.combinators.next_index = global.next_index or 1
-	global.combinators.get_next_index = global.combinators.get_next_index or
-	function() 
-	-- returns the next most suitable index
-		best_i = 0
-		best = #global.combinators[0]
-		
-		for i = 1, config.REFRESH_RATE - 1 do
-			if #global.combinators[i] < best then
-				best_i = i
-				best = #global.combinators[i]
-			end
-		end
-		
-		return best_i
-	end
 	
 	for i = 0, config.REFRESH_RATE - 1 do
 		global.combinators[i] = global.combinators[i] or {}
