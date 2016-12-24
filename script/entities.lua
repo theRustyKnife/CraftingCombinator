@@ -87,7 +87,7 @@ function entities.RecipeCombinator:update()
 			table.insert(params, {signal = {type = ing.type, name = ing.name}, count = math.floor(tonumber(ing.amount)) + r, index = i})
 		end
 		
-		table.insert(params, {signal = {type = "virtual", name = "recipe-time"}, count = tonumber(recipe.energy) * 10, index = 20})
+		table.insert(params, {signal = {type = "virtual", name = "recipe-time"}, count = math.floor(tonumber(recipe.energy) * 10), index = 20})
 	end
 	self.control_behavior.parameters = {enabled = true, parameters = params}
 end
