@@ -1,3 +1,4 @@
+--luacheck: globals crafting_combinator_data
 crafting_combinator_data = crafting_combinator_data or {}
 crafting_combinator_data.overrides = crafting_combinator_data.overrides or {}
 crafting_combinator_data.icons = crafting_combinator_data.icons or {}
@@ -50,9 +51,8 @@ end
 local function get_locale(recipe)
 	--Try the best option to get a valid localised name
 
-	local cur_type, item, result_item
+	local item, result_item
 	for _, type in pairs({"item", "module", "tool", "fluid"}) do
-	cur_type = type
 	item = data.raw[type][recipe.name]
 	result_item = data.raw[type][recipe.result] or (recipe.results and data.raw[type][recipe.results[1].name])
 	if item or result_item then break end
@@ -78,8 +78,8 @@ end
 local ignore_name_list = {
 	-- "angels%-fluid%-splitter-",
 	-- "converter%-angels%-",
-	-- "compress%-",
-	-- "uncompress%-",
+	"compress%-",
+	"uncompress%-",
 }
 local function ignore_recipes(name)
 	for _, ignore_name in ipairs(ignore_name_list) do
@@ -90,9 +90,15 @@ end
 -- create the subgroup for virtual recipes
 data:extend{
 	{
+		type = "item-group",
+		name = "signals-crafting-combinator",
+		order = "fb",
+		icon = "__base__/graphics/item-group/signals.png",
+	},
+	{
 		type = "item-subgroup",
 		name = "virtual-signal-recipe",
-		group = "signals",
+		group = "signals-crafting-combinator",
 		order = "zzz"
 	},
 }
