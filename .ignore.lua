@@ -1,9 +1,0 @@
-empty-crude-oil-barrel=Empty crude oil barrel
-fill-crude-oil-barrel=Fill crude oil barrel
-advanced-oil-processing=Advanced oil processing
-basic-oil-processing=Basic oil processing
-heavy-oil-cracking=Heavy oil cracking to light oil
-light-oil-cracking=Light oil cracking to petroleum gas
-solid-fuel-from-heavy-oil=Solid fuel
-solid-fuel-from-light-oil=Solid fuel
-solid-fuel-from-petroleum-gas=Solid fuel
