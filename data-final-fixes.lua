@@ -27,7 +27,9 @@ local function needs_signal(recipe) -- string recipe
 end
 
 local function get_icon(recipe) -- LuaRecipe recipe
-    -- attempts to find the best suitable icon for this recipe - uses a default one if none is found
+    --Attempts to find the best suitable icon for this recipe - uses a default one if none is found
+    --Loop through recipes, Then result, then results, then finnally results type items, finally return no-icon if none found
+    --returns an Icons table to support recipes with icons tables
     if crafting_combinator_data.icons[recipe.name] then
         return crafting_combinator_data.icons[recipe.name]
     end
@@ -44,13 +46,22 @@ local function get_icon(recipe) -- LuaRecipe recipe
         if recipe.result and data.raw[type][recipe.result] and data.raw[type][recipe.result].icons then
             return data.raw[type][recipe.result].icons
         end
-        if recipe.results then
-            for _, v in pairs(recipe.results) do
-                if v.name == recipe.name and data.raw[type][v.name] and data.raw[type][v.name].icon then
-                    return {{data.raw[type][v.name].icon}};
-                elseif v.name == recipe.name and data.raw[type][v.name] and data.raw[type][v.name].icons then
-                    return data.raw[type][v.name].icons
-                end -- there's a matching item in the results table with an icon
+        if recipe.results then --loop twice, first look for matching name, then look for first available.
+            for _, result in pairs(recipe.results) do
+                if result.name == recipe.name and data.raw[type][result.name] and data.raw[type][result.name].icon then
+                    return {{icon = data.raw[type][result.name].icon}}
+                elseif result.name == recipe.name and data.raw[type][result.name] and data.raw[type][result.name].icons then
+                    return data.raw[type][result.name].icons
+                end
+            end
+            for _, result in pairs(recipe.results) do
+                if data.raw[result.type][result.name] and data.raw[result.type][result.name].icon then
+                    --log(serpent.line(data.raw[result.type][result.name].icon))
+                    return {{icon = data.raw[result.type][result.name].icon}}
+                elseif data.raw[result.type][result.name] and data.raw[result.type][result.name].icons then
+                    --log(serpent.line(data.raw[result.type][result.name].icons))
+                    return data.raw[type][result.name].icons
+                end
             end
         end
     end
@@ -89,8 +100,8 @@ end
 local ignore_name_list = {
     -- "angels%-fluid%-splitter-",
     -- "converter%-angels%-",
-    -- "compress%-",
-    -- "uncompress%-",
+    "compress%-",
+    "uncompress%-",
 }
 
 local function ignore_recipes(name)
