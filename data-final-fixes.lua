@@ -114,15 +114,15 @@ end
 for name, recipe in pairs(data.raw.recipe) do
     -- only make virtual recipes if the name is not the same as result (or one of the results)
     if needs_signal(name) and not (recipe.hidden or ignore_recipes(recipe.name)) then
-        data:extend{
-            {
-                type = "virtual-signal",
-                name = name,
-                localised_name = get_locale(recipe),
-                icons = get_icon(recipe),
-                subgroup = "virtual-signal-recipe",
-                order = "zzz[virtual-signal-recipe]" .. (recipe.order or ""),
-            }
+        local signal = {
+            type = "virtual-signal",
+            name = name,
+            localised_name = get_locale(recipe),
+            icons = get_icon(recipe),
+            subgroup = "virtual-signal-recipe",
+            order = name .."-["..(recipe.order or "").."]",
         }
+        --Don't add these silly angels recipes they don't do anything
+        if not signal.localised_name[2] and signal.localised_name[2][1]:find("angels%-void") then data:extend({signal}) end
     end
 end
