@@ -123,6 +123,6 @@ for name, recipe in pairs(data.raw.recipe) do
             order = name .."-["..(recipe.order or "").."]",
         }
         --Don't add these silly angels recipes they don't do anything
-        if not signal.localised_name[2] and signal.localised_name[2][1]:find("angels%-void") then data:extend({signal}) end
+        if not (signal.localised_name[2] and signal.localised_name[2][1]:find("angels%-void")) then data:extend({signal}) end
     end
 end
