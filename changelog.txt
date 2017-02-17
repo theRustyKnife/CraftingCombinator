@@ -1,3 +1,9 @@
+##0.4.0##
+* Changed the way virtual recipes are generated which should increase compatibilty (thanks to [Nexela](https://github.com/theRustyKnife/CraftingCombinator/pull/4))
+* Combinators are color coded now (by [Nexela](https://github.com/theRustyKnife/CraftingCombinator/pull/4))
++ Added automatic locale generation (thanks to [Nexela](https://github.com/theRustyKnife/CraftingCombinator/pull/4) again)
++ Added a subgroup for virtual recipes (once more by [Nexela](https://github.com/theRustyKnife/CraftingCombinator/pull/4))
+
 ##0.3.3##
 * Fixed a crash caused by a rounding error in recipe combinator
 
