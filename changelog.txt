@@ -1,3 +1,7 @@
+##0.4.1##
+* Fixed a crash when loading with AAI Programmable Vehicles
+* Fixed some virtual recipes would get the default icon when not necessary
+
 ##0.4.0##
 * Changed the way virtual recipes are generated which should increase compatibilty (thanks to [Nexela](https://github.com/theRustyKnife/CraftingCombinator/pull/4))
 * Combinators are color coded now (by [Nexela](https://github.com/theRustyKnife/CraftingCombinator/pull/4))
