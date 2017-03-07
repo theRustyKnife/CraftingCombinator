@@ -3,10 +3,10 @@ local config = {}
 
 -- GENRAL --
 -- The name of the mod FML is installed in - will be used for checking on_configuration_changed
-config.MOD_NAME = "FML-test"
+config.MOD_NAME = "crafting_combinator"
 
 -- If set to true modules won't be loaded using pcall, therefore crashing if there are errors - good for debugging
-config.FORCE_LOAD_MODULES = true
+config.FORCE_LOAD_MODULES = false
 
 -- If set to true then the on_load event will be raised after on_init too
 config.ON_LOAD_AFTER_INIT = true

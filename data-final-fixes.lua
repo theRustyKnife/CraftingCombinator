@@ -26,6 +26,11 @@ local function needs_signal(recipe) -- string recipe
     return res
 end
 
+local function get_result_name(result)
+	if result.name then return name
+	else return result[1]; end
+end
+
 local function get_icon(recipe) -- LuaRecipe recipe
     --Attempts to find the best suitable icon for this recipe - uses a default one if none is found
     --Loop through recipes, Then result, then results, then finnally results type items, finally return no-icon if none found
@@ -39,7 +44,7 @@ local function get_icon(recipe) -- LuaRecipe recipe
     if recipe.icons then
         return recipe.icons
     end
-    for _, type in pairs({"item", "module", "tool", "fluid"}) do
+    for _, type in pairs({"item", "module", "tool", "fluid", "ammo"}) do
         if recipe.result and data.raw[type][recipe.result] and data.raw[type][recipe.result].icon then
             return {{icon = data.raw[type][recipe.result].icon}}
         end
@@ -48,20 +53,24 @@ local function get_icon(recipe) -- LuaRecipe recipe
         end
         if recipe.results then --loop twice, first look for matching name, then look for first available.
             for _, result in pairs(recipe.results) do
-                if result.name == recipe.name and data.raw[type][result.name] and data.raw[type][result.name].icon then
-                    return {{icon = data.raw[type][result.name].icon}}
-                elseif result.name == recipe.name and data.raw[type][result.name] and data.raw[type][result.name].icons then
-                    return data.raw[type][result.name].icons
-                end
+				local res_name = get_result_name(result)
+				
+				if res_name == recipe.name and data.raw[type][res_name] then
+					if data.raw[type][res_name].icon then return {{icon = data.raw[type][res_name].icon}}
+					elseif data.raw[type][res_name].icons then return data.raw[type][res_name].icons
+					end
+				end
             end
             for _, result in pairs(recipe.results) do
-                if data.raw[result.type][result.name] and data.raw[result.type][result.name].icon then
-                    --log(serpent.line(data.raw[result.type][result.name].icon))
-                    return {{icon = data.raw[result.type][result.name].icon}}
-                elseif data.raw[result.type][result.name] and data.raw[result.type][result.name].icons then
-                    --log(serpent.line(data.raw[result.type][result.name].icons))
-                    return data.raw[type][result.name].icons
-                end
+				local res_name = get_result_name(result)
+				
+				if data.raw[type][res_name] and data.raw[type][res_name].icon then
+					log(serpent.line(data.raw[res_type][res_name].icon))
+					return {{icon = data.raw[type][res_name].icon}}
+				elseif data.raw[type][res_name] and data.raw[type][res_name].icons then
+					log(serpent.line(data.raw[type][res_name].icons))
+					return data.raw[type][res_name].icons
+				end
             end
         end
     end
