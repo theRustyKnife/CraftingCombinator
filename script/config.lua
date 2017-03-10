@@ -1,5 +1,6 @@
 local config = {}
 
+
 -- how many ticks between updates
 config.REFRESH_RATE = 60
 
@@ -20,5 +21,9 @@ config.CHEST_NAME = "crafting-combinator-overflow"
 
 -- for some reason defines.inventory.assembling_machine_output does not seem to work properly so let's define it ourself
 config.ASSEMBLING_MACHINE_OUTPUT_INDEX = 3
+
+-- if true, recipes will be sorted into subgroups for better readability (in Factorio 0.14 this causes problems)
+config.USE_RECIPE_SUBGROUPS = false
+
 
 return config

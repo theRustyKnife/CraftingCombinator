@@ -99,9 +99,12 @@ function _M.make_prototypes(prototypes)
 end
 
 function _M.make_prototype(prototype)
-	if prototype.type then data:extend{prototype} -- if it's a regular prototype definition, we add it to data right away
+	local res
+	if prototype.type then -- if it's a regular prototype definition, we add it to data right away
+		data:extend{prototype}
+		res = prototype
 	else
-		local res = FML.table.deep_copy(prototype.base) or {} -- get the base prototype
+		res = FML.table.deep_copy(prototype.base) or {} -- get the base prototype
 		
 		if prototype.properties and type(prototype.properties == "table") then FML.table.insert_all(res, prototype.properties, true, true); end -- override with explicitly defined properties
 		
@@ -109,6 +112,8 @@ function _M.make_prototype(prototype)
 		
 		data:extend{res}
 	end
+	
+	return data.raw[res.type][res.name]
 end
 
 function _M.is_result(recipe, item)
