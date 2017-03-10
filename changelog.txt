@@ -1,3 +1,6 @@
+##0.4.2##
++ Added [Recycling Machines](https://mods.factorio.com/mods/DRY411S/ZRecycling) compatibility
+
 ##0.4.1##
 * Fixed a crash when loading with AAI Programmable Vehicles
 * Fixed some virtual recipes would get the default icon when not necessary

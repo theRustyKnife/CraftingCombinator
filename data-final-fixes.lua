@@ -3,6 +3,11 @@ crafting_combinator_data = crafting_combinator_data or {}
 crafting_combinator_data.overrides = crafting_combinator_data.overrides or {}
 crafting_combinator_data.icons = crafting_combinator_data.icons or {}
 
+
+local FML = require "FML.init"
+local config = require "script.config"
+
+
 local function is_result(recipe, item) -- LuaRecipe recipe, string item
     -- is the item one of the results?
     if recipe.result and recipe.result == item then return true -- result is item... simple
@@ -65,10 +70,10 @@ local function get_icon(recipe) -- LuaRecipe recipe
 				local res_name = get_result_name(result)
 				
 				if data.raw[type][res_name] and data.raw[type][res_name].icon then
-					log(serpent.line(data.raw[res_type][res_name].icon))
+					--log(serpent.line(data.raw[res_type][res_name].icon))
 					return {{icon = data.raw[type][res_name].icon}}
 				elseif data.raw[type][res_name] and data.raw[type][res_name].icons then
-					log(serpent.line(data.raw[type][res_name].icons))
+					--log(serpent.line(data.raw[type][res_name].icons))
 					return data.raw[type][res_name].icons
 				end
             end
@@ -123,15 +128,30 @@ end
 for name, recipe in pairs(data.raw.recipe) do
     -- only make virtual recipes if the name is not the same as result (or one of the results)
     if needs_signal(name) and not (recipe.hidden or ignore_recipes(recipe.name)) then
-        local signal = {
-            type = "virtual-signal",
-            name = name,
-            localised_name = get_locale(recipe),
-            icons = get_icon(recipe),
-            subgroup = "virtual-signal-recipe",
-            order = name .."-["..(recipe.order or "").."]",
-        }
-        --Don't add these silly angels recipes they don't do anything
-        if not (signal.localised_name[2] and signal.localised_name[2][1]:find("angels%-void")) then data:extend({signal}) end
+		-- organize the recipes into subgroups
+		local subgroup = data.raw["item-subgroup"]["virtual-signal-recipe"]
+		if config.USE_RECIPE_SUBGROUPS and recipe.subgroup then
+			local group = data.raw["item-group"][data.raw["item-subgroup"][recipe.subgroup].group]
+			
+			subgroup = data.raw["item-subgroup"]["crafting-combinator-virtual-recipe-subgroup-" .. group.name] or FML.data.make_prototype{
+				type = "item-subgroup",
+				name = "crafting-combinator-virtual-recipe-subgroup-" .. group.name,
+				group = "signals-crafting-combinator",
+				order = group.order .. "[" .. group.name .. "]",
+			}
+		end
+		
+		local loc_name = get_locale(recipe)
+		
+		if not (loc_name[2] and loc_name[2][1]:find("angels%-void")) then --Don't add these silly angels recipes they don't do anything
+			FML.data.make_prototype{
+				type = "virtual-signal",
+				name = name,
+				localised_name = get_locale(recipe),
+				icons = get_icon(recipe),
+				subgroup = subgroup.name,
+				order = ((data.raw["item-subgroup"][recipe.subgroup] or {}).order or "zzz") .. "-" .. (recipe.order or "zzz") .. "[" .. recipe.name .. "]",
+			}
+		end
     end
 end
