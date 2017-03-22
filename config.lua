@@ -1,12 +1,27 @@
 local config = {}
 
 
--- how many ticks between updates, changing this may break existing saves
+-- the default refresh rates for the mod - can be changed in game per-save
 -- recipe combinator
-config.REFRESH_RATE_RC = 60
+config.REFRESH_RATE_RC = 1
 -- crafting combinator
 config.REFRESH_RATE_CC = 60
 
+
+-- the settings any newly built crafting combinator will have
+config.CC_DEFAULT_SETTINGS = {
+	set_recipes = true,
+	read_recipes = false,
+	
+	module_destination = "passive", -- one of active, passive, normal, none
+	item_destination = "active", -- same as modules
+	
+	empty_inserters = true, -- if true, inserters inserting into a controlled assembler will get their hands' contents moved into the overflow chest
+}
+
+
+-- how far around an assembler to search for inserters
+config.CC_INSERTER_SEARCH_DISTANCE = 10
 
 -- how far to look for crafting combinators around an assembler
 config.CC_SEARCH_DISTANCE = 2
@@ -18,6 +33,9 @@ config.CC_ASSEMBLER_OFFSET = 0.2
 
 -- the number of signal slots the recipe combinator will have
 config.RC_SLOT_COUNT = 20
+
+-- the number of slots the overflow chests will have
+config.OVERFLOW_SLOT_COUNT = 1000
 
 
 -- if true, recipes will be sorted into subgroups for better readability (in Factorio 0.14 this causes problems)
@@ -41,6 +59,8 @@ config.RC_NAME = "crafting_combinator_recipe-combinator"
 config.OVERFLOW_A_NAME = "crafting_combinator_overflow-active"
 -- passive provider overflow chest
 config.OVERFLOW_P_NAME = "crafting_combinator_overflow-passive"
+-- normal overflow chest
+config.OVERFLOW_N_NAME = "crafting_combinator_overflow-normal"
 
 -- virtual recipe group name
 config.GROUP_NAME = "crafting_combinator_virtual-recipes"
@@ -53,9 +73,6 @@ config.TIME_NAME = "crafting_combinator_recipe-time"
 -- the name of the menu key ipnut
 config.MENU_KEY_NAME = "crafting_combinator_open-menu"
 
-
--- for some reason defines.inventory.assembling_machine_output does not seem to work properly so let's define it ourself
-config.ASSEMBLING_MACHINE_OUTPUT_INDEX = 3
 
 -- types to check for locale an icons
 config.ITEM_TYPES = {"item", "module", "tool", "fluid", "ammo"}

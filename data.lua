@@ -77,7 +77,26 @@ FML.data.make_prototypes{
 			selection_box = nil,
 			collision_mask = {},
 			hidden = true,
-			item_slot_count = 1000,
+			item_slot_count = config.OVERFLOW_SLOT_COUNT,
+			picture = {
+				filename = "__crafting_combinator__/graphics/trans.png",
+				width = 1,
+				height = 1,
+			},
+			circuit_wire_max_distance = 0,
+		},
+	},
+	{ -- the regular overflow chest
+		base = FML.data.inherit("container", "steel-chest"),
+		properties = {
+			name = config.OVERFLOW_N_NAME,
+			flags = {"placeable-off-grid"},
+			minable = nil,
+			selectable_in_game = false,
+			selection_box = nil,
+			collision_mask = {},
+			hidden = true,
+			item_slot_count = config.OVERFLOW_SLOT_COUNT,
 			picture = {
 				filename = "__crafting_combinator__/graphics/trans.png",
 				width = 1,

@@ -4,12 +4,8 @@ local _M = {}
 function _M.on_gui_clicked(event)
 	local clicked_combinator
 	
-	for _, v in pairs(global.entities) do
-		for __, type in pairs(v) do
-			for ___, combinator in pairs(type) do
-				if combinator.gui == event.element.parent then clicked_combinator = combinator; end
-			end
-		end
+	for _, combinator in pairs(global.combinators.all) do
+		if combinator.gui == event.element.parent then clicked_combinator = combinator; end
 	end
 	
 	if clicked_combinator then
@@ -31,10 +27,24 @@ function _M.on_gui_clicked(event)
 			clicked_combinator.settings.read_recipes = event.element.state
 		elseif event.element.name == "crafting_combinator_gui_crafting-combinator_items-dest-passive" then
 			clicked_combinator.gui["crafting_combinator_gui_crafting-combinator_items-dest-active"].state = false
-			clicked_combinator.settings.items_to_passive = true
+			clicked_combinator.gui["crafting_combinator_gui_crafting-combinator_items-dest-none"].state = false
+			clicked_combinator.gui["crafting_combinator_gui_crafting-combinator_items-dest-normal"].state = false
+			clicked_combinator.settings.item_destination = "passive"
 		elseif event.element.name == "crafting_combinator_gui_crafting-combinator_items-dest-active" then
 			clicked_combinator.gui["crafting_combinator_gui_crafting-combinator_items-dest-passive"].state = false
-			clicked_combinator.settings.items_to_passive = false
+			clicked_combinator.gui["crafting_combinator_gui_crafting-combinator_items-dest-none"].state = false
+			clicked_combinator.gui["crafting_combinator_gui_crafting-combinator_items-dest-normal"].state = false
+			clicked_combinator.settings.item_destination = "active"
+		elseif event.element.name == "crafting_combinator_gui_crafting-combinator_items-dest-none" then
+			clicked_combinator.gui["crafting_combinator_gui_crafting-combinator_items-dest-passive"].state = false
+			clicked_combinator.gui["crafting_combinator_gui_crafting-combinator_items-dest-active"].state = false
+			clicked_combinator.gui["crafting_combinator_gui_crafting-combinator_items-dest-normal"].state = false
+			clicked_combinator.settings.item_destination = "none"
+		elseif event.element.name == "crafting_combinator_gui_crafting-combinator_items-dest-normal" then
+			clicked_combinator.gui["crafting_combinator_gui_crafting-combinator_items-dest-passive"].state = false
+			clicked_combinator.gui["crafting_combinator_gui_crafting-combinator_items-dest-active"].state = false
+			clicked_combinator.gui["crafting_combinator_gui_crafting-combinator_items-dest-none"].state = false
+			clicked_combinator.settings.item_destination = "normal"
 		elseif event.element.name == "crafting_combinator_gui_crafting-combinator_save" then
 			clicked_combinator.gui.destroy()
 			clicked_combinator.gui = nil
@@ -118,13 +128,25 @@ function _M.crafting_combinator_settings(combinator, player)
 		type = "radiobutton",
 		name = prefix.."items-dest-passive",
 		caption = "Passive provider",
-		state = combinator.settings.items_to_passive,
+		state = combinator.settings.item_destination == "passive",
 	}
 	frame.add{
 		type = "radiobutton",
 		name = prefix.."items-dest-active",
 		caption = "Active provider",
-		state = not combinator.settings.items_to_passive,
+		state = combinator.settings.item_destination == "active",
+	}
+	frame.add{
+		type = "radiobutton",
+		name = prefix.."items-dest-normal",
+		caption = "Regular chest",
+		state = combinator.settings.item_destination == "normal",
+	}
+	frame.add{
+		type = "radiobutton",
+		name = prefix.."items-dest-none",
+		caption = "Nowhere",
+		state = combinator.settings.item_destination == "none",
 	}
 	frame.add{
 		type = "button",

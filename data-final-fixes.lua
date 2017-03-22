@@ -35,7 +35,7 @@ local function needs_signal(recipe)
 end
 
 local function get_result_name(result)
-	if result.name then return name
+	if result.name then return result.name
 	else return result[1]; end
 end
 

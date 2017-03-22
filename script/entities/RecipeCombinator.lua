@@ -6,24 +6,18 @@ local gui = require "script.gui"
 
 
 FML.global.on_init(function()
-	global.entities.recipe = global.entities.recipe or {}
-	for i = 0, config.REFRESH_RATE_RC do
-		global.entities.recipe[i] = global.entities.recipe[i] or {}
-	end
+	global.combinators.recipe = global.combinators.recipe or {}
 end)
 
 
 local _M = entities.Combinator:extend()
 
 
-_M.REFRESH_RATE = config.REFRESH_RATE_RC
-
-FML.global.on_load(function() _M.tab = global.entities.recipe end)
+FML.global.on_load(function() _M.tab = global.combinators.recipe end)
 
 
 function _M:on_create()
 	self.product_mode = false -- default to ingredient mode
-	self.entity.operable = false
 end
 
 function _M:update(forced)
@@ -59,6 +53,12 @@ function _M:update(forced)
 		
 		self.control_behavior.parameters = {enabled = true, parameters = params}
 	end
+end
+
+function _M:destroy()
+	if self.gui then self.gui.destroy(); end
+	
+	self.super.destroy(self)
 end
 
 function _M:on_opened(player)
