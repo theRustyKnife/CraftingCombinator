@@ -1,6 +1,5 @@
 local FML = require "FML.init"
 local entities = require "script.entities.init"
-
 local config = require "config"
 local events = require "script.events"
 local gui = require "script.gui"

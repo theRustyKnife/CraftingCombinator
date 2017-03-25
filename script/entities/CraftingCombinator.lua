@@ -13,7 +13,11 @@ end)
 local _M = entities.Combinator:extend()
 
 
-FML.global.on_load(function() _M.tab = global.combinators.crafting end)
+FML.global.on_load(function()
+	_M.tab = global.combinators.crafting
+	
+	for _, o in pairs(global.combinators.crafting) do _M:load(o); end
+end)
 
 
 function _M.update_assemblers(surface, position)

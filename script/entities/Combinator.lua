@@ -29,6 +29,8 @@ function _M:on_opened(player) end -- abstract method that will be called when th
 function _M:destroy()
 	FML.table.remove_v(global.combinators.all, self)
 	FML.table.remove_v(self.tab, self)
+	
+	_M.super.destroy(self)
 end
 
 
