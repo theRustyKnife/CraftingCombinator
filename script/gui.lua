@@ -81,6 +81,12 @@ function _M.make_entity_frame(entity, player_index, caption)
 	
 	local container = _M.make_container(frame, "container")
 	
+	-- frame.add{
+		-- type = "button",
+		-- name = "change-refresh-rate",
+		-- caption = {"crafting_combinator_gui_button_change-refresh-rate"},
+	-- }
+	
 	frame.add{
 		type = "button",
 		name = "save",
