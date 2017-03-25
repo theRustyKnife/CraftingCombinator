@@ -85,7 +85,10 @@ function _M:on_radiobutton_changed(group, selected)
 end
 
 function _M:on_button_clicked(player_index, name)
-	if name == "save" then gui.destroy_entity_frame(player_index); end
+	if name == "save" then gui.destroy_entity_frame(player_index)
+	elseif name == "change-refresh-rate" then
+		
+	end
 end
 
 

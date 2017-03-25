@@ -1,3 +1,15 @@
+##0.5.0##
++ Added configuration GUIs for combinators
++ Added product mode to recipe combinator
++ Added an option to crafting combinator to read recipes from assemblers
++ Added settings copy/paste
++ Added an option to crafting combinator to empty inserters' hands to prevent jamming
++ Added a way to specify what type of chest to use for overflow items and modules
+* Modules are now moved to overflow if they can't be used with the new recipe
+* Half-finished crafting should now return the ingredients into overflow
+* Crafting and recipe combinators now have seperate refresh rates specifiable in config (GUI coming later)
+* Many minor changes
+
 ##0.4.2##
 + Added [Recycling Machines](https://mods.factorio.com/mods/DRY411S/ZRecycling) compatibility
 
