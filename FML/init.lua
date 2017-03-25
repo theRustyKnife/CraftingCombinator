@@ -47,7 +47,7 @@ if script and script.on_init then
 		on_fml_init = function(f) table.insert(global_handlers.fml_init, f) end, -- called when FML is first installed (after on_init) - FML's global table is passed as argument
 	}
 	-- runs all the handlers from a table passing an argument to them
-	local function run(handlers, arg) for _, handler in pairs(handlers) do handler(arg); end end
+	local function run(handlers, arg) for _, handler in ipairs(handlers) do handler(arg); end end
 	
 	-- create the global table if it doesn't exist - if everything works properly it should be safe to call this from on_load
 	local function init_global()
@@ -74,7 +74,7 @@ if script and script.on_init then
 	end)
 	
 	script.on_load(function()
-		init_global()
+		--init_global()
 		run(global_handlers.load)
 	end)
 	

@@ -73,5 +73,16 @@ function _M.is_empty(tab)
 	return false
 end
 
+function _M.index_of(tab, value)
+	for i, v in pairs(tab) do
+		if v == value then return i; end
+	end
+	return nil
+end
+
+function _M.remove_v(tab, value)
+	table.remove(tab, _M.index_of(tab, value))
+end
+
 
 return _M
