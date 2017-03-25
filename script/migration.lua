@@ -19,6 +19,7 @@ FML.global.on_mod_config_change(function(data)
 		global.combinators = {all = {}, crafting = {}, recipe = {}}
 		
 		global.settings = {refresh_rate = {cc = config.REFRESH_RATE_CC, rc = config.REFRESH_RATE_RC}}
+		global.to_close = {}
 		
 		entities.util.update_global()
 		

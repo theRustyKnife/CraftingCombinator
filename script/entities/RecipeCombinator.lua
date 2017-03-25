@@ -13,6 +13,8 @@ end)
 local _M = entities.Combinator:extend()
 
 
+_M.TYPE = "recipe"
+
 FML.global.on_load(function()
 	_M.tab = global.combinators.recipe
 	
@@ -65,8 +67,10 @@ function _M:destroy()
 	self.super.destroy(self)
 end
 
-function _M:open(player)
-	local parent = gui.make_entity_frame(self, player.gui.center, {"crafting_combinator_gui_title_recipe-combinator"})
+function _M:open(player_index)
+	self.super.open(self)
+	
+	local parent = gui.make_entity_frame(self, player_index, {"crafting_combinator_gui_title_recipe-combinator"})
 	gui.make_radiobutton_group(parent, "mode", {"crafting_combinator_gui_title_mode"}, {
 			ingredient = {"crafting_combinator_gui_recipe-combinator_mode_ingredient"},
 			product = {"crafting_combinator_gui_recipe-combinator_mode_product"},
@@ -80,8 +84,8 @@ function _M:on_radiobutton_changed(group, selected)
 	end
 end
 
-function _M:on_button_clicked(name)
-	if name == "save" then gui.destroy_entity_frame(self); end
+function _M:on_button_clicked(player_index, name)
+	if name == "save" then gui.destroy_entity_frame(player_index); end
 end
 
 

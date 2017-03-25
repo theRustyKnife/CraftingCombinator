@@ -13,6 +13,8 @@ end)
 local _M = entities.Combinator:extend()
 
 
+_M.TYPE = "crafting"
+
 FML.global.on_load(function()
 	_M.tab = global.combinators.crafting
 	
@@ -176,8 +178,10 @@ function _M:destroy(player)
 	self.super.destroy(self)
 end
 
-function _M:open(player)
-	local parent = gui.make_entity_frame(self, player.gui.center, {"crafting_combinator_gui_title_crafting-combinator"})
+function _M:open(player_index)
+	self.super.open(self)
+	
+	local parent = gui.make_entity_frame(self, player_index, {"crafting_combinator_gui_title_crafting-combinator"})
 	
 	local modes = {}
 	if self.settings.set_recipes then table.insert(modes, "set_recipes"); end
@@ -212,8 +216,8 @@ function _M:on_radiobutton_changed(group, selected)
 	self.settings[group] = selected
 end
 
-function _M:on_button_clicked(name)
-	if name == "save" then gui.destroy_entity_frame(self); end
+function _M:on_button_clicked(player_index, name)
+	if name == "save" then gui.destroy_entity_frame(player_index); end
 end
 
 function _M:find_assembler()

@@ -23,3 +23,5 @@ script.on_event(config.CLOSE_KEY_NAME, events.on_close_menu_key_pressed)
 script.on_event(defines.events.on_gui_click, gui.on_gui_clicked)
 
 script.on_event(defines.events.on_player_rotated_entity, events.on_rotated)
+
+script.on_event(defines.events.on_entity_settings_pasted, events.on_paste)

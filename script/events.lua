@@ -6,6 +6,7 @@ local gui = require ".gui"
 
 FML.global.on_init(function()
 	global.settings = {refresh_rate = {cc = config.REFRESH_RATE_CC, rc = config.REFRESH_RATE_RC}}
+	global.to_close = global.to_close{}
 end)
 
 
@@ -40,6 +41,11 @@ local function run_update(tab, tick, rate)
 end
 
 function _M.on_tick(event)
+	for i, c in pairs(global.to_close) do
+		c.entity.operable = true
+		global.to_close[i] = nil
+	end
+	
 	run_update(global.combinators.crafting, event.tick, global.settings.refresh_rate.cc)
 	run_update(global.combinators.recipe, event.tick, global.settings.refresh_rate.rc)
 end
@@ -52,17 +58,34 @@ function _M.on_rotated(event)
 	end
 end
 
+function _M.on_paste(event)
+	local source = entities.util.find_in_global(event.source)
+	local destination = entities.util.find_in_global(event.destination)
+	
+	if source and destination and source.type == destination.type then
+		if source.type == entities.RecipeCombinator.TYPE then
+			destination.mode = source.mode
+			destination:update(true)
+		elseif source.type == entities.CraftingCombinator.TYPE then
+			destination.settings = FML.table.deep_copy(source.settings)
+		end
+	end
+end
+
 function _M.on_menu_key_pressed(event)
 	local player = game.players[event.player_index]
 	local entity = player.selected
 	if entity and not player.cursor_stack.valid_for_read then
 		local combinator = entities.util.find_in_global(entity)
-		if combinator then combinator:open(player); end
+		if combinator then
+			combinator.entity.operable = false
+			combinator:open(event.player_index)
+		end
 	end
 end
 
 function _M.on_close_menu_key_pressed(event)
-	gui.destroy_entity_frame_from_player(game.players[event.player_index])
+	gui.destroy_entity_frame(event.player_index)
 end
 
 

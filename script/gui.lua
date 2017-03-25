@@ -74,11 +74,10 @@ function _M.make_checkbox_group(parent, name, caption, options, selected) -- sam
 	return container
 end
 
-function _M.make_entity_frame(entity, parent, caption)
-	local frame = parent[PREFIX.."entity-frame"]
-	_M.destroy_entity_frame(frame)
+function _M.make_entity_frame(entity, player_index, caption)
+	_M.destroy_entity_frame(player_index)
 	
-	frame = _M.make_frame(parent, "entity-frame", caption)
+	local frame = _M.make_frame(game.players[player_index].gui.center, "entity-frame", caption)
 	
 	local container = _M.make_container(frame, "container")
 	
@@ -88,24 +87,27 @@ function _M.make_entity_frame(entity, parent, caption)
 		caption = {"crafting_combinator_gui_button_save"},
 	}
 	
-	table.insert(global.gui, {gui = frame, entity = entity})
+	global.gui[player_index] = {gui = frame, entity = entity}
 	
 	return container
 end
 
-function _M.destroy_entity_frame(todestroy)
-	if todestroy == nil then return; end
-	for i, v in pairs(global.gui) do
-		if v.gui == todestroy or v.entity == todestroy then
-			v.gui.destroy()
-			table.remove(global.gui, i)
-			return
-		end
-	end
+function _M.destroy_entity_frame(player_index)
+	local todestroy = global.gui[player_index]
+	if not todestroy then return; end
+	
+	todestroy.gui.destroy()
+	local entity = todestroy.entity
+	global.gui[player_index] = nil
+	
+	--entity:close()
 end
 
-function _M.destroy_entity_frame_from_player(player)
-	_M.destroy_entity_frame(player.gui.center[PREFIX.."entity-frame"])
+function _M.is_open(entity)
+	for _, v in pairs(global.gui) do
+		if v.entity == entity then return true; end
+	end
+	return false
 end
 
 
@@ -133,7 +135,7 @@ function _M.on_gui_clicked(event)
 		end
 		clicked_entity:on_radiobutton_changed(event.element.parent.name, event.element.name)
 	elseif event.element.type == "button" then
-		clicked_entity:on_button_clicked(event.element.name)
+		clicked_entity:on_button_clicked(event.player_index, event.element.name)
 	end
 end
 
