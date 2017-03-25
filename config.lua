@@ -72,6 +72,8 @@ config.TIME_NAME = "crafting_combinator_recipe-time"
 
 -- the name of the menu key ipnut
 config.MENU_KEY_NAME = "crafting_combinator_open-menu"
+-- the name of the close menu key input
+config.CLOSE_KEY_NAME = "crafting_combinator_close-menu"
 
 
 -- types to check for locale an icons

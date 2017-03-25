@@ -1,6 +1,7 @@
 local config = require "config"
 local entities = require "therustyknife.crafting_combinator.entities"
 local FML = require "therustyknife.FML"
+local gui = require ".gui"
 
 
 FML.global.on_init(function()
@@ -56,8 +57,12 @@ function _M.on_menu_key_pressed(event)
 	local entity = player.selected
 	if entity and not player.cursor_stack.valid_for_read then
 		local combinator = entities.util.find_in_global(entity)
-		if combinator then combinator:on_opened(player); end
+		if combinator then combinator:open(player); end
 	end
+end
+
+function _M.on_close_menu_key_pressed(event)
+	gui.destroy_entity_frame_from_player(game.players[event.player_index])
 end
 
 

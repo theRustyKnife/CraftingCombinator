@@ -24,7 +24,13 @@ function _M:on_create() end -- abstract method that will be called when a new Co
 
 function _M:update() end -- abstract method that will be called when this Combinator is supposed to be updated
 
-function _M:on_opened(player) end -- abstract method that will be called when this combinator is opened
+function _M:open(player) end -- abstract method that will be called when this combinator is opened
+
+function _M:on_checkbox_changed(group, name, state) end
+
+function _M:on_radiobutton_changed(group, selected) end
+
+function _M:on_button_clicked(name) end
 
 function _M:destroy()
 	FML.table.remove_v(global.combinators.all, self)

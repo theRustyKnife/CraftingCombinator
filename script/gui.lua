@@ -1,163 +1,140 @@
 local FML = require "therustyknife.FML"
 
 
+FML.global.on_init(function()
+	global.gui = global.gui or {}
+end)
+
+
+local PREFIX = "crafting_combinator_"
+
+
 local _M = {}
 
 
-function _M.on_gui_clicked(event)
-	local clicked_combinator
+function _M.make_frame(parent, name, caption, direction)
+	return parent.add{
+		type = "frame",
+		name = PREFIX..name,
+		caption = caption,
+		direction = direction or "vertical",
+	}
+end
+
+function _M.make_container(parent, name, caption, direction)
+	local container = parent.add{
+		type = "flow",
+		name = name,
+		direction = direction or "vertical",
+	}
 	
-	for _, combinator in pairs(global.combinators.all) do
-		if combinator.gui == event.element.parent then clicked_combinator = combinator; end
+	if caption then
+		container.add{
+			type = "label",
+			name = "caption",
+			caption = caption,
+			style = "bold_label_style",
+		}
 	end
 	
-	if clicked_combinator then
-		if event.element.name == "crafting_combinator_gui_recipe-combinator_save" then
-			clicked_combinator.gui.destroy()
-			clicked_combinator.gui = nil
-		elseif event.element.name == "crafting_combinator_gui_recipe-combinator_mode-ingredient" then
-			clicked_combinator.gui["crafting_combinator_gui_recipe-combinator_mode-product"].state = false
-			clicked_combinator.product_mode = false
-			clicked_combinator:update(true)
-		elseif event.element.name == "crafting_combinator_gui_recipe-combinator_mode-product" then
-			clicked_combinator.gui["crafting_combinator_gui_recipe-combinator_mode-ingredient"].state = false
-			clicked_combinator.product_mode = true
-			clicked_combinator:update(true)
-			
-		elseif event.element.name == "crafting_combinator_gui_crafting-combinator_mode-set" then
-			clicked_combinator.settings.set_recipes = event.element.state
-		elseif event.element.name == "crafting_combinator_gui_crafting-combinator_mode-read" then
-			clicked_combinator.settings.read_recipes = event.element.state
-		elseif event.element.name == "crafting_combinator_gui_crafting-combinator_items-dest-passive" then
-			clicked_combinator.gui["crafting_combinator_gui_crafting-combinator_items-dest-active"].state = false
-			clicked_combinator.gui["crafting_combinator_gui_crafting-combinator_items-dest-none"].state = false
-			clicked_combinator.gui["crafting_combinator_gui_crafting-combinator_items-dest-normal"].state = false
-			clicked_combinator.settings.item_destination = "passive"
-		elseif event.element.name == "crafting_combinator_gui_crafting-combinator_items-dest-active" then
-			clicked_combinator.gui["crafting_combinator_gui_crafting-combinator_items-dest-passive"].state = false
-			clicked_combinator.gui["crafting_combinator_gui_crafting-combinator_items-dest-none"].state = false
-			clicked_combinator.gui["crafting_combinator_gui_crafting-combinator_items-dest-normal"].state = false
-			clicked_combinator.settings.item_destination = "active"
-		elseif event.element.name == "crafting_combinator_gui_crafting-combinator_items-dest-none" then
-			clicked_combinator.gui["crafting_combinator_gui_crafting-combinator_items-dest-passive"].state = false
-			clicked_combinator.gui["crafting_combinator_gui_crafting-combinator_items-dest-active"].state = false
-			clicked_combinator.gui["crafting_combinator_gui_crafting-combinator_items-dest-normal"].state = false
-			clicked_combinator.settings.item_destination = "none"
-		elseif event.element.name == "crafting_combinator_gui_crafting-combinator_items-dest-normal" then
-			clicked_combinator.gui["crafting_combinator_gui_crafting-combinator_items-dest-passive"].state = false
-			clicked_combinator.gui["crafting_combinator_gui_crafting-combinator_items-dest-active"].state = false
-			clicked_combinator.gui["crafting_combinator_gui_crafting-combinator_items-dest-none"].state = false
-			clicked_combinator.settings.item_destination = "normal"
-		elseif event.element.name == "crafting_combinator_gui_crafting-combinator_save" then
-			clicked_combinator.gui.destroy()
-			clicked_combinator.gui = nil
+	return container
+end
+
+function _M.make_radiobutton_group(parent, name, caption, options, selected) -- options is in the format {name = caption, ...}, selected is a name from options
+	local container = _M.make_container(parent, name, caption)
+	
+	local group = _M.make_container(container, name)
+	
+	for name, caption in pairs(options) do
+		group.add{
+			type = "radiobutton",
+			name = name,
+			caption = caption,
+			state = name == selected,
+		}
+	end
+	
+	return container
+end
+
+function _M.make_checkbox_group(parent, name, caption, options, selected) -- same as radiobutton group just selected is an array of options
+	local container = _M.make_container(parent, name, caption)
+	
+	local group = _M.make_container(container, name)
+	
+	for name, caption in pairs(options) do
+		group.add{
+			type = "checkbox",
+			name = name,
+			caption = caption,
+			state = FML.table.contains(selected, name),
+		}
+	end
+	
+	return container
+end
+
+function _M.make_entity_frame(entity, parent, caption)
+	local frame = parent[PREFIX.."entity-frame"]
+	_M.destroy_entity_frame(frame)
+	
+	frame = _M.make_frame(parent, "entity-frame", caption)
+	
+	local container = _M.make_container(frame, "container")
+	
+	frame.add{
+		type = "button",
+		name = "save",
+		caption = {"crafting_combinator_gui_button_save"},
+	}
+	
+	table.insert(global.gui, {gui = frame, entity = entity})
+	
+	return container
+end
+
+function _M.destroy_entity_frame(todestroy)
+	if todestroy == nil then return; end
+	for i, v in pairs(global.gui) do
+		if v.gui == todestroy or v.entity == todestroy then
+			v.gui.destroy()
+			table.remove(global.gui, i)
+			return
 		end
 	end
 end
 
-
-function _M.recipe_combinator_settings(combinator, player)
-	local frame_name = "crafting_combinator_gui_recipe-combinator_frame"
-	
-	if combinator.gui or player.gui.center[frame_name] then return; end
-	
-	local frame = player.gui.center.add{
-		type = "frame",
-		name = frame_name,
-		caption = "Recipe Combinator",
-		direction = "vertical",
-	}
-	frame.add{
-		type = "label",
-		name = "crafting_combinator_gui_recipe-combinator_mode-title",
-		caption = "Mode",
-	}
-	frame.add{
-		type = "radiobutton",
-		name = "crafting_combinator_gui_recipe-combinator_mode-ingredient",
-		caption = "Ingredient",
-		state = not combinator.product_mode,
-	}
-	frame.add{
-		type = "radiobutton",
-		name = "crafting_combinator_gui_recipe-combinator_mode-product",
-		caption = "Product",
-		state = combinator.product_mode,
-	}
-	frame.add{
-		type = "button",
-		name = "crafting_combinator_gui_recipe-combinator_save",
-		caption = "Save",
-	}
-	
-	combinator.gui = frame
+function _M.destroy_entity_frame_from_player(player)
+	_M.destroy_entity_frame(player.gui.center[PREFIX.."entity-frame"])
 end
 
-function _M.crafting_combinator_settings(combinator, player)
-	local prefix = "crafting_combinator_gui_crafting-combinator_"
-	local frame_name = prefix.."combinator_frame"
+
+function _M.on_gui_clicked(event)
+	local parent = event.element
+	while true do
+		if parent == nil then return; end
+		if parent.name == PREFIX.."entity-frame" then break; end
+		parent = parent.parent
+	end
 	
-	if combinator.gui or player.gui.center[frame_name] then return; end
+	local clicked_entity
+	for _, v in pairs(global.gui) do
+		if v.gui == parent then
+			clicked_entity = v.entity
+			break
+		end
+	end
 	
-	local frame = player.gui.center.add{
-		type = "frame",
-		name = frame_name,
-		caption = "Recipe Combinator",
-		direction = "vertical",
-	}
-	frame.add{
-		type = "label",
-		name = prefix.."mode-title",
-		caption = "Mode",
-	}
-	frame.add{
-		type = "checkbox",
-		name = prefix.."mode-set",
-		caption = "Set recipes",
-		state = combinator.settings.set_recipes,
-	}
-	frame.add{
-		type = "checkbox",
-		name = prefix.."mode-read",
-		caption = "Read recipes",
-		state = combinator.settings.read_recipes,
-	}
-	frame.add{
-		type = "label",
-		name = prefix.."items-dest-title",
-		caption = "Move items to:",
-	}
-	frame.add{
-		type = "radiobutton",
-		name = prefix.."items-dest-passive",
-		caption = "Passive provider",
-		state = combinator.settings.item_destination == "passive",
-	}
-	frame.add{
-		type = "radiobutton",
-		name = prefix.."items-dest-active",
-		caption = "Active provider",
-		state = combinator.settings.item_destination == "active",
-	}
-	frame.add{
-		type = "radiobutton",
-		name = prefix.."items-dest-normal",
-		caption = "Regular chest",
-		state = combinator.settings.item_destination == "normal",
-	}
-	frame.add{
-		type = "radiobutton",
-		name = prefix.."items-dest-none",
-		caption = "Nowhere",
-		state = combinator.settings.item_destination == "none",
-	}
-	frame.add{
-		type = "button",
-		name = prefix.."save",
-		caption = "Save",
-	}
-	
-	combinator.gui = frame
+	if event.element.type == "checkbox" then
+		clicked_entity:on_checkbox_changed(event.element.parent.name, event.element.name, event.element.state)
+	elseif event.element.type == "radiobutton" then
+		for _, name in pairs(event.element.parent.children_names) do
+			event.element.parent[name].state = name == event.element.name
+		end
+		clicked_entity:on_radiobutton_changed(event.element.parent.name, event.element.name)
+	elseif event.element.type == "button" then
+		clicked_entity:on_button_clicked(event.element.name)
+	end
 end
 
 

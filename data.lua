@@ -111,6 +111,12 @@ FML.data.make_prototypes{
 		key_sequence = "mouse-button-1",
 		consuming = "none",
 	},
+	{
+		type = "custom-input",
+		name = config.CLOSE_KEY_NAME,
+		key_sequence = "E",
+		consuming = "none",
+	},
 }
 
 

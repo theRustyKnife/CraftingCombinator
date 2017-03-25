@@ -21,7 +21,7 @@ end)
 
 
 function _M:on_create()
-	self.product_mode = false -- default to ingredient mode
+	self.mode = "ingredient" -- default to ingredient mode
 end
 
 function _M:update(forced)
@@ -34,7 +34,7 @@ function _M:update(forced)
 		local params = {}
 		
 		if recipe then
-			for i, ing in pairs((self.product_mode and recipe.products) or recipe.ingredients) do
+			for i, ing in pairs(((self.mode == "product") and recipe.products) or recipe.ingredients) do
 				local t_amount = tonumber(ing.amount or ing.amount_min or ing.amount_max)
 				local amount = math.floor(t_amount)
 				if t_amount % 1 > 0 then amount = amount + 1; end
@@ -65,8 +65,23 @@ function _M:destroy()
 	self.super.destroy(self)
 end
 
-function _M:on_opened(player)
-	gui.recipe_combinator_settings(self, player)
+function _M:open(player)
+	local parent = gui.make_entity_frame(self, player.gui.center, {"crafting_combinator_gui_title_recipe-combinator"})
+	gui.make_radiobutton_group(parent, "mode", {"crafting_combinator_gui_title_mode"}, {
+			ingredient = {"crafting_combinator_gui_recipe-combinator_mode_ingredient"},
+			product = {"crafting_combinator_gui_recipe-combinator_mode_product"},
+		}, self.mode)
+end
+
+function _M:on_radiobutton_changed(group, selected)
+	if group == "mode" then
+		self.mode = selected
+		self:update(true)
+	end
+end
+
+function _M:on_button_clicked(name)
+	if name == "save" then gui.destroy_entity_frame(self); end
 end
 
 

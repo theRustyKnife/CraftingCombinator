@@ -176,8 +176,44 @@ function _M:destroy(player)
 	self.super.destroy(self)
 end
 
-function _M:on_opened(player)
-	gui.crafting_combinator_settings(self, player)
+function _M:open(player)
+	local parent = gui.make_entity_frame(self, player.gui.center, {"crafting_combinator_gui_title_crafting-combinator"})
+	
+	local modes = {}
+	if self.settings.set_recipes then table.insert(modes, "set_recipes"); end
+	if self.settings.read_recipes then table.insert(modes, "read_recipes"); end
+	
+	gui.make_checkbox_group(parent, "mode", {"crafting_combinator_gui_title_mode"}, {
+			set_recipes = {"crafting_combinator_gui_crafting-combinator_mode_set"},
+			read_recipes = {"crafting_combinator_gui_crafting-combinator_mode_read"},
+		}, modes)
+	gui.make_radiobutton_group(parent, "item-destination", {"crafting_combinator_gui_crafting-combinator_title_item-destination"}, {
+			active = {"crafting_combinator_gui_destination_active"},
+			passive = {"crafting_combinator_gui_destination_passive"},
+			normal = {"crafting_combinator_gui_destination_normal"},
+			none = {"crafting_combinator_gui_destination_none"},
+		}, self.settings.item_destination)
+	gui.make_radiobutton_group(parent, "module_destination", {"crafting_combinator_gui_crafting-combinator_title_module-destination"}, {
+			active = {"crafting_combinator_gui_destination_active"},
+			passive = {"crafting_combinator_gui_destination_passive"},
+			normal = {"crafting_combinator_gui_destination_normal"},
+			none = {"crafting_combinator_gui_destination_none"},
+		}, self.settings.module_destination)
+	gui.make_checkbox_group(parent, "misc", {"crafting_combinator_gui_crafting-combinator_title_misc"}, {
+			empty_inserters = {"crafting_combinator_gui_crafting-combinator_empty-inserters"},
+		}, (self.settings.empty_inserters and {"empty_inserters"}) or {})
+end
+
+function _M:on_checkbox_changed(group, name, state)
+	self.settings[name] = state
+end
+
+function _M:on_radiobutton_changed(group, selected)
+	self.settings[group] = selected
+end
+
+function _M:on_button_clicked(name)
+	if name == "save" then gui.destroy_entity_frame(self); end
 end
 
 function _M:find_assembler()
