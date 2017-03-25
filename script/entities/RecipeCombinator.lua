@@ -16,7 +16,7 @@ local _M = entities.Combinator:extend()
 FML.global.on_load(function()
 	_M.tab = global.combinators.recipe
 	
-	for _, o in pairs(global.combinators.recipe) do _M:load(o); end
+	for _, o in pairs(global.combinators.recipe or {}) do _M:load(o); end
 end)
 
 

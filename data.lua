@@ -65,7 +65,14 @@ FML.data.make_prototypes{
 		name = config.TIME_NAME,
 		icon = "__core__/graphics/clock-icon.png",
 		subgroup = "crafting_combinator-signals",
-		order = "c[recipe-time]",
+		order = "a[recipe-time]",
+	},
+	{
+		type = "virtual-signal",
+		name = "rocket-part",
+		icon = "__base__/graphics/icons/rocket-part.png",
+		subgroup = config.RECIPE_SUBGROUP_NAME, --TODO: change this to be in the signals subgroup in 0.15
+		order = "b[rocket-part]"
 	},
 	{ -- the active overflow chest
 		base = FML.data.inherit("logistic-container", "logistic-chest-active-provider"),

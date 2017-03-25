@@ -3,7 +3,7 @@ local config = {}
 
 -- the default refresh rates for the mod - can be changed in game per-save
 -- recipe combinator
-config.REFRESH_RATE_RC = 1
+config.REFRESH_RATE_RC = 60
 -- crafting combinator
 config.REFRESH_RATE_CC = 60
 
@@ -43,10 +43,11 @@ config.USE_RECIPE_SUBGROUPS = false
 
 -- recipes matching any of the strings will not get a virtual recipe
 config.RECIPES_TO_IGNORE = {
-	--"angels%-fluid%-splitter-",
-    --"converter%-angels%-",
-    "compress%-",
-    "uncompress%-",
+	--"^ngels%-fluid%-splitter-",
+    --"^converter%-angels%-",
+    "^compress%-",
+    "^uncompress%-",
+	"angels%-void",
 }
 
 

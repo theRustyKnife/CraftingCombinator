@@ -18,6 +18,12 @@ _M.util = {}
 _M.util.entity_names = {[config.CC_NAME] = true, [config.RC_NAME]= true}
 
 
+function _M.util.update_global()
+	_M.RecipeCombinator.tab = global.combinators.recipe
+	_M.CraftingCombinator.tab = global.combinators.crafting
+end
+
+
 function _M.util.try_destroy(entity, player) -- player is optional and only used for CraftingCombinator
 	if _M.util.entity_names[entity.name] then
 		local c = _M.util.find_in_global(entity)

@@ -16,7 +16,7 @@ local _M = entities.Combinator:extend()
 FML.global.on_load(function()
 	_M.tab = global.combinators.crafting
 	
-	for _, o in pairs(global.combinators.crafting) do _M:load(o); end
+	for _, o in pairs(global.combinators.crafting or {}) do _M:load(o); end
 end)
 
 
@@ -187,7 +187,7 @@ function _M:open(player)
 			set_recipes = {"crafting_combinator_gui_crafting-combinator_mode_set"},
 			read_recipes = {"crafting_combinator_gui_crafting-combinator_mode_read"},
 		}, modes)
-	gui.make_radiobutton_group(parent, "item-destination", {"crafting_combinator_gui_crafting-combinator_title_item-destination"}, {
+	gui.make_radiobutton_group(parent, "item_destination", {"crafting_combinator_gui_crafting-combinator_title_item-destination"}, {
 			active = {"crafting_combinator_gui_destination_active"},
 			passive = {"crafting_combinator_gui_destination_passive"},
 			normal = {"crafting_combinator_gui_destination_normal"},

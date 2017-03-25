@@ -14,7 +14,7 @@ end
 
 local function is_ignored(name)
 	for _, ignore_name in pairs(config.RECIPES_TO_IGNORE) do
-		if name:find("^"..ignore_name) then return true; end
+		if name:find(ignore_name) then return true; end
 	end
 	return false
 end
@@ -129,15 +129,13 @@ for name, recipe in pairs(data.raw.recipe) do
 		
 		local localised_name = get_locale(recipe)
 		
-		if not (localised_name[2] and localised_name[2][1]:find("angels%-void")) then --Don't add these silly angels recipes they don't do anything
-			FML.data.make_prototype{
-				type = "virtual-signal",
-				name = name,
-				localised_name = localised_name,
-				icons = get_icons(recipe),
-				subgroup = subgroup.name,
-				order = ((data.raw["item-subgroup"][recipe.subgroup] or {}).order or "zzz").."-"..(recipe.order or "zzz").."["..recipe.name.."]",
-			}
-		end
+		FML.data.make_prototype{
+			type = "virtual-signal",
+			name = name,
+			localised_name = localised_name,
+			icons = get_icons(recipe),
+			subgroup = subgroup.name,
+			order = ((data.raw["item-subgroup"][recipe.subgroup] or {}).order or "zzz").."-"..(recipe.order or "zzz").."["..recipe.name.."]",
+		}
 	end
 end

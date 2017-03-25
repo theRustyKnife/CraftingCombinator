@@ -5,6 +5,9 @@ local events = require "script.events"
 local gui = require "script.gui"
 
 
+require "script.migration"
+
+
 script.on_event(defines.events.on_built_entity, events.on_built)
 script.on_event(defines.events.on_robot_built_entity, events.on_built)
 
