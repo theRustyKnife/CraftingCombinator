@@ -121,7 +121,7 @@ function _M:update()
 					local stack = inventory[i]
 					if stack.valid_for_read then
 						local limitations = game.item_prototypes[stack.name].limitations -- table indexed by recipe names (?)
-						if limitations and not limitations[recipe.name] then target.insert(stack); end
+						if limitations and not FML.table.is_empty(limitations) and not limitations[recipe.name] then target.insert(stack); end
 					end
 				end
 			end

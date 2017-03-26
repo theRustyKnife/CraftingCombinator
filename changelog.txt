@@ -1,3 +1,6 @@
+##0.5.1##
+* Fixed that module would be moved even when not necessary which caused duplication
+
 ##0.5.0##
 + Added configuration GUIs for combinators
 + Added product mode to recipe combinator
