@@ -79,11 +79,6 @@ local function get_icons(recipe)
     return {{icon = "__crafting_combinator__/graphics/no-icon.png"}}
 end
 
-
-local function get_locale(recipe)
-	
-end
-
 local function get_locale(recipe)
     --Try the best option to get a valid localised name
 
