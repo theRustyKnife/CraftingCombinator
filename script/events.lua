@@ -6,7 +6,7 @@ local gui = require ".gui"
 
 FML.global.on_init(function()
 	global.settings = {refresh_rate = {cc = config.REFRESH_RATE_CC, rc = config.REFRESH_RATE_RC}}
-	global.to_close = global.to_close{}
+	global.to_close = global.to_close or {}
 end)
 
 
