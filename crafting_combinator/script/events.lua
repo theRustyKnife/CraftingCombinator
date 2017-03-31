@@ -13,16 +13,31 @@ end)
 local _M = {}
 
 
+local function on_built(entity)
+	if entity.valid and entity.type == "assembling-machine" then
+		entities.CraftingCombinator.update_assemblers(entity.surface, entity.position)
+	end
+end
+
 function _M.on_built(event)
 	local entity = event.created_entity
 	
 	if entity.name == config.RC_NAME then entities.RecipeCombinator:new(entity); end
 	if entity.name == config.CC_NAME then entities.CraftingCombinator:new(entity); end
 	
-	if entity.type == "assembling-machine" then
-		entities.CraftingCombinator.update_assemblers(entity.surface, entity.position)
-	end
+	if entity.name == "entity-ghost" then FML.blueprint_data.check_built_entity(entity); end
+	
+	on_built(entity)
 end
+function _M.on_robot_built(event)
+	local entity = event.created_entity
+	
+	if entity.name == config.RC_NAME then entities.RecipeCombinator:new(entity, true) end
+	if entity.name == config.CC_NAME then entities.CraftingCombinator:new(entity, true) end
+	
+	on_built(entity)
+end
+
 
 function _M.on_destroyed(event)
 	local entity = event.entity

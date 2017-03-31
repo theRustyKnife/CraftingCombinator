@@ -5,7 +5,7 @@ local entities = require "therustyknife.crafting_combinator.entities"
 local _M = FML.Object:extend()
 
 
-function _M:new(entity)
+function _M:new(entity, blueprint)
 	local res = _M.super:new(self)
 	res.type = self.TYPE
 	res.tab = self.tab
@@ -14,12 +14,12 @@ function _M:new(entity)
 	res.entity = entity
 	res.control_behavior = entity.get_or_create_control_behavior()
 	
-	res:on_create()
+	res:on_create(blueprint)
 	
 	return res
 end
 
-function _M:on_create() end -- abstract method that will be called when a new Combinator is created - use this instead of the constructor
+function _M:on_create(blueprint) end -- abstract method that will be called when a new Combinator is created, true will be passed if built from blueprint - use this instead of the constructor
 
 function _M:update() end -- abstract method that will be called when this Combinator is supposed to be updated
 

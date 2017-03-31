@@ -2,11 +2,11 @@ local config = {}
 
 
 -- GENRAL --
--- The name of the mod FML is installed in - will be used for checking on_configuration_changed
+-- The name of the mod FML is installed in - will be used for checking on_configuration_changed and saving some data (needs to be unique)
 config.MOD_NAME = "crafting_combinator"
 
 -- If set to true modules won't be loaded using pcall, therefore crashing if there are errors - good for debugging
-config.FORCE_LOAD_MODULES = false
+config.FORCE_LOAD_MODULES = true
 
 -- If set to true then the on_load event will be raised after on_init too
 config.ON_LOAD_AFTER_INIT = true
@@ -16,9 +16,9 @@ config.MODULES_TO_LOAD = {
 	Object = ".modules.Object",
 	surface = ".modules.surface",
 	table = ".modules.table",
-	events = ".modules.events",
 	data = ".modules.data",
-	format = ".modules.format",
+	blueprint_data = ".modules.blueprint_data",
+	--format = ".modules.format",
 }
 
 -- The name of the global table FML will use. You shouldn't need to change this unless you have a global table with my name for some reason...
@@ -53,6 +53,14 @@ config.RECIPE_BASE = {
 
 -- Default minable values
 config.DEFAULT_MINABLE = {hardness = 0.2, mining_time = 0.5}
+
+
+-- BLUEPRINT_DATA --
+-- The path to the settings definition, nil if none
+config.BLUEPRINT_DATA_PATH = "script.setting_defs"
+
+-- The name to use for the prototype, will be prefixed with mod name and FML
+config.BLUEPRINT_DATA_PROTOTYPE_NAME = "blueprint-data-prototype"
 
 
 return config
