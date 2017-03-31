@@ -33,26 +33,35 @@ end
 
 
 if not FML.global then
-	FML.data.make_prototype{
+	local prototype = FML.data.make_prototype{
 		base = FML.data.inherit("constant-combinator"),
 		properties = {
 			name = get_name("entity"),
 			flags = {"placeable-off-grid", "placeable-neutral", "player-creation"},
 			collision_mask = {},
-			collision_box = {{-0.4, -0.4}, {0.4, 0.4}},
-			selectable_in_game = false,
+			collision_box = config.BLUEPRINT_PROXY_SIZE,
+			selection_box = {{0, 0}, {0, 0}},
 			item_slot_count = FML.table.getn(data),
+			icon = "__base__/graphics/icons/blueprint.png",
 			hidden = true,
 		},
 		auto_generate = {"item"},
 	}
+	
+	for _, img in pairs(prototype.sprites) do
+		img.filename = "__"..config.MOD_NAME.."__"..config.FML_PATH.."/graphics/trans.png"
+		img.x = 0
+		img.y = 0
+		img.width = 0
+		img.height = 0
+	end
 	
 	for _, v in pairs(data) do
 		FML.data.make_prototype{
 			type = "item",
 			name = get_name(v.name),
 			flags = {"hidden"},
-			icon = config.DEFAULT_ICON_PATH,
+			icon = "__"..config.MOD_NAME.."__"..config.FML_PATH.."/graphics/trans.png",
 			stack_size = 1,
 		}
 	end
@@ -83,10 +92,12 @@ else
 	
 	
 	local lut = {}
-	local function get_proxy_internal(entity)
+	local function get_proxy_internal(entity, create)
 		local proxy = entity.surface.find_entity(get_name("entity"), entity.position)
 		
 		if not proxy then
+			if create == false then return nil; end
+			
 			proxy = entity.surface.create_entity{
 				name = get_name("entity"),
 				position = entity.position,
@@ -99,8 +110,8 @@ else
 		lut[entity] = proxy.get_or_create_control_behavior()
 		return lut[entity]
 	end
-	local function get_proxy(entity)
-		return lut[entity] or get_proxy_internal(entity)
+	local function get_proxy(entity, create)
+		return lut[entity] or get_proxy_internal(entity, create)
 	end
 	
 	
@@ -111,7 +122,9 @@ else
 		local params = {}
 		for i, v in pairs(proxy.parameters.parameters) do
 			if v.index ~= setting.index then table.insert(params, v)
-			else table.insert(params, {
+			else
+				if setting.type == "bool" then value = (value and 1) or 0; end
+				table.insert(params, {
 						signal = {type = "item", name = setting.signal_name},
 						index = setting.index,
 						count = value,
@@ -120,33 +133,33 @@ else
 		end
 		
 		proxy.parameters = {enabled = true, parameters = params}
-		
-		log("FML.blueprint_data: written "..tostring(value).." to "..tostring(setting.name))
 	end
 	
 	
 	function _M.read(entity, setting)
 		local proxy = get_proxy(entity)
 		
-		log("FML.blueprint_data: reading from "..tostring(setting.name)..", with signal name: "..tostring(setting.signal_name).."...")
-		
 		for _, v in pairs(proxy.parameters.parameters) do
-			log("FML.blueprint_data: checking signal "..tostring(v.signal.name).."...")
 			if v.signal.name == setting.signal_name then
 				if setting.type == "bool" then
 					if v.count == 0 then return false; else return true; end
 				end
-				log("FML.blueprint_data: read "..tostring(v.count).." from "..tostring(setting.name))
 				return v.count
 			end
 		end
+	end
+	
+	
+	function _M.copy(source, dest)
+		local source_proxy = get_proxy(source)
+		local dest_proxy = get_proxy(dest)
 		
-		log("FML.blueprint_data: no signal found for "..tostring(setting.name))
+		dest_proxy.parameters = source_proxy.parameters
 	end
 	
 	
 	function _M.destroy_proxy(entity)
-		local proxy = get_proxy(entity)
+		local proxy = get_proxy(entity, false)
 		
 		if proxy then
 			proxy.entity.destroy()
@@ -180,6 +193,11 @@ else
 		if entity.name == "entity-ghost" and entity.ghost_prototype.name == e_name then
 			entity.revive()
 		end
+	end
+	
+	function _M.check_deconstruction(entity)
+		if not entity.type then entity = entity.entity; end
+		if entity.name == e_name then entity.cancel_deconstruction(entity.force); end
 	end
 	
 	

@@ -25,3 +25,5 @@ script.on_event(defines.events.on_gui_click, gui.on_gui_clicked)
 script.on_event(defines.events.on_player_rotated_entity, events.on_rotated)
 
 script.on_event(defines.events.on_entity_settings_pasted, events.on_paste)
+
+script.on_event(defines.events.on_marked_for_deconstruction, FML.blueprint_data.check_deconstruction)

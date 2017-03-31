@@ -49,6 +49,8 @@ function _M.on_destroyed(event)
 	if entity.type == "assembling-machine" then
 		entities.CraftingCombinator.update_assemblers(entity.surface, entity.position)
 	end
+	
+	if entity.name == "entity-ghost" then FML.blueprint_data.destroy_proxy(entity); end
 end
 
 local function run_update(tab, tick, rate)
@@ -78,6 +80,8 @@ function _M.on_paste(event)
 	local destination = entities.util.find_in_global(event.destination)
 	
 	if source and destination and source.type == destination.type then
+		FML.blueprint_data.copy(source.entity, destination.entity)
+		
 		if source.type == entities.RecipeCombinator.TYPE then
 			destination.mode = source.mode
 			destination:update(true)

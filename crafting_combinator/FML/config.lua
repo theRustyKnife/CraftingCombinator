@@ -5,6 +5,9 @@ local config = {}
 -- The name of the mod FML is installed in - will be used for checking on_configuration_changed and saving some data (needs to be unique)
 config.MOD_NAME = "crafting_combinator"
 
+-- The directory FML is installed in - will be used for adressing graphics
+config.FML_PATH = "/FML"
+
 -- If set to true modules won't be loaded using pcall, therefore crashing if there are errors - good for debugging
 config.FORCE_LOAD_MODULES = true
 
@@ -61,6 +64,9 @@ config.BLUEPRINT_DATA_PATH = "script.setting_defs"
 
 -- The name to use for the prototype, will be prefixed with mod name and FML
 config.BLUEPRINT_DATA_PROTOTYPE_NAME = "blueprint-data-prototype"
+
+-- The size of the proxy - should be the same as the size of your entity
+config.BLUEPRINT_PROXY_SIZE = {{-0.35, -0.35}, {0.35, 0.35}}
 
 
 return config
