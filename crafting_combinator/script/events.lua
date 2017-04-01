@@ -105,6 +105,7 @@ end
 
 function _M.on_close_menu_key_pressed(event)
 	gui.destroy_entity_frame(event.player_index)
+	gui.destroy_global_settings(event.player_index)
 end
 
 

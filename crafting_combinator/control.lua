@@ -21,6 +21,7 @@ script.on_event(config.MENU_KEY_NAME, events.on_menu_key_pressed)
 script.on_event(config.CLOSE_KEY_NAME, events.on_close_menu_key_pressed)
 
 script.on_event(defines.events.on_gui_click, gui.on_gui_clicked)
+script.on_event(defines.events.on_gui_text_changed, gui.on_text_change)
 
 script.on_event(defines.events.on_player_rotated_entity, events.on_rotated)
 

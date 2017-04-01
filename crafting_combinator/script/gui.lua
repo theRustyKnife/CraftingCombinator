@@ -13,12 +13,15 @@ local _M = {}
 
 
 function _M.make_frame(parent, name, caption, direction)
-	return parent.add{
+	local frame = parent.add{
 		type = "frame",
 		name = PREFIX..name,
 		caption = caption,
 		direction = direction or "vertical",
 	}
+	frame.style.minimal_width = 300
+	
+	return frame
 end
 
 function _M.make_container(parent, name, caption, direction)
@@ -74,6 +77,24 @@ function _M.make_checkbox_group(parent, name, caption, options, selected) -- sam
 	return container
 end
 
+function _M.make_number_selector(parent, name, caption, value)
+	value = value or 0
+	
+	local container = _M.make_container(parent, name, nil, "horizontal")
+	container.add{
+		type = "label",
+		name = "title",
+		caption = caption,
+	}
+	container.add{
+		type = "textfield",
+		name = "value",
+		text = tostring(value),
+	}
+	
+	return container
+end
+
 function _M.make_entity_frame(entity, player_index, caption)
 	_M.destroy_entity_frame(player_index)
 	
@@ -81,11 +102,11 @@ function _M.make_entity_frame(entity, player_index, caption)
 	
 	local container = _M.make_container(frame, "container")
 	
-	-- frame.add{
-		-- type = "button",
-		-- name = "change-refresh-rate",
-		-- caption = {"crafting_combinator_gui_button_change-refresh-rate"},
-	-- }
+	frame.add{
+		type = "button",
+		name = "open-global-settings",
+		caption = {"crafting_combinator_gui_button_open-global-settings"},
+	}
 	
 	frame.add{
 		type = "button",
@@ -105,8 +126,6 @@ function _M.destroy_entity_frame(player_index)
 	todestroy.gui.destroy()
 	local entity = todestroy.entity
 	global.gui[player_index] = nil
-	
-	--entity:close()
 end
 
 function _M.is_open(entity)
@@ -118,6 +137,11 @@ end
 
 
 function _M.on_gui_clicked(event)
+	if event.element.parent.name == PREFIX.."global-settings" then
+		if event.element.name == "save" then event.element.parent.destroy(); end
+		return
+	end
+	
 	local parent = event.element
 	while true do
 		if parent == nil then return; end
@@ -141,8 +165,47 @@ function _M.on_gui_clicked(event)
 		end
 		clicked_entity:on_radiobutton_changed(event.element.parent.name, event.element.name)
 	elseif event.element.type == "button" then
-		clicked_entity:on_button_clicked(event.player_index, event.element.name)
+		if event.element.name == "open-global-settings" then
+			if game.players[event.player_index].gui.center[PREFIX.."global-settings"] then return; end
+			
+			local frame = _M.make_frame(game.players[event.player_index].gui.center, "global-settings", {"crafting_combinator_gui_title_global-settings-title"})
+			local container = _M.make_container(frame, "refresh-rates", {"crafting_combinator_gui_description_refresh-rates"})
+			_M.make_number_selector(container, "cc-refresh-rate", {"crafting_combinator_gui_title_cc-refresh-rate"}, global.settings.refresh_rate.cc)
+			_M.make_number_selector(container, "rc-refresh-rate", {"crafting_combinator_gui_title_rc-refresh-rate"}, global.settings.refresh_rate.rc)
+			frame.add{
+				type = "button",
+				name = "save",
+				caption = {"crafting_combinator_gui_button_save"},
+			}
+			
+		else clicked_entity:on_button_clicked(event.player_index, event.element.name); end
 	end
+end
+
+function _M.on_text_change(event)
+	if event.element.parent.parent and event.element.parent.parent.parent and
+			event.element.parent.parent.parent.name == PREFIX.."global-settings" then
+		
+		if event.element.parent.parent.name == "refresh-rates" then
+			
+			local value = tonumber(event.element.text)
+			local success = value ~= nil
+			if event.element.text == "" then success, value = true, 0; end
+			
+			if event.element.parent.name == "cc-refresh-rate" then
+				if not success then event.element.text = tostring(global.settings.refresh_rate.cc)
+				else global.settings.refresh_rate.cc = value; end
+			elseif event.element.parent.name == "rc-refresh-rate" then
+				if not success then event.element.text = tostring(global.settings.refresh_rate.rc)
+				else global.settings.refresh_rate.rc = value; end
+			end
+		end
+	end
+end
+
+function _M.destroy_global_settings(player_index)
+	local gui = game.players[player_index].gui.center
+	if gui[PREFIX.."global-settings"] then gui[PREFIX.."global-settings"].destroy(); end
 end
 
 
