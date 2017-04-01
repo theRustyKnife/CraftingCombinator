@@ -5,7 +5,7 @@ local gui = require ".gui"
 
 
 FML.global.on_init(function()
-	global.settings = {refresh_rate = {cc = config.REFRESH_RATE_CC, rc = config.REFRESH_RATE_RC}}
+	global.settings = {cc_refresh_rate = config.REFRESH_RATE_CC, rc_refresh_rate = config.REFRESH_RATE_RC}
 	global.to_close = global.to_close or {}
 end)
 
@@ -13,16 +13,31 @@ end)
 local _M = {}
 
 
+local function on_built(entity)
+	if entity.valid and entity.type == "assembling-machine" then
+		entities.CraftingCombinator.update_assemblers(entity.surface, entity.position)
+	end
+end
+
 function _M.on_built(event)
 	local entity = event.created_entity
 	
 	if entity.name == config.RC_NAME then entities.RecipeCombinator:new(entity); end
 	if entity.name == config.CC_NAME then entities.CraftingCombinator:new(entity); end
 	
-	if entity.type == "assembling-machine" then
-		entities.CraftingCombinator.update_assemblers(entity.surface, entity.position)
-	end
+	if entity.name == "entity-ghost" then FML.blueprint_data.check_built_entity(entity); end
+	
+	on_built(entity)
 end
+function _M.on_robot_built(event)
+	local entity = event.created_entity
+	
+	if entity.name == config.RC_NAME then entities.RecipeCombinator:new(entity, true) end
+	if entity.name == config.CC_NAME then entities.CraftingCombinator:new(entity, true) end
+	
+	on_built(entity)
+end
+
 
 function _M.on_destroyed(event)
 	local entity = event.entity
@@ -34,6 +49,8 @@ function _M.on_destroyed(event)
 	if entity.type == "assembling-machine" then
 		entities.CraftingCombinator.update_assemblers(entity.surface, entity.position)
 	end
+	
+	if entity.name == "entity-ghost" then FML.blueprint_data.destroy_proxy(entity); end
 end
 
 local function run_update(tab, tick, rate)
@@ -46,8 +63,8 @@ function _M.on_tick(event)
 		global.to_close[i] = nil
 	end
 	
-	run_update(global.combinators.crafting, event.tick, global.settings.refresh_rate.cc)
-	run_update(global.combinators.recipe, event.tick, global.settings.refresh_rate.rc)
+	run_update(global.combinators.crafting, event.tick, global.settings.cc_refresh_rate + 1)
+	run_update(global.combinators.recipe, event.tick, global.settings.rc_refresh_rate + 1)
 end
 
 function _M.on_rotated(event)
@@ -63,12 +80,10 @@ function _M.on_paste(event)
 	local destination = entities.util.find_in_global(event.destination)
 	
 	if source and destination and source.type == destination.type then
-		if source.type == entities.RecipeCombinator.TYPE then
-			destination.mode = source.mode
-			destination:update(true)
-		elseif source.type == entities.CraftingCombinator.TYPE then
-			destination.settings = FML.table.deep_copy(source.settings)
-		end
+		FML.blueprint_data.copy(source.entity, destination.entity)
+		destination.settings = FML.table.deep_copy(source.settings)
+		
+		destination:update(true)
 	end
 end
 
@@ -86,6 +101,7 @@ end
 
 function _M.on_close_menu_key_pressed(event)
 	gui.destroy_entity_frame(event.player_index)
+	gui.destroy_global_settings(event.player_index)
 end
 
 

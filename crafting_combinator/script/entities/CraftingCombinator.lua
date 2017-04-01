@@ -4,6 +4,8 @@ local config = require "config"
 local recipe_selector = require "script.recipe_selector"
 local gui = require "script.gui"
 
+local settings = FML.blueprint_data.settings
+
 
 FML.global.on_init(function()
 	global.combinators.crafting = global.combinators.crafting or {}
@@ -34,8 +36,36 @@ function _M.update_assemblers(surface, position)
 end
 
 
-function _M:on_create()
-	self.settings = FML.table.deep_copy(config.CC_DEFAULT_SETTINGS)
+function _M:on_create(blueprint)
+	self.settings = {
+		cc_mode_set = true,
+		cc_mode_read = false,
+		
+		cc_module_dest = settings.cc_module_dest.options.passive,
+		cc_item_dest = settings.cc_item_dest.options.active,
+		
+		cc_empty_inserters = true,
+		cc_request_modules = true,
+	}
+	
+	self.modules_to_request = {}
+	
+	if blueprint then
+		local mode_set = FML.blueprint_data.read(self.entity, settings.cc_mode_set)
+		if mode_set ~= nil then self.settings.cc_mode_set = mode_set; end
+		
+		local mode_read = FML.blueprint_data.read(self.entity, settings.cc_mode_read)
+		if mode_read ~= nil then self.settings.cc_mode_read = mode_read; end
+		
+		self.settings.cc_module_dest = FML.blueprint_data.read(self.entity, settings.cc_module_dest) or self.settings.cc_module_dest
+		self.settings.cc_item_dest = FML.blueprint_data.read(self.entity, settings.cc_item_dest) or self.settings.cc_item_dest
+		
+		local empty = FML.blueprint_data.read(self.entity, settings.cc_empty_inserters)
+		if empty ~= nil then self.settings.cc_empty_inserters = empty; end
+		
+		local request = FML.blueprint_data.read(self.entity, settings.cc_request_modules)
+		if request ~= nil then self.settings.cc_request_modules = request; end
+	end
 	
 	self.chests = {
 		passive = self.entity.surface.create_entity{
@@ -67,69 +97,117 @@ function _M:on_create()
 	self:find_assembler()
 end
 
+
+function _M:move_items(target)
+	for _, inventory in pairs{self.inventories.assembler.input, self.inventories.assembler.output} do
+		for i = 1, #inventory do
+			local stack = inventory[i]
+			if stack.valid_for_read then target.insert(stack); end
+		end
+	end
+	
+	-- compensate for half-finished recipes that had already consumed their ingredients
+	if self.assembler.crafting_progress > 0 then
+		for _, ing in pairs(self.assembler.recipe.ingredients) do
+			if ing.type == "item" then
+				target.insert{name = ing.name, count = ing.amount}
+			end
+		end
+	end
+end
+
+function _M:empty_inserters(target)
+	if self.settings.cc_empty_inserters then
+		for _, inserter in pairs(self.assembler.surface.find_entities_filtered{
+			area = FML.surface.area_around(self.assembler.position, config.CC_INSERTER_SEARCH_DISTANCE),
+			type = "inserter",
+		}) do
+			if inserter.drop_target == self.assembler then
+				local stack = inserter.held_stack
+				if stack.valid_for_read then
+					target.insert(stack)
+					stack.count = 0
+				end
+			end
+		end
+	end
+end
+
+function _M:request_modules(recipe)
+	local to_request = {}
+	for name, count in pairs(self.modules_to_request) do
+		local limitations = game.item_prototypes[name].limitations
+		if limitations[recipe.name] or FML.table.is_empty(limitations) then
+			table.insert(to_request, {item = name, count = count})
+			self.modules_to_request[name] = nil
+		end
+	end
+	
+	if not FML.table.is_empty(to_request) then
+		self.entity.surface.create_entity{
+			name = "item-request-proxy",
+			target = self.assembler,
+			modules = to_request,
+			position = self.assembler.position,
+			force = self.assembler.force,
+		}
+	end
+end
+
+function _M:move_modules(recipe)
+	local target = self:get_target(self.settings.cc_module_dest)
+	local inventory = self.inventories.assembler.modules
+	
+	for i = 1, #inventory do
+		local stack = inventory[i]
+		if stack.valid_for_read then
+			local limitations = game.item_prototypes[stack.name].limitations -- table indexed by recipe names (?)
+			if limitations and not FML.table.is_empty(limitations) and not limitations[recipe.name] then
+				target.insert(stack)
+				-- save modules that have been removed to request them back when possible
+				if self.settings.cc_request_modules then
+					if self.modules_to_request[stack.name] then
+						self.modules_to_request[stack.name] = self.modules_to_request[stack.name] + stack.count
+					else self.modules_to_request[stack.name] = 1; end
+				end
+			end
+		end
+	end
+end
+
 function _M:update()
 	local params = {}
 	
 	if self.assembler and self.assembler.valid then
-		if self.settings.set_recipes then
+		-- set mode
+		if self.settings.cc_mode_set then
 			local recipe = recipe_selector.get_recipe(self.control_behavior, self.items_to_ignore)
 			
 			if self.assembler.recipe and ((not recipe) or recipe ~= self.assembler.recipe) then
 				-- figure out the correct place to put the items
-				local target = self:get_target(self.settings.item_destination)
+				local target = self:get_target(self.settings.cc_item_dest)
 				
 				-- move items from the assembler to the overflow chests
-				for _, inventory in pairs{self.inventories.assembler.input, self.inventories.assembler.output} do
-					for i = 1, #inventory do
-						local stack = inventory[i]
-						if stack.valid_for_read then target.insert(stack); end
-					end
-				end
-				
-				-- compensate for half-finished recipes that had already consumed their ingredients
-				if self.assembler.crafting_progress > 0 then
-					for _, ing in pairs(self.assembler.recipe.ingredients) do
-						if ing.type == "item" then
-							target.insert{name = ing.name, count = ing.amount}
-						end
-					end
-				end
+				self:move_items(target)
 				
 				-- empty inserters' hands into the overflow
-				if self.settings.empty_inserters then
-					for _, inserter in pairs(self.assembler.surface.find_entities_filtered{
-						area = FML.surface.area_around(self.assembler.position, config.CC_INSERTER_SEARCH_DISTANCE),
-						type = "inserter",
-					}) do
-						if inserter.drop_target == self.assembler then
-							local stack = inserter.held_stack
-							if stack.valid_for_read then
-								target.insert(stack)
-								stack.count = 0
-							end
-						end
-					end
-				end
+				self:empty_inserters(target)
 			end
 			
-			-- move the modules that will get discarded by this recipe change into the overflow
 			if recipe and recipe ~= self.assembler.recipe then
-				local target = self:get_target(self.settings.module_destination)
-				local inventory = self.inventories.assembler.modules
-
-				for i = 1, #inventory do
-					local stack = inventory[i]
-					if stack.valid_for_read then
-						local limitations = game.item_prototypes[stack.name].limitations -- table indexed by recipe names (?)
-						if limitations and not FML.table.is_empty(limitations) and not limitations[recipe.name] then target.insert(stack); end
-					end
-				end
+				-- request modules that have been removed and can be used with the new recipe
+				if self.settings.cc_request_modules then self:request_modules(recipe); end
+				
+				-- move the modules that will get discarded by this recipe change into the overflow
+				self:move_modules(recipe)
 			end
 			
+			-- set the new recipe
 			self.assembler.recipe = recipe
 		end
 		
-		if self.settings.read_recipes and self.assembler.recipe then
+		-- read mode
+		if self.settings.cc_mode_read and self.assembler.recipe then
 			for type, type_tab in pairs{
 				item = game.item_prototypes,
 				fluid = game.fluid_prototypes,
@@ -155,6 +233,8 @@ function _M:update()
 end
 
 function _M:destroy(player)
+	FML.blueprint_data.destroy_proxy(self.entity)
+	
 	-- if the player mined this, move items from overflow to her inventory, otherwise spill them on the ground --TODO: find a better way to handle the second case
 	for _, inventory in pairs{self.inventories.passive, self.inventories.active, self.inventories.normal} do
 		for i = 1, #inventory do
@@ -184,43 +264,50 @@ function _M:open(player_index)
 	local parent = gui.make_entity_frame(self, player_index, {"crafting_combinator_gui_title_crafting-combinator"})
 	
 	local modes = {}
-	if self.settings.set_recipes then table.insert(modes, "set_recipes"); end
-	if self.settings.read_recipes then table.insert(modes, "read_recipes"); end
+	if self.settings.cc_mode_set then table.insert(modes, "cc_mode_set"); end
+	if self.settings.cc_mode_read then table.insert(modes, "cc_mode_read"); end
+	
+	local misc = {}
+	if self.settings.cc_empty_inserters then table.insert(misc, "cc_empty_inserters"); end
+	if self.settings.cc_request_modules then table.insert(misc, "cc_request_modules"); end
+	
+	local options = settings.cc_item_dest.options
 	
 	gui.make_checkbox_group(parent, "mode", {"crafting_combinator_gui_title_mode"}, {
-			set_recipes = {"crafting_combinator_gui_crafting-combinator_mode_set"},
-			read_recipes = {"crafting_combinator_gui_crafting-combinator_mode_read"},
+			cc_mode_set = {"crafting_combinator_gui_crafting-combinator_mode_set"},
+			cc_mode_read = {"crafting_combinator_gui_crafting-combinator_mode_read"},
 		}, modes)
-	gui.make_radiobutton_group(parent, "item_destination", {"crafting_combinator_gui_crafting-combinator_title_item-destination"}, {
-			active = {"crafting_combinator_gui_destination_active"},
-			passive = {"crafting_combinator_gui_destination_passive"},
-			normal = {"crafting_combinator_gui_destination_normal"},
-			none = {"crafting_combinator_gui_destination_none"},
-		}, self.settings.item_destination)
-	gui.make_radiobutton_group(parent, "module_destination", {"crafting_combinator_gui_crafting-combinator_title_module-destination"}, {
-			active = {"crafting_combinator_gui_destination_active"},
-			passive = {"crafting_combinator_gui_destination_passive"},
-			normal = {"crafting_combinator_gui_destination_normal"},
-			none = {"crafting_combinator_gui_destination_none"},
-		}, self.settings.module_destination)
+	gui.make_radiobutton_group(parent, "cc_item_dest", {"crafting_combinator_gui_crafting-combinator_title_item-destination"}, {
+			[options.active] = {"crafting_combinator_gui_destination_active"},
+			[options.passive] = {"crafting_combinator_gui_destination_passive"},
+			[options.normal] = {"crafting_combinator_gui_destination_normal"},
+			[options.none] = {"crafting_combinator_gui_destination_none"},
+		}, self.settings.cc_item_dest)
+	gui.make_radiobutton_group(parent, "cc_module_dest", {"crafting_combinator_gui_crafting-combinator_title_module-destination"}, {
+			[options.active] = {"crafting_combinator_gui_destination_active"},
+			[options.passive] = {"crafting_combinator_gui_destination_passive"},
+			[options.normal] = {"crafting_combinator_gui_destination_normal"},
+			[options.none] = {"crafting_combinator_gui_destination_none"},
+		}, self.settings.cc_module_dest)
 	gui.make_checkbox_group(parent, "misc", {"crafting_combinator_gui_crafting-combinator_title_misc"}, {
-			empty_inserters = {"crafting_combinator_gui_crafting-combinator_empty-inserters"},
-		}, (self.settings.empty_inserters and {"empty_inserters"}) or {})
+			cc_empty_inserters = {"crafting_combinator_gui_crafting-combinator_empty-inserters"},
+			cc_request_modules = {"crafting_combinator_gui_crafting-combinator_request-modules"},
+		}, misc)
 end
 
 function _M:on_checkbox_changed(group, name, state)
 	self.settings[name] = state
+	FML.blueprint_data.write(self.entity, settings[name], state)
 end
 
 function _M:on_radiobutton_changed(group, selected)
+	selected = tonumber(selected)
 	self.settings[group] = selected
+	FML.blueprint_data.write(self.entity, settings[group], selected)
 end
 
 function _M:on_button_clicked(player_index, name)
-	if name == "save" then gui.destroy_entity_frame(player_index)
-	elseif name == "change-refresh-rate" then
-		
-	end
+	if name == "save" then gui.destroy_entity_frame(player_index); end
 end
 
 function _M:find_assembler()
@@ -243,9 +330,10 @@ end
 local empty_target = {insert = function() end} -- when no chest is selected as overflow output
 
 function _M:get_target(mode)
-	if mode == "active" then return self.chests.active
-	elseif mode == "passive" then return self.chests.passive
-	elseif mode == "normal" then return self.chests.normal
+	local options = settings.cc_item_dest.options
+	if mode == options.active then return self.chests.active
+	elseif mode == options.passive then return self.chests.passive
+	elseif mode == options.normal then return self.chests.normal
 	else return empty_target
 	end
 end

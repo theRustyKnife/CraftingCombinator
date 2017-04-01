@@ -8,18 +8,6 @@ config.REFRESH_RATE_RC = 60
 config.REFRESH_RATE_CC = 60
 
 
--- the settings any newly built crafting combinator will have
-config.CC_DEFAULT_SETTINGS = {
-	set_recipes = true,
-	read_recipes = false,
-	
-	module_destination = "passive", -- one of active, passive, normal, none
-	item_destination = "active", -- same as modules
-	
-	empty_inserters = true, -- if true, inserters inserting into a controlled assembler will get their hands' contents moved into the overflow chest
-}
-
-
 -- how far around an assembler to search for inserters
 config.CC_INSERTER_SEARCH_DISTANCE = 10
 

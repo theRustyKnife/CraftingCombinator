@@ -1,3 +1,9 @@
+##0.6.0##
++ Settings are saved in blueprints
++ Modules that have been removed due to recipe change can now be requested back into the assembler
+* The multiplier for time in recipe combinator can now be changed to any number
+* Refresh rate is now configurable from in-game, individually for crafting and recipe combinators
+
 ##0.5.2##
 * Removed rocket part signal and made the rocket part item not hidden to fix [251643](https://forums.factorio.com/viewtopic.php?f=93&t=34405&start=40#p251643) and prevent flickering issues
 
