@@ -26,4 +26,8 @@ return {
 		type = "bool",
 		name = "cc_empty_inserters",
 	},
+	{
+		type = "bool",
+		name = "cc_request_modules",
+	},
 }
