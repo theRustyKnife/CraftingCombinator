@@ -170,8 +170,8 @@ function _M.on_gui_clicked(event)
 			
 			local frame = _M.make_frame(game.players[event.player_index].gui.center, "global-settings", {"crafting_combinator_gui_title_global-settings-title"})
 			local container = _M.make_container(frame, "refresh-rates", {"crafting_combinator_gui_description_refresh-rates"})
-			_M.make_number_selector(container, "cc-refresh-rate", {"crafting_combinator_gui_title_cc-refresh-rate"}, global.settings.refresh_rate.cc)
-			_M.make_number_selector(container, "rc-refresh-rate", {"crafting_combinator_gui_title_rc-refresh-rate"}, global.settings.refresh_rate.rc)
+			_M.make_number_selector(container, "cc_refresh_rate", {"crafting_combinator_gui_title_cc-refresh-rate"}, global.settings.cc_refresh_rate)
+			_M.make_number_selector(container, "rc_refresh_rate", {"crafting_combinator_gui_title_rc-refresh-rate"}, global.settings.rc_refresh_rate)
 			frame.add{
 				type = "button",
 				name = "save",
@@ -182,25 +182,34 @@ function _M.on_gui_clicked(event)
 	end
 end
 
+local function get_number(textfield)
+	return tonumber(textfield.text) or (textfield.text == "" and 0)
+end
+
 function _M.on_text_change(event)
-	if event.element.parent.parent and event.element.parent.parent.parent and
-			event.element.parent.parent.parent.name == PREFIX.."global-settings" then
-		
-		if event.element.parent.parent.name == "refresh-rates" then
-			
-			local value = tonumber(event.element.text)
-			local success = value ~= nil
-			if event.element.text == "" then success, value = true, 0; end
-			
-			if event.element.parent.name == "cc-refresh-rate" then
-				if not success then event.element.text = tostring(global.settings.refresh_rate.cc)
-				else global.settings.refresh_rate.cc = value; end
-			elseif event.element.parent.name == "rc-refresh-rate" then
-				if not success then event.element.text = tostring(global.settings.refresh_rate.rc)
-				else global.settings.refresh_rate.rc = value; end
-			end
+	local parent = event.element
+	while true do
+		if parent == nil then return; end
+		if parent.name == PREFIX.."entity-frame" then break; end
+		if parent.name == PREFIX.."global-settings" then
+			local value = get_number(event.element)
+			if value and value % 1 == 0 and value >= 0 then global.settings[event.element.parent.name] = value
+			else event.element.text = global.settings[event.element.parent.name]; end
+			return
+		end
+		parent = parent.parent
+	end
+	
+	local clicked_entity
+	for _, v in pairs(global.gui) do
+		if v.gui == parent then
+			clicked_entity = v.entity
+			break
 		end
 	end
+	
+	local to_set = clicked_entity:on_number_selected(event.element.parent.name, get_number(event.element))
+	if to_set then event.element.text = to_set; end
 end
 
 function _M.destroy_global_settings(player_index)

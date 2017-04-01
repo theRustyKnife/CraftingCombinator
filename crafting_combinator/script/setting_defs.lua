@@ -2,7 +2,7 @@ return {
 	{
 		type = "enum",
 		name = "rc_mode",
-		options = {"ingredient", "product"},
+		options = {"ingredient", "product", "recipe"},
 	},
 	{
 		type = "bool",
@@ -29,5 +29,9 @@ return {
 	{
 		type = "bool",
 		name = "cc_request_modules",
+	},
+	{
+		type = "number",
+		name = "rc_time_multiplier"
 	},
 }

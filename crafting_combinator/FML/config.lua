@@ -9,7 +9,7 @@ config.MOD_NAME = "crafting_combinator"
 config.FML_PATH = "/FML"
 
 -- If set to true modules won't be loaded using pcall, therefore crashing if there are errors - good for debugging
-config.FORCE_LOAD_MODULES = true
+config.FORCE_LOAD_MODULES = false
 
 -- If set to true then the on_load event will be raised after on_init too
 config.ON_LOAD_AFTER_INIT = true

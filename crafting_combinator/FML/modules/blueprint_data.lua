@@ -23,7 +23,7 @@ end
 	definition format:
 	{
 		{
-			type = "enum" or "number",
+			type = "enum" or "number" or "bool",
 			name = "setting-name",
 			options = {}, -- array of strings, only needed if type == "enum"
 		},
@@ -67,8 +67,6 @@ if not FML.global then
 	end
 	
 else
-	local global
-	
 	local _M = {}
 	
 	

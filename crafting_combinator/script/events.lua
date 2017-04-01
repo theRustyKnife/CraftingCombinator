@@ -5,7 +5,7 @@ local gui = require ".gui"
 
 
 FML.global.on_init(function()
-	global.settings = {refresh_rate = {cc = config.REFRESH_RATE_CC, rc = config.REFRESH_RATE_RC}}
+	global.settings = {cc_refresh_rate = config.REFRESH_RATE_CC, rc_refresh_rate = config.REFRESH_RATE_RC}
 	global.to_close = global.to_close or {}
 end)
 
@@ -63,8 +63,8 @@ function _M.on_tick(event)
 		global.to_close[i] = nil
 	end
 	
-	run_update(global.combinators.crafting, event.tick, global.settings.refresh_rate.cc)
-	run_update(global.combinators.recipe, event.tick, global.settings.refresh_rate.rc)
+	run_update(global.combinators.crafting, event.tick, global.settings.cc_refresh_rate + 1)
+	run_update(global.combinators.recipe, event.tick, global.settings.rc_refresh_rate + 1)
 end
 
 function _M.on_rotated(event)
@@ -81,13 +81,9 @@ function _M.on_paste(event)
 	
 	if source and destination and source.type == destination.type then
 		FML.blueprint_data.copy(source.entity, destination.entity)
+		destination.settings = FML.table.deep_copy(source.settings)
 		
-		if source.type == entities.RecipeCombinator.TYPE then
-			destination.mode = source.mode
-			destination:update(true)
-		elseif source.type == entities.CraftingCombinator.TYPE then
-			destination.settings = FML.table.deep_copy(source.settings)
-		end
+		destination:update(true)
 	end
 end
 

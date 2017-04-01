@@ -34,6 +34,8 @@ function _M:on_radiobutton_changed(group, selected) end
 
 function _M:on_button_clicked(player_index, name) end
 
+function _M:on_number_selected(name, value) end
+
 function _M:destroy()
 	FML.table.remove_v(global.combinators.all, self)
 	FML.table.remove_v(self.tab, self)

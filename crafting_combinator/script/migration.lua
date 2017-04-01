@@ -12,19 +12,70 @@ end
 
 
 FML.global.on_mod_config_change(function(data)
-	local old_v = data.mod_changes["crafting_combinator"].old_version or ""
+	local old_v = data.mod_changes["crafting_combinator"].old_version
+	
+	if not old_v then return; end
+	
+	log("found crafting_combinator version "..tostring(old_v))
 	
 	if old_v < "0.5.0" then
+		log(" - updating to 0.5.0...")
+		
 		global.gui = {}
 		global.combinators = {all = {}, crafting = {}, recipe = {}}
 		
-		global.settings = {refresh_rate = {cc = config.REFRESH_RATE_CC, rc = config.REFRESH_RATE_RC}}
+		global.settings = {
+			cc_refresh_rate = config.REFRESH_RATE_CC,
+			rc_refresh_rate = config.REFRESH_RATE_RC,
+		}
 		global.to_close = {}
 		
 		entities.util.update_global()
 		
 		for _, surface in pairs(game.surfaces) do
 			register_entities(surface.find_entities_filtered{type = "constant-combinator"})
+		end
+		
+		return
+	end
+	if old_v < "0.6.0" then
+		log(" - updating to 0.6.0...")
+		
+		global.settings = {
+			cc_refresh_rate = global.settings.refresh_rate.cc,
+			rc_refresh_rate = global.settings.refresh_rate.rc,
+		}
+		
+		local dests = {"active", "passive", "normal", "none"}
+		
+		for _, cc in pairs(global.combinators.crafting)do
+			-- migrate settings to new format
+			log("old_settings = "..serpent.line(cc.settings))
+			cc.settings = {
+				cc_mode_set = cc.settings.set_recipes,
+				cc_mode_read = cc.settings.read_recipes,
+				
+				cc_module_dest = FML.blueprint_data.settings.cc_module_dest.options[cc.settings.module_destination],
+				cc_item_dest = FML.blueprint_data.settings.cc_item_dest.options[cc.settings.item_destination],
+				
+				cc_empty_inserters = cc.settings.empty_inserters,
+				cc_request_modules = true,
+			}
+			log("new_settings = "..serpent.line(cc.settings))
+			
+			-- save settings to blueprint_data
+			for k, v in pairs(cc.settings) do
+				FML.blueprint_data.write(cc.entity, FML.blueprint_data.settings[k], v)
+			end
+			
+			cc.modules_to_request = {}
+		end
+		
+		for _, rc in pairs(global.combinators.recipe) do
+			rc.settings = {
+				rc_mode = FML.blueprint_data.settings.rc_mode.options[rc.mode],
+				rc_time_multiplier = 10,
+			}
 		end
 	end
 end)
