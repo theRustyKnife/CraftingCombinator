@@ -10,8 +10,22 @@ local function register_entities(tab)
 	end
 end
 
+local function enable_researched_recipes()
+	for _, force in pairs(game.forces) do
+		if force.technologies["circuit-network"].researched then
+			force.recipes["crafting_combinator_crafting-combinator"].enabled = true
+			force.recipes["crafting_combinator_recipe-combinator"].enabled = true
+		end
+	end
+end
+
+
+FML.global.on_init(enable_researched_recipes)
+
 
 FML.global.on_mod_config_change(function(data)
+	enable_researched_recipes()
+	
 	local old_v = data.mod_changes["crafting_combinator"].old_version
 	
 	if not old_v then return; end

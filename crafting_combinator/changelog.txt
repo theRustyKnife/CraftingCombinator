@@ -1,3 +1,6 @@
+##0.6.1##
+* Fixed recipes not being enabled again [4438](https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/4438)
+
 ##0.6.0##
 + Settings are saved in blueprints
 + Modules that have been removed due to recipe change can now be requested back into the assembler
