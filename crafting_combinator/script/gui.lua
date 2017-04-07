@@ -137,6 +137,7 @@ end
 
 
 function _M.on_gui_clicked(event)
+	if not event.element.parent then return; end
 	if event.element.parent.name == PREFIX.."global-settings" then
 		if event.element.name == "save" then event.element.parent.destroy(); end
 		return
