@@ -1,3 +1,6 @@
+##0.7.0##
+* Updated for Factorio 0.15
+
 ##0.6.2##
 * Fixed a crash when the root GUI element was clicked ([9454](https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/9454))
 

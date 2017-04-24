@@ -18,7 +18,7 @@ function _M.get_recipe_from_wire(control_behavior, wire, items_to_ignore) -- Lua
 	local cn = control_behavior.get_circuit_network(wire, defines.circuit_connector_id.combinator_input)
 	if not cn then return res, n; end -- no network connected - no recipe to be found
 	
-	local signals = cn.signals
+	local signals = cn.signals or {}
 	local entity = control_behavior.entity
 	
 	for _, signal in pairs(signals) do
