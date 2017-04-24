@@ -34,7 +34,7 @@ function _M.make_container(parent, name, caption, direction)
 	if caption then
 		container.add{
 			type = "label",
-			name = "caption",
+			name = "container_caption",
 			caption = caption,
 			style = "bold_label_style",
 		}
@@ -88,7 +88,7 @@ function _M.make_number_selector(parent, name, caption, value)
 	}
 	container.add{
 		type = "textfield",
-		name = "value",
+		name = "number_value",
 		text = tostring(value),
 	}
 	
