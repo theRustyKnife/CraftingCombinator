@@ -47,12 +47,13 @@ FML.data.make_prototypes{
 		name = config.GROUP_NAME,
 		order = "fb",
 		icon = "__crafting_combinator__/graphics/recipe-book.png",
+		icon_size = 64,
 	},
 	{
 		type = "item-subgroup",
 		name = "crafting_combinator-signals",
-		group = "signals", --TODO: change this to be in our group once 0.15 comes out
-		order = "zzz",
+		group = config.GROUP_NAME,
+		order = "___",
 	},
 	{
 		type = "item-subgroup",
