@@ -27,7 +27,7 @@ config.OVERFLOW_SLOT_COUNT = 1000
 
 
 -- if true, recipes will be sorted into subgroups for better readability (in Factorio 0.14 this causes problems)
-config.USE_RECIPE_SUBGROUPS = false
+config.USE_RECIPE_SUBGROUPS = true
 
 -- recipes matching any of the strings will not get a virtual recipe
 config.RECIPES_TO_IGNORE = {

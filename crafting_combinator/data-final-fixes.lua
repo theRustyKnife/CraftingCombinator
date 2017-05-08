@@ -2,13 +2,21 @@ local FML = require "FML.init"
 local config = require "config"
 
 
-local function is_result(recipe, item)
-	if recipe.result == item then return true; end
-	
-	for _, result in pairs(recipe.results or {}) do
+local function is_result_internal(item, result, results)
+	if item == result then return true; end
+	for _, result in pairs(results or {}) do
 		if result.name == item then return true; end
 	end
-	
+	return false
+end
+local function is_result(recipe, item)
+	if is_result_internal(item, recipe.result, recipe.results) then return true; end
+	if recipe.normal then
+		if is_result_internal(item, recipe.normal.result, recipe.normal.results) then return true; end
+	end
+	if recipe.expensive then
+		return is_result_internal(item, recipe.expensive,result, recipe.expensive.results)
+	end
 	return false
 end
 
@@ -117,7 +125,7 @@ for name, recipe in pairs(data.raw.recipe) do
 			subgroup = data.raw["item-subgroup"]["crafting-combinator-virtual-recipe-subgroup-"..group.name] or FML.data.make_prototype{
 				type = "item-subgroup",
 				name = "crafting-combinator-virtual-recipe-subgroup-"..group.name,
-				group = "signals-crafting-combinator",
+				group = config.GROUP_NAME,
 				order = group.order.."["..group.name.."]",
 			}
 		end

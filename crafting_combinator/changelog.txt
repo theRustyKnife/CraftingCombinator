@@ -1,3 +1,9 @@
+##0.7.1##
+* Fixed wrong icon scale for virtual recipe group
+* Fixed recipes that defined complexities would get a virtual signal even if not necessary ([11640](https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/11640))
+* Fixed broken localization
+* Enabled sorting virtual recipes into groups
+
 ##0.7.0##
 * Updated for Factorio 0.15
 
