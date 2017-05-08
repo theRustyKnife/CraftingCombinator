@@ -64,6 +64,9 @@ config.MENU_KEY_NAME = "crafting_combinator_open-menu"
 -- the name of the close menu key input
 config.CLOSE_KEY_NAME = "crafting_combinator_close-menu"
 
+config.SETTING_NAME_REFRESH_RATE_CC = "crafting_combinator_refresh-rate-cc"
+config.SETTING_NAME_REFRESH_RATE_RC = "crafting_combinator_refresh-rate-rc"
+
 
 -- types to check for locale an icons
 config.ITEM_TYPES = {"item", "module", "tool", "fluid", "ammo"}
