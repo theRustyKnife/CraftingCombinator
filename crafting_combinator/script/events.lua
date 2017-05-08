@@ -5,7 +5,6 @@ local gui = require ".gui"
 
 
 FML.global.on_init(function()
-	global.settings = {cc_refresh_rate = config.REFRESH_RATE_CC, rc_refresh_rate = config.REFRESH_RATE_RC}
 	global.to_close = global.to_close or {}
 end)
 
@@ -63,8 +62,8 @@ function _M.on_tick(event)
 		global.to_close[i] = nil
 	end
 	
-	run_update(global.combinators.crafting, event.tick, global.settings.cc_refresh_rate + 1)
-	run_update(global.combinators.recipe, event.tick, global.settings.rc_refresh_rate + 1)
+	run_update(global.combinators.crafting, event.tick, settings.global[config.SETTING_NAME_REFRESH_RATE_CC].value+1)
+	run_update(global.combinators.recipe, event.tick, settings.global[config.SETTING_NAME_REFRESH_RATE_RC].value+1)
 end
 
 function _M.on_rotated(event)
@@ -101,7 +100,6 @@ end
 
 function _M.on_close_menu_key_pressed(event)
 	gui.destroy_entity_frame(event.player_index)
-	gui.destroy_global_settings(event.player_index)
 end
 
 
