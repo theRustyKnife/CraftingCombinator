@@ -28,19 +28,24 @@ function _M:on_create(blueprint)
 	self.settings = {
 		rc_mode = settings.rc_mode.options.ingredient,
 		rc_time_multiplier = 10,
+		rc_multiply_by_input = false,
 	}
 	
 	if blueprint then
 		self.settings.rc_mode = FML.blueprint_data.read(self.entity, settings.rc_mode) or self.settings.rc_mode
 		self.settings.rc_time_multiplier = FML.blueprint_data.read(self.entity, settings.rc_time_multiplier) or self.settings.rc_time_multiplier
+		
+		local rc_multiply_by_input = FML.blueprint_data.read(self.entity, settings.rc_multiply_by_input)
+		if rc_multiply_by_input ~= nil then self.settings.rc_multiply_by_input = rc_multiply_by_input; end
 	end
 end
 
 function _M:update(forced)
-	local recipe = recipe_selector.get_recipe(self.control_behavior, self.items_to_ignore)
+	local recipe, input_count = recipe_selector.get_recipe(self.control_behavior, self.items_to_ignore)
 	
-	if self.recipe ~= recipe or forced then
+	if self.recipe ~= recipe or forced or (self.settings.rc_multiply_by_input and self.input_count ~= input_count) then
 		self.recipe = recipe
+		self.input_count = input_count
 		self.items_to_ignore = {}
 		
 		local params = {}
@@ -48,6 +53,7 @@ function _M:update(forced)
 		if recipe then
 			for i, ing in pairs(((self.settings.rc_mode == settings.rc_mode.options.product) and recipe.products) or recipe.ingredients) do
 				local t_amount = tonumber(ing.amount or ing.amount_min or ing.amount_max)
+				if self.settings.rc_multiply_by_input then t_amount = t_amount * input_count; end
 				local amount = math.floor(t_amount)
 				if t_amount % 1 > 0 then amount = amount + 1; end
 				
@@ -88,6 +94,9 @@ function _M:open(player_index)
 			[settings.rc_mode.options.product] = {"crafting_combinator_gui_recipe-combinator_mode_product"},
 		}, self.settings.rc_mode)
 	gui.make_number_selector(parent, "rc_time_multiplier", {"crafting_combinator_gui_recipe-combinator_time-multiplier"}, self.settings.rc_time_multiplier)
+	gui.make_checkbox_group(parent, "misc", nil, {
+		rc_multiply_by_input = {"crafting_combinator_gui_recipe-combinator_multiply-by-input"},
+	}, self.settings.rc_multiply_by_input and {"rc_multiply_by_input"} or {})
 end
 
 function _M:on_radiobutton_changed(group, selected)
@@ -106,6 +115,11 @@ function _M:on_number_selected(name, value)
 		FML.blueprint_data.write(self.entity, settings[name], self.settings[name])
 		self:update(true)
 	else return self.settings[name]; end
+end
+
+function _M:on_checkbox_changed(group, name, state)
+	self.settings[name] = state
+	FML.blueprint_data.write(self.entity, settings[name], state)
 end
 
 

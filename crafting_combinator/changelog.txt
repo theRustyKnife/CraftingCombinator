@@ -1,3 +1,8 @@
+##0.8.0##
++ Added an option to read crafting speed to crafting combinator
++ Added an option to multiply results by input count to recipe combinator
+* Fixed modules being carried back to storage in certain cases
+
 ##0.7.2##
 * Moved the refresh rate configuration to mod settings
 

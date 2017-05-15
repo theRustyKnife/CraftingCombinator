@@ -7,7 +7,7 @@ function _M.get_recipe(control_behavior, items_to_ignore) -- LuaControlBehavior 
 	s1, c1 = _M.get_recipe_from_wire(control_behavior, defines.wire_type.red, items_to_ignore)
 	s2, c2 = _M.get_recipe_from_wire(control_behavior, defines.wire_type.green, items_to_ignore)
 	
-	return (c2 > c1 and s2) or s1 -- if c2 is bigger, return s2 else return s1
+	return (c2 > c1 and s2) or s1, (c2 > c1 and c2) or c1 -- if c2 is bigger, return s2, c2 else return s1, c1
 end
 
 function _M.get_recipe_from_wire(control_behavior, wire, items_to_ignore) -- LuaControlBehavior control_behavior, defines.wire_type wire, {"item-name"=amount, ...} items_to_ignore (optional)
