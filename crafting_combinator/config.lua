@@ -58,6 +58,8 @@ config.RECIPE_SUBGROUP_NAME = "crafting_combinator_recipes"
 
 -- time signal name
 config.TIME_NAME = "crafting_combinator_recipe-time"
+-- speed signal name
+config.SPEED_NAME = "crafting_combinator_crafting-speed"
 
 -- the name of the menu key ipnut
 config.MENU_KEY_NAME = "crafting_combinator_open-menu"
