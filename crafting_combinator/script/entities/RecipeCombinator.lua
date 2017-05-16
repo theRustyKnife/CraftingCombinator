@@ -43,7 +43,7 @@ end
 function _M:update(forced)
 	local recipe, input_count = recipe_selector.get_recipe(self.control_behavior, self.items_to_ignore)
 	
-	if self.recipe ~= recipe or forced or (self.settings.rc_multiply_by_input and self.input_count ~= input_count) then
+	if self.settings.rc_mode ~= settings.rc_mode.options.recipe and (self.recipe ~= recipe or (forced and self.settings.rc_mode ~= settings.rc_mode.options.recipe) or (self.settings.rc_multiply_by_input and self.input_count ~= input_count)) then
 		self.recipe = recipe
 		self.input_count = input_count
 		self.items_to_ignore = {}
@@ -51,7 +51,11 @@ function _M:update(forced)
 		local params = {}
 		
 		if recipe then
-			for i, ing in pairs(((self.settings.rc_mode == settings.rc_mode.options.product) and recipe.products) or recipe.ingredients) do
+			for i, ing in pairs(
+						((self.settings.rc_mode == settings.rc_mode.options.product) and recipe.products)
+						or ((self.settings.rc_mode == settings.rc_mode.options.ingredient) and recipe.ingredients)
+						or {}
+					) do
 				local t_amount = tonumber(ing.amount or ing.amount_min or ing.amount_max)
 				if self.settings.rc_multiply_by_input then t_amount = t_amount * input_count; end
 				local amount = math.floor(t_amount)
@@ -75,6 +79,27 @@ function _M:update(forced)
 		
 		self.control_behavior.parameters = {enabled = true, parameters = params}
 	end
+	
+	if self.settings.rc_mode == settings.rc_mode.options.recipe then
+		local params = {}
+		
+		local t_to_ignore = self.items_to_ignore
+		self.items_to_ignore = {}
+		
+		local index = 1
+		for _, recipe in pairs(recipe_selector.get_recipes(self.control_behavior, t_to_ignore)) do
+			table.insert(params, {
+				signal = recipe_selector.get_signal(recipe),
+				count = 1,
+				index = index,
+			})
+			
+			self.items_to_ignore[recipe] = 1
+			index = index + 1
+		end
+		
+		self.control_behavior.parameters = {enabled = true, parameters = params}
+	end
 end
 
 function _M:destroy()
@@ -92,6 +117,7 @@ function _M:open(player_index)
 	gui.make_radiobutton_group(parent, "rc_mode", {"crafting_combinator_gui_title_mode"}, {
 			[settings.rc_mode.options.ingredient] = {"crafting_combinator_gui_recipe-combinator_mode_ingredient"},
 			[settings.rc_mode.options.product] = {"crafting_combinator_gui_recipe-combinator_mode_product"},
+			[settings.rc_mode.options.recipe] = {"crafting_combinator_gui_recipe-combinator_mode_recipe"},
 		}, self.settings.rc_mode)
 	gui.make_number_selector(parent, "rc_time_multiplier", {"crafting_combinator_gui_recipe-combinator_time-multiplier"}, self.settings.rc_time_multiplier)
 	gui.make_checkbox_group(parent, "misc", nil, {
