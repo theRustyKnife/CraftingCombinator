@@ -46,6 +46,7 @@ function _M:on_create(blueprint)
 		
 		cc_empty_inserters = true,
 		cc_request_modules = true,
+		cc_read_speed = false,
 	}
 	
 	self.modules_to_request = {}
@@ -65,6 +66,9 @@ function _M:on_create(blueprint)
 		
 		local request = FML.blueprint_data.read(self.entity, settings.cc_request_modules)
 		if request ~= nil then self.settings.cc_request_modules = request; end
+		
+		local read_speed = FML.blueprint_data.read(self.entity, settings.cc_read_speed)
+		if read_speed ~= nil then self.settings.cc_read_speed = read_speed; end
 	end
 	
 	self.chests = {
@@ -124,6 +128,7 @@ function _M:empty_inserters(target)
 		}) do
 			if inserter.drop_target == self.assembler then
 				local stack = inserter.held_stack
+				
 				if stack.valid_for_read then
 					target.insert(stack)
 					stack.count = 0
@@ -133,21 +138,43 @@ function _M:empty_inserters(target)
 	end
 end
 
+function _M:check_requested_modules(recipe)
+	for name, count in pairs(self.item_request_proxy.item_requests) do
+		local limitations = game.item_prototypes[name].limitations
+		if not limitations[recipe.name] and not FML.table.is_empty(limitations) then
+			self.item_request_proxy.item_requests[name] = 0
+			if self.settings.cc_request_modules then
+				self.modules_to_request[name] = self.modules_to_request[name] or 0
+				self.modules_to_request[name] = self.modules_to_request[name] + count
+			end
+		end
+	end
+end
+
 function _M:request_modules(recipe)
 	local to_request = {}
+	if self.item_request_proxy then to_request = self.item_request_proxy.item_requests; end
+	
 	for name, count in pairs(self.modules_to_request) do
 		local limitations = game.item_prototypes[name].limitations
 		if limitations[recipe.name] or FML.table.is_empty(limitations) then
-			table.insert(to_request, {item = name, count = count})
+			to_request[name] = to_request[name] or 0
+			to_request[name] = to_request[name] + count
+			--table.insert(to_request, {item = name, count = count})
 			self.modules_to_request[name] = nil
 		end
 	end
 	
-	if not FML.table.is_empty(to_request) then
-		self.entity.surface.create_entity{
+	if not self.item_request_proxy and not FML.table.is_empty(to_request) then
+		local modules = {}
+		for name, count in pairs(to_request) do
+			table.insert(modules, {item = name, count = count})
+		end
+		
+		self.item_request_proxy = self.entity.surface.create_entity{
 			name = "item-request-proxy",
 			target = self.assembler,
-			modules = to_request,
+			modules = modules,
 			position = self.assembler.position,
 			force = self.assembler.force,
 		}
@@ -168,7 +195,7 @@ function _M:move_modules(recipe)
 				if self.settings.cc_request_modules then
 					if self.modules_to_request[stack.name] then
 						self.modules_to_request[stack.name] = self.modules_to_request[stack.name] + stack.count
-					else self.modules_to_request[stack.name] = 1; end
+					else self.modules_to_request[stack.name] = stack.count; end
 				end
 			end
 		end
@@ -176,8 +203,9 @@ function _M:move_modules(recipe)
 end
 
 function _M:update()
-	local params = {}
+	if self.item_request_proxy and not self.item_request_proxy.valid then self.item_request_proxy = nil; end
 	
+	local params = {}
 	if self.assembler and self.assembler.valid then
 		-- set mode
 		if self.settings.cc_mode_set then
@@ -195,11 +223,14 @@ function _M:update()
 			end
 			
 			if recipe and recipe ~= self.assembler.recipe then
-				-- request modules that have been removed and can be used with the new recipe
-				if self.settings.cc_request_modules then self:request_modules(recipe); end
-				
 				-- move the modules that will get discarded by this recipe change into the overflow
 				self:move_modules(recipe)
+				
+				-- check that the modules in the item-request-proxy are still usable
+				if self.item_request_proxy then self:check_requested_modules(recipe); end
+				
+				-- request modules that have been removed and can be used with the new recipe
+				if self.settings.cc_request_modules then self:request_modules(recipe); end
 			end
 			
 			-- set the new recipe
@@ -226,6 +257,15 @@ function _M:update()
 			end
 		else
 			self.items_to_ignore = nil
+		end
+		
+		-- read crafting speed
+		if self.settings.cc_read_speed then
+			table.insert(params, {
+				signal = {type = "virtual", name = config.SPEED_NAME},
+				count = game.entity_prototypes[self.assembler.name].crafting_speed * 100,
+				index = 2,
+			})
 		end
 	end
 	
@@ -270,6 +310,7 @@ function _M:open(player_index)
 	local misc = {}
 	if self.settings.cc_empty_inserters then table.insert(misc, "cc_empty_inserters"); end
 	if self.settings.cc_request_modules then table.insert(misc, "cc_request_modules"); end
+	if self.settings.cc_read_speed then table.insert(misc, "cc_read_speed"); end
 	
 	local options = settings.cc_item_dest.options
 	
@@ -292,6 +333,7 @@ function _M:open(player_index)
 	gui.make_checkbox_group(parent, "misc", {"crafting_combinator_gui_crafting-combinator_title_misc"}, {
 			cc_empty_inserters = {"crafting_combinator_gui_crafting-combinator_empty-inserters"},
 			cc_request_modules = {"crafting_combinator_gui_crafting-combinator_request-modules"},
+			cc_read_speed = {"crafting_combinator_gui_crafting-combinator_read-speed"},
 		}, misc)
 end
 

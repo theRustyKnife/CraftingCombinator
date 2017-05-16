@@ -8,7 +8,7 @@ local cc = FML.data.make_prototype{
 	properties = {
 		name = config.CC_NAME,
 		icon = "__crafting_combinator__/graphics/icon-crafting-combinator.png",
-		item_slot_count = 1,
+		item_slot_count = 2,
 	},
 	auto_generate = {
 		item = {properties = {subgroup = "circuit-network"}},
@@ -67,6 +67,13 @@ FML.data.make_prototypes{
 		icon = "__core__/graphics/clock-icon.png",
 		subgroup = "crafting_combinator-signals",
 		order = "a[recipe-time]",
+	},
+	{
+		type = "virtual-signal",
+		name = config.SPEED_NAME,
+		icon = "__crafting_combinator__/graphics/speed-icon.png",
+		subgroup = "crafting_combinator-signals",
+		order = "b[crafting-speed]",
 	},
 	{ -- the active overflow chest
 		base = FML.data.inherit("logistic-container", "logistic-chest-active-provider"),

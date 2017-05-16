@@ -34,4 +34,12 @@ return {
 		type = "number",
 		name = "rc_time_multiplier"
 	},
+	{
+		type = "bool",
+		name = "cc_read_speed",
+	},
+	{
+		type = "bool",
+		name = "rc_multiply_by_input",
+	},
 }
