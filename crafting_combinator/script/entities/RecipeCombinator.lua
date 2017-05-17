@@ -87,14 +87,16 @@ function _M:update(forced)
 		self.items_to_ignore = {}
 		
 		local index = 1
-		for _, recipe in pairs(recipe_selector.get_recipes(self.control_behavior, t_to_ignore)) do
+		local recipes, count = recipe_selector.get_recipes(self.control_behavior, t_to_ignore)
+		for _, recipe in pairs(recipes) do
+			local count = (self.settings.rc_multiply_by_input and count) or 1
 			table.insert(params, {
 				signal = recipe_selector.get_signal(recipe),
-				count = 1,
+				count = count,
 				index = index,
 			})
 			
-			self.items_to_ignore[recipe] = 1
+			self.items_to_ignore[recipe] = count
 			index = index + 1
 		end
 		
