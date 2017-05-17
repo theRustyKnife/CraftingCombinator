@@ -1,3 +1,7 @@
+##0.8.1##
+* Multiply by input count can now be used with find recipes
+* Negative values are handled properly (not ignored as before)
+
 ##0.8.0##
 + Added an option to read crafting speed to crafting combinator
 + Added an option to multiply results by input count to recipe combinator

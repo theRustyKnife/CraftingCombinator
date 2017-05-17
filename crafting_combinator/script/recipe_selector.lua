@@ -13,10 +13,10 @@ end
 function _M.get_recipe_from_wire(control_behavior, wire, items_to_ignore) -- LuaControlBehavior control_behavior, defines.wire_type wire, {"item-name"=amount, ...} items_to_ignore (optional)
 -- searches the particular wire type for a recipe signal
 	local res = nil
-	local n = 0
+	local n = nil
 	
 	local cn = control_behavior.get_circuit_network(wire, defines.circuit_connector_id.combinator_input)
-	if not cn then return res, n; end -- no network connected - no recipe to be found
+	if not cn then return res, 0; end -- no network connected - no recipe to be found
 	
 	local signals = cn.signals or {}
 	local entity = control_behavior.entity
@@ -25,14 +25,14 @@ function _M.get_recipe_from_wire(control_behavior, wire, items_to_ignore) -- Lua
 		local s = entity.force.recipes[signal.signal.name]
 		if s and s.enabled then
 			local c = signal.count - (items_to_ignore[s.name] or 0)
-			if c > n then
+			if n == nil or c > n then
 				res = s
 				n = c
 			end
 		end
 	end
 	
-	return res, n
+	return res, n or 0
 end
 
 function _M.get_highest_signal(control_behavior, items_to_ignore)
@@ -45,24 +45,24 @@ end
 
 function _M.get_highest_signal_form_wire(control_behavior, wire, items_to_ignore)
 	local res = nil
-	local n = 0
+	local n = nil
 	
 	local cn = control_behavior.get_circuit_network(wire, defines.circuit_connector_id.combinator_input)
-	if not cn or not cn.signals then return res, n; end
+	if not cn or not cn.signals then return res, 0; end
 	
 	for _, signal in pairs(cn.signals) do
 		local c = signal.count - (items_to_ignore[signal.signal.name] or 0)
-		if c > n then
+		if n == nil or c > n then
 			res = signal.signal.name
 			n = c
 		end
 	end
 	
-	return res, n
+	return res, n or 0
 end
 
 function _M.get_recipes(control_behavior, items_to_ignore)
-	local highest = _M.get_highest_signal(control_behavior, items_to_ignore)
+	local highest, count = _M.get_highest_signal(control_behavior, items_to_ignore)
 	if not highest then return {}; end
 	
 	local recipes = {}
@@ -83,7 +83,7 @@ function _M.get_recipes(control_behavior, items_to_ignore)
 		end
 	end
 	
-	return recipes
+	return recipes, count
 end
 
 function _M.get_signal(recipe) -- string recipe
