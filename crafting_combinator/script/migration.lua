@@ -62,7 +62,7 @@ FML.global.on_mod_config_change(function(data)
 		
 		local dests = {"active", "passive", "normal", "none"}
 		
-		for _, cc in pairs(global.combinators.crafting)do
+		for _, cc in pairs(global.combinators.crafting) do
 			-- migrate settings to new format
 			log("old_settings = "..serpent.line(cc.settings))
 			cc.settings = {
@@ -90,6 +90,15 @@ FML.global.on_mod_config_change(function(data)
 				rc_mode = FML.blueprint_data.settings.rc_mode.options[rc.mode],
 				rc_time_multiplier = 10,
 			}
+		end
+	end
+end)
+
+FML.global.on_config_change(function(data)
+	if data.mod_changes["Bottleneck"] or not data.mod_changes["Bottleneck"].new_version then
+		log("Bottleneck was removed - disabling bottleneck read mode...")
+		for _, combinator in pairs(global.combinators.crafting) do
+			combinator.settings.cc_read_bottleneck = false
 		end
 	end
 end)
