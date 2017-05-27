@@ -7,6 +7,9 @@ local gui = require "script.gui"
 local settings = FML.blueprint_data.settings
 
 
+local BOTTLENECK_STATES = remote.call("Bottleneck", "get_states")
+
+
 FML.global.on_init(function()
 	global.combinators.crafting = global.combinators.crafting or {}
 end)
@@ -47,6 +50,7 @@ function _M:on_create(blueprint)
 		cc_empty_inserters = true,
 		cc_request_modules = true,
 		cc_read_speed = false,
+		cc_read_bottleneck = false,
 	}
 	
 	self.modules_to_request = {}
@@ -69,6 +73,9 @@ function _M:on_create(blueprint)
 		
 		local read_speed = FML.blueprint_data.read(self.entity, settings.cc_read_speed)
 		if read_speed ~= nil then self.settings.cc_read_speed = read_speed; end
+		
+		local read_bottleneck = FML.blueprint_data.read(self.entity, settings.cc_read_bottleneck)
+		if game.active_mods["Bottleneck"] and read_bottleneck ~= nil then self.settings.cc_read_bottleneck = read_bottleneck; end
 	end
 	
 	self.chests = {
@@ -267,6 +274,23 @@ function _M:update()
 				index = 2,
 			})
 		end
+		
+		-- read Bottleneck
+		if self.settings.cc_read_bottleneck then
+			local state = (remote.call("Bottleneck", "get_signal_data", self.assembler.unit_number) or {}).status
+			local name
+			if state == BOTTLENECK_STATES.STOPPED then name = "signal-red"
+			elseif state == BOTTLENECK_STATES.FULL then name = "signal-yellow"
+			elseif state == BOTTLENECK_STATES.RUNNING then name = "signal-green"
+			end
+			if name then
+				table.insert(params, {
+					signal = {type = "virtual", name = name},
+					count = 1,
+					index = 3,
+				})
+			end
+		end
 	end
 	
 	self.control_behavior.parameters = {enabled = true, parameters = params}
@@ -311,6 +335,7 @@ function _M:open(player_index)
 	if self.settings.cc_empty_inserters then table.insert(misc, "cc_empty_inserters"); end
 	if self.settings.cc_request_modules then table.insert(misc, "cc_request_modules"); end
 	if self.settings.cc_read_speed then table.insert(misc, "cc_read_speed"); end
+	if self.settings.cc_read_bottleneck then table.insert(misc, "cc_read_bottleneck"); end
 	
 	local options = settings.cc_item_dest.options
 	
@@ -334,6 +359,7 @@ function _M:open(player_index)
 			cc_empty_inserters = {"crafting_combinator_gui_crafting-combinator_empty-inserters"},
 			cc_request_modules = {"crafting_combinator_gui_crafting-combinator_request-modules"},
 			cc_read_speed = {"crafting_combinator_gui_crafting-combinator_read-speed"},
+			cc_read_bottleneck = game.active_mods["Bottleneck"] and {"crafting_combinator_gui_crafting-combinator_read-bottleneck"},
 		}, misc)
 end
 

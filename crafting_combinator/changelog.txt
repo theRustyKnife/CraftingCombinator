@@ -1,3 +1,6 @@
+##0.9.0##
++ Crafting combinator can read Bottleneck status (requires [Bottleneck](https://mods.factorio.com/mods/trold/Bottleneck) 0.7.3 or higher)
+
 ##0.8.1##
 * Multiply by input count can now be used with find recipes
 * Negative values are handled properly (not ignored as before)
