@@ -95,7 +95,7 @@ FML.global.on_mod_config_change(function(data)
 end)
 
 FML.global.on_config_change(function(data)
-	if data.mod_changes["Bottleneck"] or not data.mod_changes["Bottleneck"].new_version then
+	if not data.mod_changes["Bottleneck"] or not data.mod_changes["Bottleneck"].new_version then
 		log("Bottleneck was removed - disabling bottleneck read mode...")
 		for _, combinator in pairs(global.combinators.crafting) do
 			combinator.settings.cc_read_bottleneck = false
