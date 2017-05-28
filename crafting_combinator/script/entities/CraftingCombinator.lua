@@ -7,11 +7,12 @@ local gui = require "script.gui"
 local settings = FML.blueprint_data.settings
 
 
-local BOTTLENECK_STATES = remote.call("Bottleneck", "get_states")
-
-
 FML.global.on_init(function()
 	global.combinators.crafting = global.combinators.crafting or {}
+end)
+
+FML.global.on_config_change(function()
+	if game.active_mods["Bottleneck"] then global.BOTTLENECK_STATES = remote.call("Bottleneck", "get_states"); end
 end)
 
 
@@ -279,9 +280,9 @@ function _M:update()
 		if self.settings.cc_read_bottleneck then
 			local state = (remote.call("Bottleneck", "get_signal_data", self.assembler.unit_number) or {}).status
 			local name
-			if state == BOTTLENECK_STATES.STOPPED then name = "signal-red"
-			elseif state == BOTTLENECK_STATES.FULL then name = "signal-yellow"
-			elseif state == BOTTLENECK_STATES.RUNNING then name = "signal-green"
+			if state == global.BOTTLENECK_STATES.STOPPED then name = "signal-red"
+			elseif state == global.BOTTLENECK_STATES.FULL then name = "signal-yellow"
+			elseif state == global.BOTTLENECK_STATES.RUNNING then name = "signal-green"
 			end
 			if name then
 				table.insert(params, {
