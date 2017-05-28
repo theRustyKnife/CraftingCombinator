@@ -34,6 +34,9 @@ Thanks to [Nexela](https://mods.factorio.com/mods/Nexela) it is no longer necess
 -------------
 
 # Changelog #
+## 0.9.2 ##
+* Fixed a crash in the migration script
+
 ## 0.9.1 ##
 * Fixed crash when loading without Bottleneck installed ([14118](https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/14118), [28](https://github.com/theRustyKnife/CraftingCombinator/issues/28))
 * Added [Omnimatter](https://mods.factorio.com/mods/EmperorZelos/omnimatter) compatibility ([14039](https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/14039))
