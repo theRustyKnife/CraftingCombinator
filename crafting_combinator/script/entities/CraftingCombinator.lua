@@ -57,25 +57,25 @@ function _M:on_create(blueprint)
 	self.modules_to_request = {}
 	
 	if blueprint then
-		local mode_set = FML.blueprint_data.read(self.entity, settings.cc_mode_set)
+		local mode_set = FML.blueprint_data.read(self.entity, settings.cc_mode_set, false)
 		if mode_set ~= nil then self.settings.cc_mode_set = mode_set; end
 		
-		local mode_read = FML.blueprint_data.read(self.entity, settings.cc_mode_read)
+		local mode_read = FML.blueprint_data.read(self.entity, settings.cc_mode_read, false)
 		if mode_read ~= nil then self.settings.cc_mode_read = mode_read; end
 		
-		self.settings.cc_module_dest = FML.blueprint_data.read(self.entity, settings.cc_module_dest) or self.settings.cc_module_dest
-		self.settings.cc_item_dest = FML.blueprint_data.read(self.entity, settings.cc_item_dest) or self.settings.cc_item_dest
+		self.settings.cc_module_dest = FML.blueprint_data.read(self.entity, settings.cc_module_dest, false) or self.settings.cc_module_dest
+		self.settings.cc_item_dest = FML.blueprint_data.read(self.entity, settings.cc_item_dest, false) or self.settings.cc_item_dest
 		
-		local empty = FML.blueprint_data.read(self.entity, settings.cc_empty_inserters)
+		local empty = FML.blueprint_data.read(self.entity, settings.cc_empty_inserters, false)
 		if empty ~= nil then self.settings.cc_empty_inserters = empty; end
 		
-		local request = FML.blueprint_data.read(self.entity, settings.cc_request_modules)
+		local request = FML.blueprint_data.read(self.entity, settings.cc_request_modules, false)
 		if request ~= nil then self.settings.cc_request_modules = request; end
 		
-		local read_speed = FML.blueprint_data.read(self.entity, settings.cc_read_speed)
+		local read_speed = FML.blueprint_data.read(self.entity, settings.cc_read_speed, false)
 		if read_speed ~= nil then self.settings.cc_read_speed = read_speed; end
 		
-		local read_bottleneck = FML.blueprint_data.read(self.entity, settings.cc_read_bottleneck)
+		local read_bottleneck = FML.blueprint_data.read(self.entity, settings.cc_read_bottleneck, false)
 		if game.active_mods["Bottleneck"] and read_bottleneck ~= nil then self.settings.cc_read_bottleneck = read_bottleneck; end
 	end
 	

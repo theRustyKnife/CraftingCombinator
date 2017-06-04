@@ -21,8 +21,8 @@ end
 function _M.on_built(event)
 	local entity = event.created_entity
 	
-	if entity.name == config.RC_NAME then entities.RecipeCombinator:new(entity); end
-	if entity.name == config.CC_NAME then entities.CraftingCombinator:new(entity); end
+	if entity.name == config.RC_NAME then entities.RecipeCombinator:new(entity, true); end
+	if entity.name == config.CC_NAME then entities.CraftingCombinator:new(entity, true); end
 	
 	if entity.name == "entity-ghost" then FML.blueprint_data.check_built_entity(entity); end
 	

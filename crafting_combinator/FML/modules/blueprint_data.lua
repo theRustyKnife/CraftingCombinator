@@ -44,6 +44,7 @@ if not FML.global then
 			item_slot_count = FML.table.getn(data),
 			icon = "__base__/graphics/icons/blueprint.png",
 			hidden = true,
+			localized_name = "Saved entity settings",
 		},
 		auto_generate = {"item"},
 	}
@@ -134,8 +135,10 @@ else
 	end
 	
 	
-	function _M.read(entity, setting)
-		local proxy = get_proxy(entity)
+	function _M.read(entity, setting, create)
+		if create == nil then create = true; end
+		local proxy = get_proxy(entity, create)
+		if not proxy then return nil; end
 		
 		for _, v in pairs(proxy.parameters.parameters) do
 			if v.signal.name == setting.signal_name then
