@@ -32,10 +32,10 @@ function _M:on_create(blueprint)
 	}
 	
 	if blueprint then
-		self.settings.rc_mode = FML.blueprint_data.read(self.entity, settings.rc_mode) or self.settings.rc_mode
-		self.settings.rc_time_multiplier = FML.blueprint_data.read(self.entity, settings.rc_time_multiplier) or self.settings.rc_time_multiplier
+		self.settings.rc_mode = FML.blueprint_data.read(self.entity, settings.rc_mode, false) or self.settings.rc_mode
+		self.settings.rc_time_multiplier = FML.blueprint_data.read(self.entity, settings.rc_time_multiplier, false) or self.settings.rc_time_multiplier
 		
-		local rc_multiply_by_input = FML.blueprint_data.read(self.entity, settings.rc_multiply_by_input)
+		local rc_multiply_by_input = FML.blueprint_data.read(self.entity, settings.rc_multiply_by_input, false)
 		if rc_multiply_by_input ~= nil then self.settings.rc_multiply_by_input = rc_multiply_by_input; end
 	end
 end

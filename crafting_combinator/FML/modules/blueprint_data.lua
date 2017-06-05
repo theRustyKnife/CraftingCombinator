@@ -134,8 +134,10 @@ else
 	end
 	
 	
-	function _M.read(entity, setting)
-		local proxy = get_proxy(entity)
+	function _M.read(entity, setting, create)
+		if create == nil then create = true; end
+		local proxy = get_proxy(entity, create)
+		if not proxy then return nil; end
 		
 		for _, v in pairs(proxy.parameters.parameters) do
 			if v.signal.name == setting.signal_name then
@@ -187,8 +189,19 @@ else
 	
 	
 	local e_name = get_name("entity")
-	function _M.check_built_entity(entity)
+	function _M.check_built_entity(entity, destroy)
 		if entity.name == "entity-ghost" and entity.ghost_prototype.name == e_name then
+			-- Here we check if there already is a data entity on the same position, if yes, then destroy this one and return
+			if destroy then
+				if not FML.table.is_empty(entity.surface.find_entities_filtered{
+							position = entity.position,
+							name = e_name,
+						}) then
+					entity.destroy()
+					return
+				end
+			end
+			
 			entity.revive()
 		end
 	end
