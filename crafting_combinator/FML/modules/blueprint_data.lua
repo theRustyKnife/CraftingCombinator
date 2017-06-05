@@ -44,7 +44,6 @@ if not FML.global then
 			item_slot_count = FML.table.getn(data),
 			icon = "__base__/graphics/icons/blueprint.png",
 			hidden = true,
-			localized_name = "Saved entity settings",
 		},
 		auto_generate = {"item"},
 	}
@@ -190,8 +189,19 @@ else
 	
 	
 	local e_name = get_name("entity")
-	function _M.check_built_entity(entity)
+	function _M.check_built_entity(entity, destroy)
 		if entity.name == "entity-ghost" and entity.ghost_prototype.name == e_name then
+			-- Here we check if there already is a data entity on the same position, if yes, then destroy this one and return
+			if destroy then
+				if not FML.table.is_empty(entity.surface.find_entities_filtered{
+							position = entity.position,
+							name = e_name,
+						}) then
+					entity.destroy()
+					return
+				end
+			end
+			
 			entity.revive()
 		end
 	end
