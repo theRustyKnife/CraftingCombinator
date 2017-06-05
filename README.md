@@ -34,6 +34,10 @@ Thanks to [Nexela](https://mods.factorio.com/mods/Nexela) it is no longer necess
 -------------
 
 # Changelog #
+## 0.9.3 ##
+* Fixed settings being lost when reviving combinators using [Picker Extended](https://mods.factorio.com/mods/Nexela/PickerExtended)
+* Fixed that the data entities could get placed in large numbers when dragging a blueprint while placing it ([31](https://github.com/theRustyKnife/CraftingCombinator/issues/31))
+
 ## 0.9.2 ##
 * Fixed a crash in the migration script
 
