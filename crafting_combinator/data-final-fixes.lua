@@ -57,30 +57,35 @@ local function try_get_icons(item)
 	return nil
 end
 
+local function get_possible_results(recipe)
+	local res = {}
+	local function _get_results(tab)
+		if tab.result then table.insert(res, tab.result); end
+		if tab.results then
+			for _, result in pairs(tab.results) do table.insert(res, get_result_name(result)); end
+		end
+	end
+	
+	_get_results(recipe)
+	if recipe.expensive then _get_results(recipe.expensive); end
+	if recipe.normal then _get_results(recipe.normal); end
+	
+	return res
+end
+
 local function get_icons(recipe)
 	if recipe.icon then return {{icon = recipe.icon}}; end
 	if recipe.icons then return recipe.icons; end
 	
 	for _, type in pairs(config.ITEM_TYPES) do
-		local icons = try_get_icons(data.raw[type][recipe.result])
-		if icons then return icons; end
-		
-		if recipe.results then
-			local first_icons
-			for _, result in pairs(recipe.results) do
-				local result = data.raw[type][get_result_name(result)]
-				
-				local icons = try_get_icons(result)
-				first_icons = first_icons or icons
-				
-				if result and result.name == recipe.name then
-					if icons then return icons; end
-					if first_icons then return first_icons; end
-					break
-				end
-			end
-			if first_icons then return first_icons; end
+		local first_icons
+		for _, result in pairs(get_possible_results(recipe)) do
+			local icons = try_get_icons(data.raw[type][result])
+			if result == recipe.name and icons then return icons; end
+			first_icons = first_icons or icons
 		end
+		
+		if first_icons then return first_icons; end
 	end
 	-- no icon found - use the default one
     log("Icon not found for: "..recipe.name)
@@ -89,7 +94,6 @@ end
 
 local function get_locale(recipe)
     --Try the best option to get a valid localised name
-
     local item, result_item
     for _, type in pairs(config.ITEM_TYPES) do
         item = data.raw[type][recipe.name]
