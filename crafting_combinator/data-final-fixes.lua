@@ -95,9 +95,10 @@ end
 local function get_locale(recipe)
     --Try the best option to get a valid localised name
     local item, result_item
+	local results = get_possible_results(recipe)
     for _, type in pairs(config.ITEM_TYPES) do
         item = data.raw[type][recipe.name]
-        result_item = data.raw[type][recipe.result] or (recipe.results and data.raw[type][recipe.results[1].name])
+        result_item = data.raw[type][results[1]]
         if item or result_item then break end
     end
 
