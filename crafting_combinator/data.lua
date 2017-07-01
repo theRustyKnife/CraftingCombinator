@@ -1,6 +1,6 @@
-local config = require "config"
-
 local FML = therustyknife.FML
+
+local config = require "config"
 
 
 FML.data.make{
