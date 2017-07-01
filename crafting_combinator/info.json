@@ -7,5 +7,5 @@
 	"description": "Includes combinators that allow you to set or read the recipe of any crafting machine, get ingredients or products of a recipe and more!",
 	"homepage": "https://mods.factorio.com/mods/theRustyKnife/crafting_combinator",
 	"date": "2017-06-11",
-	"dependencies": ["base", "?Bottleneck>=0.7.3", "?ZRecycling", "?omnimatter"]
+	"dependencies": ["base", "FML", "?Bottleneck>=0.7.3", "?ZRecycling", "?omnimatter"]
 }
