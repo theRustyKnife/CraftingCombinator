@@ -2,6 +2,15 @@ return {
 	-- How many slots the overflow chests will have (normal will have twice as much)
 	OVERFLOW_SLOT_COUNT = 1000,
 	
+	-- Recipes matching any of the strings will not get a virtual recipe
+	RECIPES_TO_IGNORE = {
+		--"^ngels%-fluid%-splitter-",
+		--"^converter%-angels%-",
+		"^compress%-",
+		"^uncompress%-",
+		"angels%-void",
+	},
+	
 	NAME = {
 		-- Crafting combinator entity name
 		CC = "crafting_combinator_crafting-combinator-2",
