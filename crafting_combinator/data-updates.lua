@@ -1,1 +1,1 @@
-FML.table.remove_v(data.raw["item"]["rocket-part"].flags, "hidden")
+therustyknife.FML.table.remove_v(data.raw["item"]["rocket-part"].flags, "hidden")
