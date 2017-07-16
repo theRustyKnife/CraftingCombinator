@@ -15,6 +15,10 @@ return {
 		-- Crafting combinator entity name
 		CC = "crafting_combinator_crafting-combinator",
 		
+		-- The setting group names
+		CC_SETTINGS = "crafting_combinator_CC-settings",
+		RC_SETTINGS = "crafting_combinator_RC-settings",
+		
 		-- Virtual recipe group name
 		GROUP = "crafting_combinator_virtual-recipes",
 		-- Virtual recipe subgroup name (default)

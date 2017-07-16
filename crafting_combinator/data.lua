@@ -109,3 +109,76 @@ FML.data.make{
 		},
 	},
 }
+
+
+FML.blueprint_data.add_prototype({
+	name = config.NAME.CC_SETTINGS,
+	settings = {
+		mode_set = {
+			type = "bool",
+			index = 1,
+			default = true,
+		},
+		mode_read = {
+			type = "bool",
+			index = 2,
+			default = false,
+		},
+		item_dest = {
+			type = "enum",
+			index = 3,
+			default = 1,
+			options = {active = 1, passive = 2, normal = 3, none = 4},
+		},
+		module_dest = {
+			type = "enum",
+			index = 4,
+			default = 2,
+			options = {active = 1, passive = 2, normal = 3, none = 4},
+		},
+		empty_inserters = {
+			type = "bool",
+			index = 5,
+			default = true,
+		},
+		request_modules = {
+			type = "bool",
+			index = 6,
+			default = true,
+		},
+		read_speed = {
+			type = "bool",
+			index = 7,
+			default = false,
+		},
+		read_bottleneck = {
+			type = "bool",
+			index = 8,
+			default = false,
+		},
+	},
+}, data.raw["constant-combinator"][config.NAME.CC].collision_box)
+
+--[[ WIP
+FML.blueprint_data.add_prototype({
+	name = config.NAME.RC_SETTINGS,
+	settings = {
+		mode = {
+			type = "enum",
+			index = 1,
+			default = 1,
+			options = {ingredient = 1, product = 2, recipe = 3},
+		},
+		time_multiplier = {
+			type = "int",
+			index = 2,
+			default = 1,
+		},
+		multiply_by_input = {
+			type = "bool",
+			index = 3,
+			default = false,
+		},
+	},
+}, nil) --TODO: fill in collision_box
+--]]
