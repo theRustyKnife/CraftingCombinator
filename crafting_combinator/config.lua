@@ -13,7 +13,7 @@ return {
 	
 	NAME = {
 		-- Crafting combinator entity name
-		CC = "crafting_combinator_crafting-combinator-2",
+		CC = "crafting_combinator_crafting-combinator",
 		
 		-- Virtual recipe group name
 		GROUP = "crafting_combinator_virtual-recipes",

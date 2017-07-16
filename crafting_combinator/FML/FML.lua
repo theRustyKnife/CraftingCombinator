@@ -2,7 +2,7 @@
 local CONFIG_PATH = ".config"
 
 
-local FML_import = loadstring(settings.global["FML_FML-hack-setting"].value)()
+local FML_import = next(remote.interfaces["therustyknife.FML.serialized"]); FML_import = loadstring(FML_import)()
 
 local module_loader = {}; FML_import.module_loader(module_loader)
 local FML_stdlib = module_loader.init(FML_import.FML_stdlib)
