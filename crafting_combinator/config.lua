@@ -34,4 +34,8 @@ return {
 		OVERFLOW_P = "crafting_combinator_overflow-passive",
 		OVERFLOW_N = "crafting_combinator_overflow-normal",
 	},
+	
+	CC_ASSEMBLER_DISTANCE = 1,
+	CC_ASSEMBLER_OFFSET = 0.2,
+	CC_INSERTER_SEARCH_DISTANCE = 10,
 }
