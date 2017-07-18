@@ -53,6 +53,8 @@ FML.events.on_load(function()
 	for _, o in pairs(_M.tab) do _M:load(o); end
 end)
 
+--TODO: read bottleneck signals on_config_change
+
 
 _M.TYPE = "crafting"
 
@@ -60,7 +62,7 @@ _M.TYPE = "crafting"
 function _M:update()
 	if self.item_request_proxy and not self.item_request_proxy.valid then self.item_request_proxy = nil; end
 	
-	local params = {}
+	local params = table()
 	if self.assembler and self.assembler.valid then
 		-- Set mode
 		if self.settings.mode_set then
@@ -74,9 +76,47 @@ function _M:update()
 			
 			if recipe and recipe ~= self.assembler.recipe then
 				self:move_modules(recipe)
-				
-				if self.item_request_proxy then --TODO: finish
+				if self.item_request_proxy then self:check_requested_modules(recipe); end
+				if self.settings.request_modules then self:request_modules(recipe); end
 			end
+			
+			self.assembler.recipe = recipe
+		end
+		
+		-- Read mode
+		if self.settings.mode_read and self.assembler.recipe then
+			for type, type_tab in pairs{
+						item = game.item_prototypes,
+						fluid = game.fluid_prototypes,
+						virtual = game.virtual_signal_prototypes,
+					} do
+				local prototype = type_tab[self.assembler.recipe.name]
+				if prototype then
+					params:insert{
+						signal = {type = type, name = prototype.name},
+						count = 1,
+						index = 1,
+					}
+					self.items_to_ignore = {[prototype.name] = 1}
+					break
+				end
+			end
+		else self.items_to_ignore = nil; end
+		
+		-- Read speed
+		if self.settings.read_speed then
+			params:insert{
+				signal = {type = "virtual", name = config.NAME.SPEED},
+				count = game.entity_prototypes[self.assembler.name].crafting_speed * 100,
+				index = 2,
+			}
+		end
+		
+		--Read Bottleneck
+		if self.settings.read_bottleneck then
+			local state = (remote.call("Bottleneck", "get_signal_data", self.assembler.unit_number) or {}).status
+			local name
+			--TODO: finish
 		end
 	end
 end
