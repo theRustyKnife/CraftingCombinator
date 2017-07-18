@@ -11,7 +11,7 @@ local INVENTORIES = blueprint_data.get_enum(config.NAME.CC_SETTINGS, "item_dest"
 local INVENTORIES_LUT = {}; for name, i in pairs(INVENTORIES) do INVENTORIES_LUT[i] = name; end
 
 
-local _M = Combinator:extend(function(self, entity)
+local _M = Combinator:extend("therustyknife.crafting_combinator.CraftingCombinator", function(self, entity)
 	self = self.super.new(self, entity)
 	
 	self.settings = blueprint_data.get(self.entity, config.NAME.CC_SETTINGS)
@@ -45,18 +45,40 @@ local _M = Combinator:extend(function(self, entity)
 	return self
 )
 
-
-FML.events.on_load(function()
-	global.combinators.crafting = table(global.combinators.crafting)
-	_M.tab = global.combinators.crafting
+function _M:destroy(player)
+	self.settings._reset()
 	
-	for _, o in pairs(_M.tab) do _M:load(o); end
+	for _, inventory in ipairs{self.inventories.passive, self.inventories.active, self.inventories.normal} do
+		for i=1, #inventory do
+			local stack = inventory[i]
+			if stack.valid_for_read then
+				local remaining = stack.count
+				if player then remaining = remaining - player.insert(stack); end
+				if remaining > 0 then
+					stack.count = remaining
+					self.entity.surface.spill_item_stack(self.entity.position, stack, true)
+				end
+			end
+		end
+	end
+	
+	self.super.destroy(self)
+end
+
+
+FML.events.on_config_change(function()
+	if game.active_mods["Bottleneck"] then global.BOTTLENECK_STATES = remote.call("Bottleneck", "get_states"); end
 end)
 
---TODO: read bottleneck signals on_config_change
 
-
-_M.TYPE = "crafting"
+function _M.update_assemblers(surface, position)
+	for _, entity in pairs(surface.find_entities_filtered{
+				area = FML.surface.square(position, config.CC_ASSEMBLER_SEARCH_DISTANCE),
+				name = config.NAME.CC,
+			}) do
+		Combinator.get(entity):find_assembler()
+	end
+end
 
 
 function _M:update()
@@ -116,9 +138,21 @@ function _M:update()
 		if self.settings.read_bottleneck then
 			local state = (remote.call("Bottleneck", "get_signal_data", self.assembler.unit_number) or {}).status
 			local name
-			--TODO: finish
+			if state == global.BOTTLENECK_STATES.STOPPED then name = "signal-red"
+			elseif state == global.BOTTLENECK_STATES.FULL then name = "signal-yellow"
+			elseif state == global.BOTTLENECK_STATES.RUNNING then name = "signal-green"
+			end
+			if name then
+				params:insert{
+					signal = {type = "virtual", name = name},
+					count = 1,
+					index = 3,
+				}
+			end
 		end
 	end
+	
+	self.control_behavior.parameters = {enabled = true, parameters = params}
 end
 
 
