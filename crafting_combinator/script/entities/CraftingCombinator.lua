@@ -7,10 +7,6 @@ local Combinator = require ".Combinator"
 local recipe_selector = require "script.recipe-selector"
 
 
-local INVENTORIES = blueprint_data.get_enum(config.NAME.CC_SETTINGS, "item_dest")
-local INVENTORIES_LUT = {}; for name, i in pairs(INVENTORIES) do INVENTORIES_LUT[i] = name; end
-
-
 local _M = Combinator:extend("therustyknife.crafting_combinator.CraftingCombinator", function(self, entity)
 	self = self.super.new(self, entity)
 	
@@ -43,10 +39,10 @@ local _M = Combinator:extend("therustyknife.crafting_combinator.CraftingCombinat
 	self:find_assembler()
 	
 	return self
-)
+end)
 
 function _M:destroy(player)
-	self.settings._reset()
+	self.settings:_reset()
 	
 	for _, inventory in ipairs{self.inventories.passive, self.inventories.active, self.inventories.normal} do
 		for i=1, #inventory do
@@ -62,7 +58,9 @@ function _M:destroy(player)
 		end
 	end
 	
-	self.super.destroy(self)
+	for _, chest in pairs(self.chests) do chest.destroy(); end
+	
+	_M.super.destroy(self)
 end
 
 
@@ -174,10 +172,16 @@ function _M:find_assembler()
 	else self.inventories.assembler = {}; end
 end
 
+local inventories
+local inventories_lut
 local empty_target = {insert = function() end} -- When no chest is selected as overflow output
 function _M:get_target(mode)
-	if mode == INVENTORIES.none then return empty_target; end
-	return self.chests[INVENTORIES_LUT[mode]]
+	if not inventories then
+		inventories = blueprint_data.get_enum(config.NAME.CC_SETTINGS, "item_dest")
+		inventories_lut = {}; for name, i in pairs(inventories) do inventories_lut[i] = name; end
+	end
+	if mode == inventories.none then return empty_target; end
+	return self.chests[inventories_lut[mode]]
 end
 
 function _M:move_items(target)
