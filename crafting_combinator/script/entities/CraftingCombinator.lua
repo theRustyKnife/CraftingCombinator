@@ -1,6 +1,7 @@
 local FML = therustyknife.FML
 local blueprint_data = FML.blueprint_data
 local table = FML.table
+local log = FML.log
 
 local config = require "config"
 local Combinator = require ".Combinator"
@@ -9,6 +10,8 @@ local recipe_selector = require "script.recipe-selector"
 
 local _M = Combinator:extend("therustyknife.crafting_combinator.CraftingCombinator", function(self, entity)
 	self = self.super.new(self, entity)
+	
+	FML.log.dump("Built a CraftingCombinator at ", self.entity.position)
 	
 	self.settings = blueprint_data.get(self.entity, config.NAME.CC_SETTINGS)
 	self.modules_to_request = {}
@@ -42,6 +45,8 @@ local _M = Combinator:extend("therustyknife.crafting_combinator.CraftingCombinat
 end)
 
 function _M:destroy(player)
+	FML.log.dump("Destroying a CraftingCombinator at ", self.entity.position)
+	
 	self.settings:_reset()
 	
 	for _, inventory in ipairs{self.inventories.passive, self.inventories.active, self.inventories.normal} do
@@ -69,11 +74,36 @@ FML.events.on_config_change(function()
 end)
 
 
-function _M.update_assemblers(surface, position)
-	for _, entity in pairs(surface.find_entities_filtered{
-				area = FML.surface.square(position, config.CC_ASSEMBLER_SEARCH_DISTANCE),
-				name = config.NAME.CC,
-			}) do
+FML.events.on_built(function(event)
+	local entity = event.created_entity
+	if entity.name == config.NAME.CC then _M(entity); end
+	if entity.type == "assembling-machine" then
+		_M.update_assemblers(entity.surface, entity.position, entity.bounding_box)
+	end
+end)
+
+FML.events.on_destroyed(function(event)
+	local entity = event.entity
+	local player = event.player_index and game.players[event.player_index]
+	
+	if entity.name == config.NAME.CC then Combinator.get(entity):destroy(player); end
+	if entity.type == "assembling-machine" then
+		_M.update_assemblers(entity.surface, entity.position, entity.bounding_box)
+	end
+end)
+
+FML.events.on_player_rotated_entity(function(event)
+	local entity = event.entity
+	if entity.name == config.NAME.CC then Combinator.get(entity):find_assembler(); end
+end)
+
+
+function _M.update_assemblers(surface, position, box)
+	FML.log.dump("Updating assemblers around ", surface.name, position)
+	box = box and FML.surface.expand(box, config.CC_ASSEMBLER_SEARCH_DISTANCE)
+			or FML.surface.square(position, config.CC_ASSEMBLER_SEARCH_DISTANCE)
+	log.dump("\tbox: ", box)
+	for _, entity in pairs(surface.find_entities_filtered{area = box, name = config.NAME.CC}) do
 		Combinator.get(entity):find_assembler()
 	end
 end
@@ -155,6 +185,7 @@ end
 
 
 function _M:find_assembler()
+	log.d("Serching for assembler around CraftingCombinator unit_number="..self.entity.unit_number.."...")
 	self.assembler = self.entity.surface.find_entities_filtered{
 		area = FML.surface.square(
 				FML.surface.move(self.entity.position, self.entity.direction, config.CC_ASSEMBLER_DISTANCE),
@@ -164,12 +195,13 @@ function _M:find_assembler()
 	}[1]
 	
 	if self.assembler then
+		log.d("Found assembler unit_number="..self.assembler.unit_number)
 		self.inventories.assembler = {
 			output = self.assembler.get_inventory(defines.inventory.assembling_machine_output),
 			input = self.assembler.get_inventory(defines.inventory.assembling_machine_input),
 			modules = self.assembler.get_inventory(defines.inventory.assembling_machine_modules),
 		}
-	else self.inventories.assembler = {}; end
+	else log.d("No assembler found"); self.inventories.assembler = {}; end
 end
 
 local inventories
@@ -215,6 +247,28 @@ function _M:empty_inserters(target)
 				end
 			end
 		end
+	end
+end
+
+function _M:request_modules(recipe)
+	local to_request
+	if self.item_request_proxy then to_request = table(self.item_request_proxy.item_requests)
+	else to_request = table(); end
+	
+	for name, count in pairs(self.modules_to_request) do
+		local limitations = table(game.item_prototypes[name.limitations])
+		if limitations[recipe.name] or limitations:is_empty() then
+			to_request[name] = to_request[name] or 0
+			to_request[name] = to_request[name] + count
+			self.modules_to_request[name] = nil
+		end
+	end
+	
+	if not self.item_request_proxy and not to_request:is_empty() then
+		local modules = table()
+		for name, count in to_request:pairs() do modules:insert{item = name, count = count}; end
+		
+		self.item_request_proxy = FML.random_util.make_request(self.assembler, modules)
 	end
 end
 

@@ -33,10 +33,12 @@ return {
 		OVERFLOW_A = "crafting_combinator_overflow-active",
 		OVERFLOW_P = "crafting_combinator_overflow-passive",
 		OVERFLOW_N = "crafting_combinator_overflow-normal",
+		
+		SETTING_REFRESH_RATE = "crafting_combinator_refresh-rate",
 	},
 	
 	CC_ASSEMBLER_DISTANCE = 1,
 	CC_ASSEMBLER_OFFSET = 0.2,
-	CC_ASSEMBLER_SEARCH_DISTANCE = 2,
+	CC_ASSEMBLER_SEARCH_DISTANCE = 1,
 	CC_INSERTER_SEARCH_DISTANCE = 10,
 }
