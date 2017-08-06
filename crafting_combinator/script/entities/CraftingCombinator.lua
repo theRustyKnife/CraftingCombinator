@@ -2,6 +2,7 @@ local FML = therustyknife.FML
 local blueprint_data = FML.blueprint_data
 local table = FML.table
 local log = FML.log
+local GUI = FML.GUI
 
 local config = require "config"
 local Combinator = require ".Combinator"
@@ -95,6 +96,38 @@ end)
 FML.events.on_player_rotated_entity(function(event)
 	local entity = event.entity
 	if entity.name == config.NAME.CC then Combinator.get(entity):find_assembler(); end
+end)
+
+
+GUI.watch_opening(config.NAME.CC, function(event)
+	if event.status then return nil; end
+	
+	local self = Combinator.get(event.entity)
+	
+	local parent = GUI.entity_base{
+		parent = event.player.gui.center,
+		entity = event.entity,
+		cam_zoom = 1,
+	}
+	
+	-- Mode
+	GUI.controls.CheckboxGroup{
+		parent = GUI.entity_segment{parent = parent.primary, title = {"crafting_combinator-gui.cc-mode"}},
+		name = "mode",
+		options = {
+			{name = "mode_set", state = self.settings.mode_set, caption = {"crafting_combinator-gui.cc-mode-set"}},
+			{name = "mode_read", state = self.settings.mode_read, caption = {"crafting_combinator-gui.cc-mode-read"}},
+		},
+		on_change = "therustyknife.crafting_combinator.cc_mode_change",
+		meta = self,
+	}
+	
+	return parent.root
+end)
+
+FML.handlers.add("therustyknife.crafting_combinator.cc_mode_change", function(group)
+	local settings = group.meta.settings
+	for name, state in pairs(group.values) do settings[name] = state; end
 end)
 
 
