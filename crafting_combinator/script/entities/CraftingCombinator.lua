@@ -70,9 +70,10 @@ function _M:destroy(player)
 end
 
 
-FML.events.on_config_change(function()
+local function load_bottleneck()
 	if game.active_mods["Bottleneck"] then global.BOTTLENECK_STATES = remote.call("Bottleneck", "get_states"); end
-end)
+end
+FML.events.on_config_change(load_bottleneck); FML.events.on_init(load_bottleneck)
 
 
 FML.events.on_built(function(event)
