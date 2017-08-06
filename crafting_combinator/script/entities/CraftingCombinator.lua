@@ -112,11 +112,55 @@ GUI.watch_opening(config.NAME.CC, function(event)
 	
 	-- Mode
 	GUI.controls.CheckboxGroup{
-		parent = GUI.entity_segment{parent = parent.primary, title = {"crafting_combinator-gui.cc-mode"}},
+		parent = parent.title,--GUI.entity_segment{parent = parent.primary, title = {"crafting_combinator-gui.cc-mode"}},
 		name = "mode",
 		options = {
 			{name = "mode_set", state = self.settings.mode_set, caption = {"crafting_combinator-gui.cc-mode-set"}},
 			{name = "mode_read", state = self.settings.mode_read, caption = {"crafting_combinator-gui.cc-mode-read"}},
+			{name = "read_speed", state = self.settings.read_speed, caption = {"crafting_combinator-gui.cc-read-speed"}},
+			game.active_mods["Bottleneck"] and {name = "read_bottleneck", state = self.settings.read_bottleneck, caption = {"crafting_combinator-gui.cc-read-bottleneck"}} or nil,
+		},
+		on_change = "therustyknife.crafting_combinator.cc_mode_change",
+		meta = self,
+	}
+	
+	local dest_enum = blueprint_data.get_enum(config.NAME.CC_SETTINGS, "item_dest")
+	local dests = {
+		{name = dest_enum.active, caption = {"crafting_combinator-gui.cc-dest-active"}},
+		{name = dest_enum.passive, caption = {"crafting_combinator-gui.cc-dest-passive"}},
+		{name = dest_enum.normal, caption = {"crafting_combinator-gui.cc-dest-normal"}},
+		{name = dest_enum.none, caption = {"crafting_combinator-gui.cc-dest-none"}},
+	}
+	
+	-- Item dest
+	GUI.controls.RadiobuttonGroup{
+		parent = GUI.entity_segment{parent = parent.primary, title = {"crafting_combinator-gui.cc-item-dest"}},
+		name = "item_dest",
+		options = dests,
+		selected = self.settings.item_dest,
+		on_change = "therustyknife.crafting_combinator.cc_radio_change",
+		meta = self,
+		direction = "horizontal",
+	}
+	
+	-- Module dest
+	GUI.controls.RadiobuttonGroup{
+		parent = GUI.entity_segment{parent = parent.primary, title = {"crafting_combinator-gui.cc-module-dest"}},
+		name = "module_dest",
+		options = dests,
+		selected = self.settings.module_dest,
+		on_change = "therustyknife.crafting_combinator.cc_radio_change",
+		meta = self,
+		direction = "horizontal",
+	}
+	
+	-- Misc
+	GUI.controls.CheckboxGroup{
+		parent = GUI.entity_segment{parent = parent.primary, title = {"crafting_combinator-gui.cc-misc"}},
+		name = "misc",
+		options = {
+			{name = "empty_inserters", state = self.settings.empty_inserters, caption = {"crafting_combinator-gui.cc-empty-inserters"}},
+			{name = "request_modules", state = self.settings.request_modules, caption = {"crafting_combinator-gui.cc-request-modules"}},
 		},
 		on_change = "therustyknife.crafting_combinator.cc_mode_change",
 		meta = self,
@@ -128,6 +172,10 @@ end)
 FML.handlers.add("therustyknife.crafting_combinator.cc_mode_change", function(group)
 	local settings = group.meta.settings
 	for name, state in pairs(group.values) do settings[name] = state; end
+end)
+
+FML.handlers.add("therustyknife.crafting_combinator.cc_radio_change", function(group)
+	group.meta.settings[group.name] = group.value
 end)
 
 
