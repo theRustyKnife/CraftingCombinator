@@ -21,7 +21,42 @@ FML.data.make{
 			recipe = {base = FML.data.inherit("recipe", "constant-combinator"), unlock_with = "circuit-network"},
 		},
 	},
-	--TODO: Recipe Combinator
+	{
+	-- Recipe Combinator main entity
+		base = FML.data.inherit("arithmetic-combinator"),
+		properties = {
+			name = config.NAME.RC,
+			--TODO: icon = ?,
+			--TODO: sprites = ?,
+		},
+		generate = {
+			item = {properties = {subgroup = "circuit-network"}},
+			recipe = {base = FML.data.inherit("recipe", "constant-combinator"), unlock_with = "circuit-network"},
+		},
+	},
+	{
+	-- Recipe Combinator output proxy
+		base = FML.data.inherit("constant-combinator"),
+		properties = {
+			name = config.NAME.RC_OUT_PROXY,
+			flags = {"placeable-off-grid"},
+			item_slot_count = config.RC_SLOT_COUNT, --TODO: make this dynamic?
+			order = "zzz",
+			_for = {names = {"minable"}, set = nil},
+			selectable_in_game = false,
+			sprites = {_tabs = function(val)
+				val.filename = "__crafting_combinator__/graphics/trans.png"
+				val.y = 0; val.x = 0
+			end},
+			collision_mask = {},
+			circuit_wire_connection_points = {
+				_for = { -- Put all the points to the center
+					names = {1, 2, 3, 4},
+					set = {shadow = {red = {0, 0}, green = {0, 0}}, wire = {red = {0, 0}, green = {0, 0}}}
+				},
+			}
+		},
+	},
 	{
 	-- Virtual recipe tab
 		type = "item-group",
@@ -157,9 +192,8 @@ FML.blueprint_data.add_prototype({
 			default = false,
 		},
 	},
-}, data.raw["constant-combinator"][config.NAME.CC].collision_box)
+}, data.raw["constant-combinator"][config.NAME.CC].collision_box, {"crafting_combinator-blueprints.cc"})
 
---[[ WIP
 FML.blueprint_data.add_prototype({
 	name = config.NAME.RC_SETTINGS,
 	settings = {
@@ -180,5 +214,4 @@ FML.blueprint_data.add_prototype({
 			default = false,
 		},
 	},
-}, nil) --TODO: fill in collision_box
---]]
+}, data.raw["arithmetic-combinator"][config.NAME.RC].collision_box, {"crafting_combinator-blueprints.rc"})

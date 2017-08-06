@@ -12,8 +12,9 @@ return {
 	},
 	
 	NAME = {
-		-- Crafting combinator entity name
+		-- Entity names
 		CC = "crafting_combinator_crafting-combinator",
+		RC = "crafting_combinator_recipe-combinator",
 		
 		-- The setting group names
 		CC_SETTINGS = "crafting_combinator_CC-settings",
@@ -34,6 +35,8 @@ return {
 		OVERFLOW_P = "crafting_combinator_overflow-passive",
 		OVERFLOW_N = "crafting_combinator_overflow-normal",
 		
+		RC_OUT_PROXY = "crafting_combinator_out-proxy",
+		
 		SETTING_REFRESH_RATE = "crafting_combinator_refresh-rate",
 	},
 	
@@ -41,4 +44,6 @@ return {
 	CC_ASSEMBLER_OFFSET = 0.2,
 	CC_ASSEMBLER_SEARCH_DISTANCE = 1,
 	CC_INSERTER_SEARCH_DISTANCE = 10,
+	
+	RC_SLOT_COUNT = 50,
 }
