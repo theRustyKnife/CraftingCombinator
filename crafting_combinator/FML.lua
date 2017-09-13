@@ -23,12 +23,10 @@ local config = {
 
 local FML_import = next(remote.interfaces["therustyknife.FML.serialized"]); FML_import = loadstring(FML_import)()
 local module_loader = {}; FML_import.module_loader(module_loader)
-local FML_stdlib = module_loader.init(FML_import.FML_stdlib)
+local FML_stdlib = module_loader.init(FML_import.FML_stdlib, nil, "RUNTIME")
 config = FML_stdlib.merge_configs(config, FML_import.config)
 
-local _M = module_loader.load_std(FML_stdlib, nil, "runtime", config, config.VERSION)
+local _M = module_loader.load_std(FML_stdlib, nil, "RUNTIME", config, config.VERSION)
 FML_stdlib.put_to_global("therustyknife", "FML", _M)
-for _, module in ipairs(config.MODULES_TO_LOAD) do
-	if FML_import.modules[module.name] then _M[module.name] = module_loader.init(FML_import.modules[module.name]); end
-end
+module_loader.init_all(_M, FML_import.modules, config.MODULES_TO_LOAD, "RUNTIME")
 return _M
