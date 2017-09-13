@@ -1,153 +1,190 @@
-local FML = require "therustyknife.FML"
-local entities = require "therustyknife.crafting_combinator.entities"
+local FML = therustyknife.FML
+local blueprint_data = FML.blueprint_data
+local table = FML.table
+local log = FML.log
+local GUI = FML.GUI
+
 local config = require "config"
-local recipe_selector = require "script.recipe_selector"
-local gui = require "script.gui"
-
-local settings = FML.blueprint_data.settings
+local Combinator = require ".Combinator"
+local recipe_selector = require "script.recipe-selector"
 
 
-FML.global.on_init(function()
-	global.combinators.recipe = global.combinators.recipe or {}
-end)
-
-
-local _M = entities.Combinator:extend()
-
-
-_M.TYPE = "recipe"
-
-FML.global.on_load(function()
-	_M.tab = global.combinators.recipe
+local _M = Combinator:extend("therustyknife.crafting_combinator.RecipeCombinator", function(self, entity)
+	self = self.super.new(self, entity)
 	
-	for _, o in pairs(global.combinators.recipe or {}) do _M:load(o); end
-end)
-
-
-function _M:on_create(blueprint)
-	self.settings = {
-		rc_mode = settings.rc_mode.options.ingredient,
-		rc_time_multiplier = 10,
-		rc_multiply_by_input = false,
+	FML.log.dump("Built a RecipeCombinator at ", self.entity.position)
+	
+	self.settings = blueprint_data.get(self.entity, config.NAME.RC_SETTINGS)
+	
+	self.output_proxy = self.entity.surface.create_entity{
+		name = config.NAME.RC_OUT_PROXY,
+		position = self.entity.position,
+		force = self.entity.force,
+	}
+	self.out_control_behavior = self.output_proxy.get_or_create_control_behavior()
+	self.output_proxy.destructible = false
+	self.output_proxy.operable = false
+	self.output_proxy.connect_neighbour{
+		target_entity = self.entity,
+		wire = defines.wire_type.green,
+		target_circuit_id = defines.circuit_connector_id.combinator_output,
+	}
+	self.output_proxy.connect_neighbour{
+		target_entity = self.entity,
+		wire = defines.wire_type.red,
+		target_circuit_id = defines.circuit_connector_id.combinator_output,
 	}
 	
-	if blueprint then
-		self.settings.rc_mode = FML.blueprint_data.read(self.entity, settings.rc_mode, false) or self.settings.rc_mode
-		self.settings.rc_time_multiplier = FML.blueprint_data.read(self.entity, settings.rc_time_multiplier, false) or self.settings.rc_time_multiplier
-		
-		local rc_multiply_by_input = FML.blueprint_data.read(self.entity, settings.rc_multiply_by_input, false)
-		if rc_multiply_by_input ~= nil then self.settings.rc_multiply_by_input = rc_multiply_by_input; end
-	end
+	return self
+end)
+
+function _M:destroy()
+	FML.log.dump("Destroying a RecipeCombinator at ", self.entity.position)
+	
+	self.settings:_reset()
+	self.output_proxy.destroy()
+	
+	_M.super.destroy(self)
 end
 
-function _M:update(forced)
-	local recipe, input_count = recipe_selector.get_recipe(self.control_behavior, self.items_to_ignore)
+
+FML.events.on_built(function(event)
+	local entity = event.created_entity
+	if entity.name == config.NAME.RC then _M(entity); end
+end)
+
+FML.events.on_destroyed(function(event)
+	local entity = event.entity
+	if entity.name == config.NAME.RC then Combinator.get(entity):destroy(); end
+end)
+
+
+local MODE
+GUI.watch_opening(config.NAME.RC, function(event)
+	if event.status then return nil; end
 	
-	if self.settings.rc_mode ~= settings.rc_mode.options.recipe and (self.recipe ~= recipe or (forced and self.settings.rc_mode ~= settings.rc_mode.options.recipe) or (self.settings.rc_multiply_by_input and self.input_count ~= input_count)) then
+	local self = Combinator.get(event.entity)
+	
+	local parent = GUI.entity_base{
+		parent = event.player.gui.center,
+		entity = event.entity,
+		cam_zoom = 1,
+	}
+	
+	-- Mode
+	MODE = MODE or blueprint_data.get_enum(config.NAME.RC_SETTINGS, "mode")
+	
+	GUI.controls.RadiobuttonGroup{
+		parent = parent.title,
+		name = "mode",
+		options = {
+			{name = MODE.ingredient, caption = {"crafting_combinator-gui.rc-mode-ingredient"}},
+			{name = MODE.product, caption = {"crafting_combinator-gui.rc-mode-product"}},
+			{name = MODE.recipe, caption = {"crafting_combinator-gui.rc-mode-recipe"}},
+		},
+		selected = self.settings.mode,
+		on_change = "therustyknife.crafting_combinator.rc_mode_change",
+		meta = self,
+	}
+	
+	local misc = GUI.entity_segment{parent = parent.primary, title = {"crafting_combinator-gui.rc-misc"}}
+	
+	-- Time multiplier
+	GUI.controls.NumberSelector{
+		parent = misc,
+		name = "time_multiplier",
+		caption = {"crafting_combinator-gui.rc-time-multiplier"},
+		value = self.settings.time_multiplier,
+		on_change = "therustyknife.crafting_combinator.rc_number_changed",
+		meta = self,
+		min = 1,
+	}
+	
+	--Multiply by input
+	GUI.controls.CheckboxGroup{
+		parent = misc,
+		options = {
+			{name = "multiply_by_input", state = self.settings.multiply_by_input, caption = {"crafting_combinator-gui.rc-multiply-by-input"}},
+		},
+		on_change = "therustyknife.crafting_combinator.rc_check_change",
+		meta = self,
+	}
+	
+	return parent.root
+end)
+
+FML.handlers.add("therustyknife.crafting_combinator.rc_mode_change", function(group)
+	group.meta.settings[group.name] = group.value
+	group.meta:update(true)
+end)
+
+FML.handlers.add("therustyknife.crafting_combinator.rc_check_change", function(group)
+	local settings = group.meta.settings
+	for name, state in pairs(group.values) do settings[name] = state; end
+	group.meta:update(true)
+end)
+
+FML.handlers.add("therustyknife.crafting_combinator.rc_number_changed", function(picker)
+	picker.meta.settings[picker.name] = picker.value
+	picker.meta:update(true)
+end)
+
+
+function _M:update(forced)
+	local recipe, input_count = recipe_selector.get_recipe(self.control_behavior)
+	
+	MODE = MODE or blueprint_data.get_enum(config.NAME.RC_SETTINGS, "mode")
+	if self.settings.mode ~= MODE.recipe
+			and (self.recipe ~= recipe or forced or (self.settings.multiply_by_input and self.input_count ~= input_count)) then
 		self.recipe = recipe
 		self.input_count = input_count
-		self.items_to_ignore = {}
-		
-		local params = {}
+		local params = table()
 		
 		if recipe then
 			for i, ing in pairs(
-						((self.settings.rc_mode == settings.rc_mode.options.product) and recipe.products)
-						or ((self.settings.rc_mode == settings.rc_mode.options.ingredient) and recipe.ingredients)
+						((self.settings.mode == MODE.product) and recipe.products)
+						or ((self.settings.mode == MODE.ingredient) and recipe.ingredients)
 						or {}
 					) do
 				local t_amount = tonumber(ing.amount or ing.amount_min or ing.amount_max)
-				if self.settings.rc_multiply_by_input then t_amount = t_amount * input_count; end
+				if self.settings.multiply_by_input then t_amount = t_amount * input_count; end
 				local amount = math.floor(t_amount)
 				if t_amount % 1 > 0 then amount = amount + 1; end
 				
-				table.insert(params, {
-						signal = {type = ing.type, name = ing.name},
-						count = amount,
-						index = i,
-					})
-				
-				self.items_to_ignore[ing.name] = amount
+				params:insert{
+					signal = {type = ing.type, name = ing.name},
+					count = amount,
+					index = i,
+				}
 			end
 			
-			table.insert(params, {
-					signal = {type = "virtual", name = config.TIME_NAME},
-					count = math.floor(tonumber(recipe.energy) * self.settings.rc_time_multiplier),
-					index = config.RC_SLOT_COUNT,
-				})
+			params:insert{
+				signal = {type = "virtual", name = config.NAME.TIME},
+				count = math.floor(tonumber(recipe.energy) * self.settings.time_multiplier),
+				index = config.RC_SLOT_COUNT,
+			}
 		end
 		
-		self.control_behavior.parameters = {enabled = true, parameters = params}
+		self.out_control_behavior.parameters = {enabled = true, parameters = params}
 	end
 	
-	if self.settings.rc_mode == settings.rc_mode.options.recipe then
-		local params = {}
-		
-		local t_to_ignore = self.items_to_ignore
-		self.items_to_ignore = {}
+	if self.settings.mode == MODE.recipe then
+		local params = table()
 		
 		local index = 1
-		local recipes, count = recipe_selector.get_recipes(self.control_behavior, t_to_ignore)
+		local recipes, count = recipe_selector.get_recipes(self.control_behavior)
 		for _, recipe in pairs(recipes) do
-			local count = (self.settings.rc_multiply_by_input and count) or 1
-			table.insert(params, {
+			local count = (self.settings.multiply_by_input and count) or 1
+			params:insert{
 				signal = recipe_selector.get_signal(recipe),
 				count = count,
 				index = index,
-			})
-			
-			self.items_to_ignore[recipe] = count
+			}
 			index = index + 1
 		end
 		
-		self.control_behavior.parameters = {enabled = true, parameters = params}
+		self.out_control_behavior.parameters = {enabled = true, parameters = params}
 	end
-end
-
-function _M:destroy()
-	if self.gui then self.gui.destroy(); end
-	
-	FML.blueprint_data.destroy_proxy(self.entity)
-	
-	self.super.destroy(self)
-end
-
-function _M:open(player_index)
-	self.super.open(self)
-	
-	local parent = gui.make_entity_frame(self, player_index, {"crafting_combinator_gui_title_recipe-combinator"})
-	gui.make_radiobutton_group(parent, "rc_mode", {"crafting_combinator_gui_title_mode"}, {
-			[settings.rc_mode.options.ingredient] = {"crafting_combinator_gui_recipe-combinator_mode_ingredient"},
-			[settings.rc_mode.options.product] = {"crafting_combinator_gui_recipe-combinator_mode_product"},
-			[settings.rc_mode.options.recipe] = {"crafting_combinator_gui_recipe-combinator_mode_recipe"},
-		}, self.settings.rc_mode)
-	gui.make_number_selector(parent, "rc_time_multiplier", {"crafting_combinator_gui_recipe-combinator_time-multiplier"}, self.settings.rc_time_multiplier)
-	gui.make_checkbox_group(parent, "misc", nil, {
-		rc_multiply_by_input = {"crafting_combinator_gui_recipe-combinator_multiply-by-input"},
-	}, self.settings.rc_multiply_by_input and {"rc_multiply_by_input"} or {})
-end
-
-function _M:on_radiobutton_changed(group, selected)
-	self.settings[group] = tonumber(selected)
-	FML.blueprint_data.write(self.entity, settings[group], self.settings[group])
-	self:update(true)
-end
-
-function _M:on_button_clicked(player_index, name)
-	if name == "save" then gui.destroy_entity_frame(player_index); end
-end
-
-function _M:on_number_selected(name, value)
-	if value then
-		self.settings[name] = value
-		FML.blueprint_data.write(self.entity, settings[name], self.settings[name])
-		self:update(true)
-	else return self.settings[name]; end
-end
-
-function _M:on_checkbox_changed(group, name, state)
-	self.settings[name] = state
-	FML.blueprint_data.write(self.entity, settings[name], state)
 end
 
 

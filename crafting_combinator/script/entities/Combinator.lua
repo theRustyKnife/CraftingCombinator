@@ -1,47 +1,80 @@
-local FML = require "therustyknife.FML"
-local entities = require "therustyknife.crafting_combinator.entities"
+local FML = therustyknife.FML
+local table = FML.table
+local log = FML.log
+
+local config = require "config"
 
 
-local _M = FML.Object:extend()
+FML.events.on_load(function()
+	global.combinators = table(global.combinators)
+	global.combinators.default = table(global.combinators.default)
+	global.combinators.custom = table(global.combinators.custom)
+end)
 
 
-function _M:new(entity, blueprint)
-	local res = _M.super:new(self)
-	res.type = self.TYPE
-	res.tab = self.tab
-	table.insert(global.combinators.all, res)
-	table.insert(res.tab, res)
-	res.entity = entity
-	res.control_behavior = entity.get_or_create_control_behavior()
+FML.events.on_tick(function(event)
+	--TODO: proper tick handling
+	-- Proposal: by default, all combinators are in one table updated using the modulo method
+	--            -> Others will be placed in a table indexed by tick numbers and will re-place themselves into this
+	--               table as needed
 	
-	res:on_create(blueprint)
+	-- Default
+	local rate = settings.global[config.NAME.SETTING_REFRESH_RATE].value
+	for i = event.tick % rate + 1, #global.combinators.default, rate do global.combinators.default[i]:update(); end
 	
-	return res
-end
+	-- Custom
+	if global.combinators.custom[event.tick] then
+		for _, c in pairs(global.combinators.custom[event.tick]) do if c.valid then c:update(); end end
+		global.combinators.custom[event.tick] = nil
+	end
+end)
 
-function _M:on_create(blueprint) end -- abstract method that will be called when a new Combinator is created, true will be passed if built from blueprint - use this instead of the constructor
 
-function _M:update() end -- abstract method that will be called when this Combinator is supposed to be updated
-
-function _M:open(player)
-	table.insert(global.to_close, self)
-	self.entity.operable = false
-end
-
-function _M:on_checkbox_changed(group, name, state) end
-
-function _M:on_radiobutton_changed(group, selected) end
-
-function _M:on_button_clicked(player_index, name) end
-
-function _M:on_number_selected(name, value) end
+local _M = FML.Object:extend("therustyknife.crafting_combinator.Combinator", function(self, entity)
+	log.dump("Created a new Combinator at ", entity.position)
+	
+	self.valid = true
+	self.entity = entity
+	self.control_behavior = entity.get_or_create_control_behavior()
+	global.combinators.default:insert(self)
+	
+	return self
+end)
 
 function _M:destroy()
-	FML.table.remove_v(global.combinators.all, self)
-	FML.table.remove_v(self.tab, self)
+	log.dump("Destroying Combinator at ", self.entity.position)
 	
+	global.combinators.default:remove_v(self)
+	self.valid = false
 	_M.super.destroy(self)
 end
+
+
+FML.events.on_entity_settings_pasted(function(event)
+	local src, dest = _M.get(event.source), _M.get(event.destination)
+	
+	if src and dest and src:typeof() == dest:typeof() then
+		dest.settings:_copy(src.settings)
+		dest:update(true) -- Pass true to indicate that settings have changed (force update)
+	end
+end)
+
+
+function _M.get(entity)
+	for _, c in global.combinators.default:ipairs() do
+		if c.valid and c.entity == entity then return c; end
+	end
+	for _, t in global.combinators.custom:pairs() do
+		for _, c in t:ipairs() do
+			if c.valid and c.entity == entity then return c; end
+		end
+	end
+	return nil
+end
+
+
+--abstract
+_M:abstract("update")
 
 
 return _M
