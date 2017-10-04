@@ -101,6 +101,11 @@ end)
 
 
 GUI.watch_opening(config.NAME.CC, function(event)
+--f on_open
+--% private static
+--- Sets up the GUI when a player opens a combinator.
+--@ GuiOpenedEventData event
+--: LuaGuiElement: The root element of the GUI
 	if event.status then return nil; end
 	
 	local self = Combinator.get(event.entity)
@@ -123,6 +128,7 @@ GUI.watch_opening(config.NAME.CC, function(event)
 		},
 		on_change = "therustyknife.crafting_combinator.cc_mode_change",
 		meta = self,
+		link_name = "therustyknife.crafting_combinator.CraftingCombinator.main.mode."..string.format("%d", self.entity.unit_number),
 	}
 	
 	local dest_enum = blueprint_data.get_enum(config.NAME.CC_SETTINGS, "item_dest")
@@ -142,6 +148,7 @@ GUI.watch_opening(config.NAME.CC, function(event)
 		on_change = "therustyknife.crafting_combinator.cc_radio_change",
 		meta = self,
 		direction = "horizontal",
+		link_name = "therustyknife.crafting_combinator.CraftingCombinator.main.item_dest."..string.format("%d", self.entity.unit_number),
 	}
 	
 	-- Module dest
@@ -153,6 +160,7 @@ GUI.watch_opening(config.NAME.CC, function(event)
 		on_change = "therustyknife.crafting_combinator.cc_radio_change",
 		meta = self,
 		direction = "horizontal",
+		link_name = "therustyknife.crafting_combinator.CraftingCombinator.main.module_dest."..string.format("%d", self.entity.unit_number),
 	}
 	
 	-- Misc
@@ -165,6 +173,7 @@ GUI.watch_opening(config.NAME.CC, function(event)
 		},
 		on_change = "therustyknife.crafting_combinator.cc_mode_change",
 		meta = self,
+		link_name = "therustyknife.crafting_combinator.CraftingCombinator.main.misc."..string.format("%d", self.entity.unit_number),
 	}
 	
 	return parent.root
@@ -176,7 +185,7 @@ FML.handlers.add("therustyknife.crafting_combinator.cc_mode_change", function(gr
 end)
 
 FML.handlers.add("therustyknife.crafting_combinator.cc_radio_change", function(group)
-	group.meta.settings[group.name] = group.value
+	group.meta.settings[group.name] = tonumber(group.value)
 end)
 
 

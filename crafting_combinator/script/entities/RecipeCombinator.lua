@@ -85,6 +85,7 @@ GUI.watch_opening(config.NAME.RC, function(event)
 		selected = self.settings.mode,
 		on_change = "therustyknife.crafting_combinator.rc_mode_change",
 		meta = self,
+		link_name = "therustyknife.crafting_combinator.RecipeCombinator.main.mode."..string.format("%d", self.entity.unit_number),
 	}
 	
 	local misc = GUI.entity_segment{parent = parent.primary, title = {"crafting_combinator-gui.rc-misc"}}
@@ -98,6 +99,9 @@ GUI.watch_opening(config.NAME.RC, function(event)
 		on_change = "therustyknife.crafting_combinator.rc_number_changed",
 		meta = self,
 		min = 1,
+		max = 2147483647,
+		link_name = "therustyknife.crafting_combinator.RecipeCombinator.main.time_multiplier."..string.format("%d", self.entity.unit_number),
+		format_func = function(value) return string.format("%.0f", value); end,
 	}
 	
 	--Multiply by input
@@ -108,6 +112,7 @@ GUI.watch_opening(config.NAME.RC, function(event)
 		},
 		on_change = "therustyknife.crafting_combinator.rc_check_change",
 		meta = self,
+		link_name = "therustyknife.crafting_combinator.RecipeCombinator.main.multiply_by_input."..string.format("%d", self.entity.unit_number),
 	}
 	
 	return parent.root
@@ -153,14 +158,15 @@ function _M:update(forced)
 				
 				params:insert{
 					signal = {type = ing.type, name = ing.name},
-					count = amount,
+					count = FML.random_util.calculate_overflow(amount),
 					index = i,
 				}
 			end
 			
 			params:insert{
 				signal = {type = "virtual", name = config.NAME.TIME},
-				count = math.floor(tonumber(recipe.energy) * self.settings.time_multiplier),
+				count = FML.random_util.calculate_overflow(
+					math.floor(tonumber(recipe.energy) * self.settings.time_multiplier)),
 				index = config.RC_SLOT_COUNT,
 			}
 		end
@@ -177,7 +183,7 @@ function _M:update(forced)
 			local count = (self.settings.multiply_by_input and count) or 1
 			params:insert{
 				signal = recipe_selector.get_signal(recipe),
-				count = count,
+				count = FML.random_util.calcullate_overflow(count),
 				index = index,
 			}
 			index = index + 1
