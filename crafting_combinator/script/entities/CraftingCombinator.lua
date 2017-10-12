@@ -66,6 +66,11 @@ function _M:destroy(player)
 	
 	for _, chest in pairs(self.chests) do chest.destroy(); end
 	
+	if self.gui and self.gui.valid then
+		self.gui.destroy()
+		GUI.controls.prune()
+	end
+	
 	_M.super.destroy(self)
 end
 
@@ -115,6 +120,7 @@ GUI.watch_opening(config.NAME.CC, function(event)
 		entity = event.entity,
 		cam_zoom = 1,
 	}
+	self.gui = parent.root
 	
 	-- Mode
 	GUI.controls.CheckboxGroup{

@@ -44,6 +44,11 @@ function _M:destroy()
 	self.settings:_reset()
 	self.output_proxy.destroy()
 	
+	if self.gui and self.gui.valid then
+		self.gui.destroy()
+		GUI.controls.prune()
+	end
+	
 	_M.super.destroy(self)
 end
 
@@ -55,7 +60,9 @@ end)
 
 FML.events.on_destroyed(function(event)
 	local entity = event.entity
-	if entity.name == config.NAME.RC then Combinator.get(entity):destroy(); end
+	if entity.name == config.NAME.RC then
+		Combinator.get(entity):destroy()
+	end
 end)
 
 
@@ -70,6 +77,7 @@ GUI.watch_opening(config.NAME.RC, function(event)
 		entity = event.entity,
 		cam_zoom = 1,
 	}
+	self.gui = parent.root
 	
 	-- Mode
 	MODE = MODE or blueprint_data.get_enum(config.NAME.RC_SETTINGS, "mode")
@@ -119,7 +127,7 @@ GUI.watch_opening(config.NAME.RC, function(event)
 end)
 
 FML.handlers.add("therustyknife.crafting_combinator.rc_mode_change", function(group)
-	group.meta.settings[group.name] = group.value
+	group.meta.settings[group.name] = tonumber(group.value)
 	group.meta:update(true)
 end)
 
@@ -183,7 +191,7 @@ function _M:update(forced)
 			local count = (self.settings.multiply_by_input and count) or 1
 			params:insert{
 				signal = recipe_selector.get_signal(recipe),
-				count = FML.random_util.calcullate_overflow(count),
+				count = FML.random_util.calculate_overflow(count),
 				index = index,
 			}
 			index = index + 1
