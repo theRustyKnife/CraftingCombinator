@@ -101,6 +101,7 @@ FML.data.make{
 		properties = {
 			name = config.NAME.OVERFLOW_A,
 			flags = {"placeable-off-grid"},
+			render_not_in_network_icon = false,
 			minable = nil,
 			selectable_in_game = false,
 			selection_box = nil,
