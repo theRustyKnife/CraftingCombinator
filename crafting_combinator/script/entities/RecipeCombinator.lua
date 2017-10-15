@@ -38,6 +38,10 @@ local _M = Combinator:extend("therustyknife.crafting_combinator.RecipeCombinator
 	return self
 end)
 
+function _M:gui_link(name)
+	return 'therustyknife.crafting_combinator.RecipeCombinator.main.'..name..'.'..string.format("%d", self.entity.unit_number)
+end
+
 function _M:destroy()
 	FML.log.dump("Destroying a RecipeCombinator at ", self.entity.position)
 	
@@ -93,7 +97,7 @@ GUI.watch_opening(config.NAME.RC, function(event)
 		selected = self.settings.mode,
 		on_change = "therustyknife.crafting_combinator.rc_mode_change",
 		meta = self,
-		link_name = "therustyknife.crafting_combinator.RecipeCombinator.main.mode."..string.format("%d", self.entity.unit_number),
+		link_name = self:gui_link 'mode',
 	}
 	
 	local misc = GUI.entity_segment{parent = parent.primary, title = {"crafting_combinator-gui.rc-misc"}}
@@ -108,7 +112,7 @@ GUI.watch_opening(config.NAME.RC, function(event)
 		meta = self,
 		min = 1,
 		max = 2147483647,
-		link_name = "therustyknife.crafting_combinator.RecipeCombinator.main.time_multiplier."..string.format("%d", self.entity.unit_number),
+		link_name = self:gui_link 'time_multiplier',
 		format_func = function(value) return string.format("%.0f", value); end,
 	}
 	
@@ -120,8 +124,10 @@ GUI.watch_opening(config.NAME.RC, function(event)
 		},
 		on_change = "therustyknife.crafting_combinator.rc_check_change",
 		meta = self,
-		link_name = "therustyknife.crafting_combinator.RecipeCombinator.main.multiply_by_input."..string.format("%d", self.entity.unit_number),
+		link_name = self:gui_link 'multipy_by_input',
 	}
+	
+	self:custom_refresh_rate_gui(misc)
 	
 	return parent.root
 end)
@@ -199,6 +205,8 @@ function _M:update(forced)
 		
 		self.out_control_behavior.parameters = {enabled = true, parameters = params}
 	end
+	
+	if self.settings.override_refresh_rate then self:queue_for_update(self.settings.refresh_rate); end
 end
 
 

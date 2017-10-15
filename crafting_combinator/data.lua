@@ -192,6 +192,16 @@ FML.blueprint_data.add_prototype({
 			index = 8,
 			default = false,
 		},
+		override_refresh_rate = {
+			type = 'bool',
+			index = 9,
+			default = false,
+		},
+		refresh_rate = {
+			type = 'int',
+			index = 10,
+			default = config.DEFAULT_REFRESH_RATE,
+		},
 	},
 }, data.raw["constant-combinator"][config.NAME.CC].collision_box, {"crafting_combinator-blueprints.cc"})
 
@@ -213,6 +223,16 @@ FML.blueprint_data.add_prototype({
 			type = "bool",
 			index = 3,
 			default = false,
+		},
+		override_refresh_rate = {
+			type = 'bool',
+			index = 4,
+			default = false,
+		},
+		refresh_rate = {
+			type = 'int',
+			index = 5,
+			default = config.DEFAULT_REFRESH_RATE,
 		},
 	},
 }, data.raw["arithmetic-combinator"][config.NAME.RC].collision_box, {"crafting_combinator-blueprints.rc"})

@@ -17,6 +17,7 @@ return {
 		RC = "crafting_combinator_recipe-combinator",
 		
 		-- The setting group names
+		SHARED_SETTINGS = 'crafting_combinator_shared-settings',
 		CC_SETTINGS = "crafting_combinator_CC-settings",
 		RC_SETTINGS = "crafting_combinator_RC-settings",
 		
@@ -46,4 +47,6 @@ return {
 	CC_INSERTER_SEARCH_DISTANCE = 10,
 	
 	RC_SLOT_COUNT = 50,
+	
+	DEFAULT_REFRESH_RATE = 60,
 }

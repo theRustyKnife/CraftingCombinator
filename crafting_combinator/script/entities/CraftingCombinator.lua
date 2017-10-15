@@ -45,6 +45,10 @@ local _M = Combinator:extend("therustyknife.crafting_combinator.CraftingCombinat
 	return self
 end)
 
+function _M:gui_link(name)
+	return 'therustyknife.crafting_combinator.CraftingCombinator.main.'..name..'.'..string.format("%d", self.entity.unit_number)
+end
+
 function _M:destroy(player)
 	FML.log.dump("Destroying a CraftingCombinator at ", self.entity.position)
 	
@@ -134,7 +138,7 @@ GUI.watch_opening(config.NAME.CC, function(event)
 		},
 		on_change = "therustyknife.crafting_combinator.cc_mode_change",
 		meta = self,
-		link_name = "therustyknife.crafting_combinator.CraftingCombinator.main.mode."..string.format("%d", self.entity.unit_number),
+		link_name = self:gui_link 'mode',
 	}
 	
 	local dest_enum = blueprint_data.get_enum(config.NAME.CC_SETTINGS, "item_dest")
@@ -154,7 +158,7 @@ GUI.watch_opening(config.NAME.CC, function(event)
 		on_change = "therustyknife.crafting_combinator.cc_radio_change",
 		meta = self,
 		direction = "horizontal",
-		link_name = "therustyknife.crafting_combinator.CraftingCombinator.main.item_dest."..string.format("%d", self.entity.unit_number),
+		link_name = self:gui_link 'item_dest',
 	}
 	
 	-- Module dest
@@ -166,12 +170,13 @@ GUI.watch_opening(config.NAME.CC, function(event)
 		on_change = "therustyknife.crafting_combinator.cc_radio_change",
 		meta = self,
 		direction = "horizontal",
-		link_name = "therustyknife.crafting_combinator.CraftingCombinator.main.module_dest."..string.format("%d", self.entity.unit_number),
+		link_name = self:gui_link 'module_dest',
 	}
 	
 	-- Misc
+	local misc_root = GUI.entity_segment{parent = parent.primary, title = {"crafting_combinator-gui.cc-misc"}}
 	GUI.controls.CheckboxGroup{
-		parent = GUI.entity_segment{parent = parent.primary, title = {"crafting_combinator-gui.cc-misc"}},
+		parent = misc_root,
 		name = "misc",
 		options = {
 			{name = "empty_inserters", state = self.settings.empty_inserters, caption = {"crafting_combinator-gui.cc-empty-inserters"}},
@@ -179,8 +184,9 @@ GUI.watch_opening(config.NAME.CC, function(event)
 		},
 		on_change = "therustyknife.crafting_combinator.cc_mode_change",
 		meta = self,
-		link_name = "therustyknife.crafting_combinator.CraftingCombinator.main.misc."..string.format("%d", self.entity.unit_number),
+		link_name = self:gui_link 'misc',
 	}
+	self:custom_refresh_rate_gui(misc_root)
 	
 	return parent.root
 end)
@@ -278,6 +284,8 @@ function _M:update()
 	end
 	
 	self.control_behavior.parameters = {enabled = true, parameters = params}
+	
+	if self.settings.override_refresh_rate then self:queue_for_update(self.settings.refresh_rate); end
 end
 
 
@@ -313,6 +321,7 @@ function _M:get_target(mode)
 	return self.chests[inventories_lut[mode]]
 end
 
+--TODO: Only move items that are not an ingredient in the new recipe... Stuff gets duplicated otherwise.
 function _M:move_items(target)
 	for _, inventory in pairs{self.inventories.assembler.input, self.inventories.assembler.output} do
 		for i=1, #inventory do
@@ -353,7 +362,7 @@ function _M:request_modules(recipe)
 	else to_request = table(); end
 	
 	for name, count in pairs(self.modules_to_request) do
-		local limitations = table(game.item_prototypes[name.limitations])
+		local limitations = table(game.item_prototypes[name].limitations)
 		if limitations[recipe.name] or limitations:is_empty() then
 			to_request[name] = to_request[name] or 0
 			to_request[name] = to_request[name] + count
