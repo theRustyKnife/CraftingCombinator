@@ -2,6 +2,7 @@ local config = {
 	-- Settings that need to be configured to reflect the mod FML is installed in
 	MOD = {
 		NAME = "crafting_combinator",
+		VERSION = '0.10.0',
 	},
 	
 	
