@@ -1,7 +1,6 @@
 local FML = require "FML"
 
 
---TODO: migration
-
+require 'script.migration'
 
 local entities = require "script.entities.init"
