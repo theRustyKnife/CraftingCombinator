@@ -23,9 +23,20 @@ FML.events.on_mod_config_change(function(data)
 		global.combinators.custom = table(global.combinators.custom)
 		
 		for _, c in pairs(old_combinators.crafting) do
-			entities.CraftingCombinator(c.entity)
+			local new_c = entities.CraftingCombinator(c.entity)
 			
-			--TODO: chests and items from them, modules_to_request, settings
+			local settings = new_c.settings
+			settings.empty_inserters = c.settings.cc_empty_inserters
+			settings.mode_read = c.settings.cc_mode_read
+			settings.mode_set = c.settings.cc_mode_set
+			settings.read_bottleneck = c.settings.cc_read_bottleneck
+			settings.read_speed = c.settings.cc_read_speed
+			settings.request_modules = c.settings.cc_request_modules
+			--! Careful with this - it just happened to work but may break in the future
+			settings.item_dest = c.settings.cc_item_dest
+			settings.module_dest = c.settings.cc_module_dest
+			
+			--TODO: chests and items from them, modules_to_request
 		end
 		
 		--TODO: actually migrate these?
