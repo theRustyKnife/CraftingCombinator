@@ -38,7 +38,15 @@ FML.events.on_mod_config_change(function(data)
 				settings.item_dest = c.settings.cc_item_dest
 				settings.module_dest = c.settings.cc_module_dest
 				
-				--TODO: chests and items from them, modules_to_request
+				for type, chest in pairs(c.chests) do
+					local inventory = chest.get_inventory(defines.inventory.chest)
+					local new_chest = new_c.chests[type]
+					for i=1, #inventory do
+						local stack = inventory[i]
+						if stack.valid and stack.valid_for_read then new_chest.insert(stack); end
+					end
+					chest.destroy()
+				end
 			end
 		end
 		
