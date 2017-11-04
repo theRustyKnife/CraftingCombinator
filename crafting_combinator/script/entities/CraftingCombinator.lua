@@ -35,7 +35,8 @@ function _M.update_assemblers(surface, position)
 	}
 	
 	for _, entity in pairs(found) do
-		entities.util.find_in_global(entity):find_assembler()
+		local c = entities.util.find_in_global(entity)
+		if c then c:find_assembler(); end
 	end
 end
 
