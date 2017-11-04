@@ -34,6 +34,14 @@ Thanks to [Nexela](https://mods.factorio.com/mods/Nexela) it is no longer necess
 -------------
 
 # Changelog #
+## 0.9.5 ##
+* Added compatibility for [Omnicompression](https://mods.factorio.com/mods/EmperorZelos/omnimatter_compression) and [Compressed Materials](https://mods.factorio.com/mods/Nexela/compressor) ([18161](https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/18161))
+* Removed the flashing logistic network warning ([17387](https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/17387))
+* Added compatibility for [New Game+](https://mods.factorio.com/mods/Bilka/NewGamePlus)
+
+## 0.9.4 ##
+* Fixed that Bottleneck read mode would get disabled when not appropriate ([34](https://github.com/theRustyKnife/CraftingCombinator/issues/34))
+
 ## 0.9.3 ##
 * Fixed settings being lost when reviving combinators using [Picker Extended](https://mods.factorio.com/mods/Nexela/PickerExtended)
 * Fixed that the data entities could get placed in large numbers when dragging a blueprint while placing it ([31](https://github.com/theRustyKnife/CraftingCombinator/issues/31))
