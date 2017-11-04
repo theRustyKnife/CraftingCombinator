@@ -79,6 +79,7 @@ FML.data.make_prototypes{
 		base = FML.data.inherit("logistic-container", "logistic-chest-active-provider"),
 		properties = {
 			name = config.OVERFLOW_A_NAME,
+			render_not_in_network_icon = false,
 			flags = {"placeable-off-grid"},
 			minable = nil,
 			selectable_in_game = false,
