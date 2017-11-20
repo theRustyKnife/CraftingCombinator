@@ -7,13 +7,16 @@ local gui = require "script.gui"
 local settings = FML.blueprint_data.settings
 
 
+local function load_bottleneck()
+	if game.active_mods["Bottleneck"] then global.BOTTLENECK_STATES = remote.call("Bottleneck", "get_states"); end
+end
+
 FML.global.on_init(function()
 	global.combinators.crafting = global.combinators.crafting or {}
+	load_bottleneck()
 end)
 
-FML.global.on_config_change(function()
-	if game.active_mods["Bottleneck"] then global.BOTTLENECK_STATES = remote.call("Bottleneck", "get_states"); end
-end)
+FML.global.on_config_change(load_bottleneck)
 
 
 local _M = entities.Combinator:extend()
