@@ -1,3 +1,6 @@
+## 0.9.7 ##
+* Added compatibility for [Quarry](https://mods.factorio.com/mods/FuzzCat927/quarry)
+
 ## 0.9.6 ##
 * Fixed crash with [Bottleneck](https://mods.factorio.com/mods/trold/Bottleneck)
 
