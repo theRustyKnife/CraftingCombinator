@@ -143,6 +143,7 @@ for name, recipe in pairs(data.raw.recipe) do
 			localised_name = localised_name,
 			icons = get_icons(recipe),
 			subgroup = subgroup.name,
+			icon_size = 32,
 			order = ((data.raw["item-subgroup"][recipe.subgroup] or {}).order or "zzz").."-"..(recipe.order or "zzz").."["..recipe.name.."]",
 		}
 	end

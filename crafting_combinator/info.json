@@ -1,7 +1,7 @@
 {
 	"name": "crafting_combinator",
-	"version": "0.9.7",
-	"factorio_version": "0.15",
+	"version": "0.9.8",
+	"factorio_version": "0.16",
 	"title": "Crafting Combinator",
 	"author": "LuziferSenpai and theRustyKnife",
 	"description": "Includes combinators that allow you to set or read the recipe of any crafting machine, get ingredients or products of a recipe and more!",

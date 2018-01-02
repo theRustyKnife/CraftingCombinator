@@ -124,7 +124,7 @@ function _M:move_items(target)
 	
 	-- compensate for half-finished recipes that had already consumed their ingredients
 	if self.assembler.crafting_progress > 0 then
-		for _, ing in pairs(self.assembler.recipe.ingredients) do
+		for _, ing in pairs(self.assembler.get_recipe().ingredients) do
 			if ing.type == "item" then
 				target.insert{name = ing.name, count = ing.amount}
 			end
@@ -223,7 +223,7 @@ function _M:update()
 		if self.settings.cc_mode_set then
 			local recipe = recipe_selector.get_recipe(self.control_behavior, self.items_to_ignore)
 			
-			if self.assembler.recipe and ((not recipe) or recipe ~= self.assembler.recipe) then
+			if self.assembler.get_recipe() and ((not recipe) or recipe ~= self.assembler.get_recipe()) then
 				-- figure out the correct place to put the items
 				local target = self:get_target(self.settings.cc_item_dest)
 				
@@ -234,7 +234,7 @@ function _M:update()
 				self:empty_inserters(target)
 			end
 			
-			if recipe and recipe ~= self.assembler.recipe then
+			if recipe and recipe ~= self.assembler.get_recipe() then
 				-- move the modules that will get discarded by this recipe change into the overflow
 				self:move_modules(recipe)
 				
@@ -246,17 +246,17 @@ function _M:update()
 			end
 			
 			-- set the new recipe
-			self.assembler.recipe = recipe
+			self.assembler.set_recipe(recipe) 
 		end
 		
 		-- read mode
-		if self.settings.cc_mode_read and self.assembler.recipe then
+		if self.settings.cc_mode_read and self.assembler.get_recipe() then
 			for type, type_tab in pairs{
 				item = game.item_prototypes,
 				fluid = game.fluid_prototypes,
 				virtual = game.virtual_signal_prototypes,
 			} do
-				local prototype = type_tab[self.assembler.recipe.name]
+				local prototype = type_tab[self.assembler.get_recipe().name]
 				if prototype then
 					table.insert(params, {
 							signal = {type = type, name = prototype.name},

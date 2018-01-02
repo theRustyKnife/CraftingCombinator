@@ -45,6 +45,7 @@ config.ITEM_BASE = {
 	flags = {"goes-to-quickbar"},
 	subgroup = "transport",
 	order = "unspecified",
+	icon_size = 32,
 	stack_size = 50,
 }
 
