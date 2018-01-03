@@ -36,7 +36,7 @@ function _M.make_container(parent, name, caption, direction)
 			type = "label",
 			name = "container_caption",
 			caption = caption,
-			style = "bold_label_style",
+			style = "caption_label",
 		}
 	end
 	
@@ -147,7 +147,7 @@ function _M.on_gui_clicked(event)
 			break
 		end
 	end
-	
+
 	if event.element.type == "checkbox" then
 		clicked_entity:on_checkbox_changed(event.element.parent.name, event.element.name, event.element.state)
 	elseif event.element.type == "radiobutton" then

@@ -43,6 +43,7 @@ if not FML.global then
 			selection_box = {{0, 0}, {0, 0}},
 			item_slot_count = FML.table.getn(data),
 			icon = "__base__/graphics/icons/blueprint.png",
+			icon_size = 32,
 			hidden = true,
 		},
 		auto_generate = {"item"},
@@ -62,6 +63,7 @@ if not FML.global then
 			name = get_name(v.name),
 			flags = {"hidden"},
 			icon = "__"..config.MOD_NAME.."__"..config.FML_PATH.."/graphics/trans.png",
+			icon_size = 32,
 			stack_size = 1,
 		}
 	end

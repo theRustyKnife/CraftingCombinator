@@ -1,3 +1,6 @@
+## 0.9.8 ##
+* Added compatibility for base game version 0.16
+
 ## 0.9.7 ##
 * Added compatibility for [Quarry](https://mods.factorio.com/mods/FuzzCat927/quarry)
 
