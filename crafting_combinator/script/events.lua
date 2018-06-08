@@ -62,6 +62,14 @@ function _M.on_tick(event)
 		global.to_close[i] = nil
 	end
 	
+	-- Execute delayed updates (emptying inserter hands)
+	if global.delayed_run then
+		if global.delayed_run[event.tick] then
+			for _, e in pairs(global.delayed_run[event.tick]) do e:delayed_run(); end
+			global.delayed_run[event.tick] = nil
+		end
+	else global.delayed_run = {}; end
+	
 	run_update(global.combinators.crafting, event.tick, settings.global[config.SETTING_NAME_REFRESH_RATE_CC].value+1)
 	run_update(global.combinators.recipe, event.tick, settings.global[config.SETTING_NAME_REFRESH_RATE_RC].value+1)
 end
