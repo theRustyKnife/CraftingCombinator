@@ -167,7 +167,7 @@ function _M:request_modules(recipe)
 	
 	for name, count in pairs(self.modules_to_request) do
 		local limitations = game.item_prototypes[name].limitations
-		if limitations[recipe.name] or FML.table.is_empty(limitations) then
+		if FML.table.contains(limitations, recipe.name) or FML.table.is_empty(limitations) then
 			to_request[name] = to_request[name] or 0
 			to_request[name] = to_request[name] + count
 			--table.insert(to_request, {item = name, count = count})
@@ -176,15 +176,10 @@ function _M:request_modules(recipe)
 	end
 	
 	if not self.item_request_proxy and not FML.table.is_empty(to_request) then
-		local modules = {}
-		for name, count in pairs(to_request) do
-			table.insert(modules, {item = name, count = count})
-		end
-		
 		self.item_request_proxy = self.entity.surface.create_entity{
 			name = "item-request-proxy",
 			target = self.assembler,
-			modules = modules,
+			modules = to_request,
 			position = self.assembler.position,
 			force = self.assembler.force,
 		}
@@ -199,7 +194,8 @@ function _M:move_modules(recipe)
 		local stack = inventory[i]
 		if stack.valid_for_read then
 			local limitations = game.item_prototypes[stack.name].limitations -- table indexed by recipe names (?)
-			if limitations and not FML.table.is_empty(limitations) and not limitations[recipe.name] then
+			if limitations and not FML.table.is_empty(limitations)
+					and not FML.table.contains(limitations, recipe.name) then
 				target.insert(stack)
 				-- save modules that have been removed to request them back when possible
 				if self.settings.cc_request_modules then
