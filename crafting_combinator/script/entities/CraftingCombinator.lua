@@ -21,7 +21,6 @@ FML.global.on_config_change(load_bottleneck)
 
 local _M = entities.Combinator:extend()
 
-
 _M.TYPE = "crafting"
 
 FML.global.on_load(function()
@@ -109,7 +108,6 @@ function _M:on_create(blueprint)
 		normal = self.chests.normal.get_inventory(defines.inventory.chest),
 		assembler = {},
 	}
-	
 	self:find_assembler()
 end
 
@@ -214,6 +212,11 @@ function _M:move_modules(recipe)
 	end
 end
 
+function _M:delayed_run()
+	local target = self.get_target(self.settings.cc_item_dest)
+	self:empty_inserters(target)
+end
+
 function _M:update()
 	if self.item_request_proxy and not self.item_request_proxy.valid then self.item_request_proxy = nil; end
 	
@@ -230,8 +233,12 @@ function _M:update()
 				-- move items from the assembler to the overflow chests
 				self:move_items(target)
 				
-				-- empty inserters' hands into the overflow
 				self:empty_inserters(target)
+				
+				-- prevent occasional jamming of inserters with stacksize by emptying them multiple times.
+				local tick = game.tick + config.CC_INSERTER_EMPTY_INTERVAL
+				global.delayed_run[tick] = global.delayed_run[tick] or {}
+				table.insert(global.delayed_run[tick], self)
 			end
 			
 			if recipe and recipe ~= self.assembler.get_recipe() then

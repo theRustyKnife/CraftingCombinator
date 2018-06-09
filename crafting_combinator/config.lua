@@ -17,6 +17,8 @@ config.CC_SEARCH_DISTANCE = 2
 config.CC_ASSEMBLER_DISTANCE = 1
 -- how wide of an area to search for an assembler
 config.CC_ASSEMBLER_OFFSET = 0.2
+-- how long the interval between hand emptying is in ticks
+config.CC_INSERTER_EMPTY_INTERVAL = 60
 
 
 -- the number of signal slots the recipe combinator will have
