@@ -1,3 +1,6 @@
+## 0.9.10 ##
+* Fixed a typo that could cause crashes in some cases ([41](https://github.com/theRustyKnife/CraftingCombinator/issues/41))
+
 ## 0.9.9 ##
 * Fixed occasional jamming of inserters with stack size > 1 (by [Marek-Arnold](https://github.com/theRustyKnife/CraftingCombinator/pull/40))
 * Fixed module requests not working correctly because of API changes ([5add7924a5e370000943332a](https://mods.factorio.com/mod/crafting_combinator/discussion/5add7924a5e370000943332a))

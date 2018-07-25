@@ -15,7 +15,7 @@ local function is_result(recipe, item)
 		if is_result_internal(item, recipe.normal.result, recipe.normal.results) then return true; end
 	end
 	if recipe.expensive then
-		return is_result_internal(item, recipe.expensive,result, recipe.expensive.results)
+		return is_result_internal(item, recipe.expensive.result, recipe.expensive.results)
 	end
 	return false
 end
