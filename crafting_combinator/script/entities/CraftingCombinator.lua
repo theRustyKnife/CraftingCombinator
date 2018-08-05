@@ -209,8 +209,10 @@ function _M:move_modules(recipe)
 end
 
 function _M:delayed_run()
-	local target = self.get_target(self.settings.cc_item_dest)
-	self:empty_inserters(target)
+	if self.assembler then
+		local target = self.get_target(self.settings.cc_item_dest)
+		self:empty_inserters(target)
+	end
 end
 
 function _M:update()
