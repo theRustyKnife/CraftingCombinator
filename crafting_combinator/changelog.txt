@@ -1,3 +1,6 @@
+## 0.9.12 ##
+* Added compatibility for recipes from [Whistle Stop Factories](https://mods.factorio.com/mod/WhistleStopFactories)
+
 ## 0.9.11 ##
 * Possibly fixed a crash caused by combinators with no assembler ([5b657d8c949d790009898aae](https://mods.factorio.com/mod/crafting_combinator/discussion/5b657d8c949d790009898aae))
 
