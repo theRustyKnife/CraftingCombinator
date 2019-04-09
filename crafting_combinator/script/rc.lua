@@ -69,7 +69,7 @@ function _M.destroy(entity)
 	
 	global.rc.data[unit_number] = nil
 	for k, v in pairs(global.rc.ordered) do
-		if v.enttiy.unit_number == unit_number then
+		if v.entity.unit_number == unit_number then
 			table.remove(global.rc.ordered, k)
 			break
 		end
