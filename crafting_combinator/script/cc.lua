@@ -80,7 +80,6 @@ function _M.cancel_deconstruction(entity)
 end
 
 function _M.destroy_by_robot(entity)
-	log("Destroy by robot: "..serpent.line(entity.position))
 	local combinator_entity = entity.surface.find_entity(config.CC_NAME, entity.position)
 	if not combinator_entity then return; end
 	_M.destroy(combinator_entity)
