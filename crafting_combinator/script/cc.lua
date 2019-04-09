@@ -65,6 +65,7 @@ function _M.create(entity)
 	global.cc.data[entity.unit_number] = combinator
 	table.insert(global.cc.ordered, combinator)
 	combinator:find_assembler()
+	combinator:find_chest()
 end
 
 function _M.mark_for_deconstruction(entity)
@@ -145,6 +146,7 @@ function _M.update_assemblers(surface, assembler)
 end
 
 function _M.update_chests(surface, chest)
+	log("Updating chests around "..serpent.line(chest.position))
 	local combinators = surface.find_entities_filtered {
 		area = util.area(game.entity_prototypes[chest.name].selection_box):expand(config.CHEST_SEARCH_DISTANCE) + chest.position,
 		name = config.CC_NAME,
@@ -366,7 +368,7 @@ end
 
 function _M:insert_items()
 	local inventory = self.inventories.chest
-	if not inventory or inventory.is_empty() then return; end
+	if not inventory or not inventory.valid or inventory.is_empty() then return; end
 	local target = self.inventories.assembler.input
 	
 	for i = 1, #inventory do
@@ -472,6 +474,7 @@ function _M:find_assembler()
 end
 
 function _M:find_chest()
+	log("Finding chest for combinator at "..serpent.line(self.entity.position))
 	self.chest = self.entity.surface.find_entities_filtered {
 		position = util.position(self.entity.position):shift(self.entity.direction, config.CHEST_DISTANCE),
 		type = {'container', 'logistic-container'},
