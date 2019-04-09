@@ -1,20 +1,19 @@
-local FML = require "FML.init"
 local config = require "config"
 
 
-FML.data.make_prototypes{
+data:extend{
 	{
 		type = "int-setting",
-		name = config.SETTING_NAME_REFRESH_RATE_CC,
+		name = config.REFRESH_RATE_CC_NAME,
 		setting_type = "runtime-global",
 		default_value = config.REFRESH_RATE_CC,
-		minimum_value = 1,
+		minimum_value = 0,
 	},
 	{
 		type = "int-setting",
-		name = config.SETTING_NAME_REFRESH_RATE_RC,
+		name = config.REFRESH_RATE_RC_NAME,
 		setting_type = "runtime-global",
 		default_value = config.REFRESH_RATE_RC,
-		minimum_value = 1,
+		minimum_value = 0,
 	},
 }

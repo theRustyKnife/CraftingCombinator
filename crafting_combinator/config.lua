@@ -1,79 +1,54 @@
-local config = {}
-
-
--- the default refresh rates for the mod - can be changed in game per-save
--- recipe combinator
-config.REFRESH_RATE_RC = 60
--- crafting combinator
-config.REFRESH_RATE_CC = 60
-
-
--- how far around an assembler to search for inserters
-config.CC_INSERTER_SEARCH_DISTANCE = 10
-
--- how far to look for crafting combinators around an assembler
-config.CC_SEARCH_DISTANCE = 2
--- how far in front of the combinator to search for an assembler
-config.CC_ASSEMBLER_DISTANCE = 1
--- how wide of an area to search for an assembler
-config.CC_ASSEMBLER_OFFSET = 0.2
--- how long the interval between hand emptying is in ticks
-config.CC_INSERTER_EMPTY_INTERVAL = 60
-
-
--- the number of signal slots the recipe combinator will have
-config.RC_SLOT_COUNT = 20
-
--- the number of slots the overflow chests will have
-config.OVERFLOW_SLOT_COUNT = 1000
-
-
--- if true, recipes will be sorted into subgroups for better readability (in Factorio 0.14 this causes problems)
-config.USE_RECIPE_SUBGROUPS = true
-
--- recipes matching any of the strings will not get a virtual recipe
-config.RECIPES_TO_IGNORE = {
-	--"^ngels%-fluid%-splitter-",
-    --"^converter%-angels%-",
-    "^compress%-",
-    "^uncompress%-",
-	"angels%-void",
+return {
+	CC_NAME = 'crafting_combinator:crafting-combinator',
+	RC_NAME = 'crafting_combinator:recipe-combinator',
+	MODULE_CHEST_NAME = 'crafting_combinator:module-chest',
+	SETTINGS_ENTITY_NAME = 'crafting_combinator:settings-entity',
+	REFRESH_RATE_CC_NAME = 'crafting_combinator:refresh-rate-cc',
+	REFRESH_RATE_RC_NAME = 'crafting_combinator:refresh-rate-rc',
+	RC_PROXY_NAME = 'crafting_combinator:rc-proxy',
+	TIME_SIGNAL_NAME = 'crafting_combinator:recipe-time',
+	SPEED_SIGNAL_NAME = 'crafting_combinator:crafting-speed',
+	GROUP_NAME = 'crafting_combinator:virtual-recipes',
+	RECIPE_SUBGROUP_PREFIX = 'crafting_combinator:virtual-recipe-subgroup:',
+	UNSORTED_RECIPE_SUBGROUP = 'crafting_combinator:virtual-recipe-subgroup:unsorted',
+	
+	CC_DEFAULT_SETTINGS = {
+		mode = {
+			set = true,
+			read = false,
+		},
+		discard_items = false,
+		empty_inserters = true,
+		read_speed = false,
+		read_bottleneck = false,
+	},
+	RC_DEFAULT_SETTINGS = {
+		mode = 'ing',
+		multiply_by_input = false,
+		time_multiplier = 10,
+	},
+	
+	ASSEMBLER_DISTANCE = 1,
+	ASSEMBLER_SEARCH_DISTANCE = 2,
+	CHEST_DISTANCE = -1,
+	CHEST_SEARCH_DISTANCE = 2,
+	INSERTER_SEARCH_RADIUS = 3,
+	
+	REFRESH_RATE_CC = 60,
+	REFRESH_RATE_RC = 60,
+	
+	INSERTER_EMPTY_DELAY = 60,
+	
+	MODULE_CHEST_SIZE = 100,
+	
+	RC_SLOT_COUNT = 20,
+	
+	-- Recipes matching any of these strings will not get a virtual recipe
+	RECIPES_TO_IGNORE = {
+		'^compress%-',
+		'^uncompress%-',
+		'angels%-void',
+	},
+	
+	FLYING_TEXT_INTERVAL = 180,
 }
-
-
--- crafting combinator name
-config.CC_NAME = "crafting_combinator_crafting-combinator"
--- recipe combinator name
-config.RC_NAME = "crafting_combinator_recipe-combinator"
-
--- active provider overflow chest
-config.OVERFLOW_A_NAME = "crafting_combinator_overflow-active"
--- passive provider overflow chest
-config.OVERFLOW_P_NAME = "crafting_combinator_overflow-passive"
--- normal overflow chest
-config.OVERFLOW_N_NAME = "crafting_combinator_overflow-normal"
-
--- virtual recipe group name
-config.GROUP_NAME = "crafting_combinator_virtual-recipes"
--- virtual recipe subgroup name, if USE_RECIPE_SUBGROUPS is true this will be used as default
-config.RECIPE_SUBGROUP_NAME = "crafting_combinator_recipes"
-
--- time signal name
-config.TIME_NAME = "crafting_combinator_recipe-time"
--- speed signal name
-config.SPEED_NAME = "crafting_combinator_crafting-speed"
-
--- the name of the menu key ipnut
-config.MENU_KEY_NAME = "crafting_combinator_open-menu"
--- the name of the close menu key input
-config.CLOSE_KEY_NAME = "crafting_combinator_close-menu"
-
-config.SETTING_NAME_REFRESH_RATE_CC = "crafting_combinator_refresh-rate-cc"
-config.SETTING_NAME_REFRESH_RATE_RC = "crafting_combinator_refresh-rate-rc"
-
-
--- types to check for locale an icons
-config.ITEM_TYPES = {"item", "module", "tool", "fluid", "ammo"}
-
-
-return config
