@@ -137,21 +137,20 @@ function _M.destroy(entity, player_index)
 	end
 end
 
-function _M.update_assemblers(surface, assembler)
+function _M.update_assemblers(surface, assembler, ignore)
 	local combinators = surface.find_entities_filtered {
 		area = util.area(game.entity_prototypes[assembler.name].selection_box):expand(config.ASSEMBLER_SEARCH_DISTANCE) + assembler.position,
 		name = config.CC_NAME,
 	}
-	for _, entity in pairs(combinators) do global.cc.data[entity.unit_number]:find_assembler(); end
+	for _, entity in pairs(combinators) do global.cc.data[entity.unit_number]:find_assembler(ignore and assembler or nil); end
 end
 
-function _M.update_chests(surface, chest)
-	log("Updating chests around "..serpent.line(chest.position))
+function _M.update_chests(surface, chest, ignore)
 	local combinators = surface.find_entities_filtered {
 		area = util.area(game.entity_prototypes[chest.name].selection_box):expand(config.CHEST_SEARCH_DISTANCE) + chest.position,
 		name = config.CC_NAME,
 	}
-	for _, entity in pairs(combinators) do global.cc.data[entity.unit_number]:find_chest(); end
+	for _, entity in pairs(combinators) do global.cc.data[entity.unit_number]:find_chest(ignore and chest or nil); end
 end
 
 function _M:update()
@@ -458,11 +457,12 @@ function _M:empty_inserters()
 	return true
 end
 
-function _M:find_assembler()
+function _M:find_assembler(assembler_to_ignore)
 	self.assembler = self.entity.surface.find_entities_filtered {
 		position = util.position(self.entity.position):shift(self.entity.direction, config.ASSEMBLER_DISTANCE),
 		type = 'assembling-machine',
 	}[1]
+	if self.assembler == assembler_to_ignore then self.assembler = nil; end
 	
 	if self.assembler then
 		self.inventories.assembler = {
@@ -473,12 +473,12 @@ function _M:find_assembler()
 	else self.inventories.assembler = {}; end
 end
 
-function _M:find_chest()
-	log("Finding chest for combinator at "..serpent.line(self.entity.position))
+function _M:find_chest(chest_to_ignore)
 	self.chest = self.entity.surface.find_entities_filtered {
 		position = util.position(self.entity.position):shift(self.entity.direction, config.CHEST_DISTANCE),
 		type = {'container', 'logistic-container'},
 	}[1]
+	if self.chest == chest_to_ignore then self.chest = nil; end
 	self.inventories.chest = self.chest and self.chest.get_inventory(defines.inventory.chest)
 end
 

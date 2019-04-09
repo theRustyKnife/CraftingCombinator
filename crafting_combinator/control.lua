@@ -66,8 +66,8 @@ local function on_destroyed(event)
 	end
 	if entity.name == config.MODULE_CHEST_NAME then return cc_control.destroy_by_robot(entity); end
 	if entity.name == config.RC_NAME then rc_control.destroy(entity); end
-	if entity.type == 'assembling-machine' then cc_control.update_assemblers(entity.surface, entity); end
-	if util.CONTAINER_TYPES[entity.type] then cc_control.update_chests(entity.surface, entity); end
+	if entity.type == 'assembling-machine' then cc_control.update_assemblers(entity.surface, entity, true); end
+	if util.CONTAINER_TYPES[entity.type] then cc_control.update_chests(entity.surface, entity, true); end
 	
 	if entity.type == 'entity-ghost' and (entity.ghost_name == config.CC_NAME or entity.ghost_name == config.RC_NAME) then
 		settings_parser.destroy(entity)
