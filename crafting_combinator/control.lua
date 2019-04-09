@@ -13,6 +13,14 @@ local function update_bottleneck(changes)
 		else global.BOTTLENECK_STATES = nil; end
 	end
 end
+local function enable_recipes()
+	for _, force in pairs(game.forces) do
+		if force.technologies['circuit-network'].researched then
+			force.recipes[config.CC_NAME].enabled = true
+			force.recipes[config.RC_NAME].enabled = true
+		end
+	end
+end
 
 local function on_load()
 	cc_control.on_load()
@@ -29,7 +37,10 @@ script.on_init(function()
 end)
 script.on_load(on_load)
 
-script.on_configuration_changed(update_bottleneck)
+script.on_configuration_changed(function(changes)
+	update_bottleneck(changes)
+	enable_recipes()
+end)
 
 
 local function count_entities_at(entity, name)
