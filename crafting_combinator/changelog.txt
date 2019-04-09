@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.10.3
+  Bugfixes:
+    - Fixed a crash when removing recipe combinator
+    - Fixed that crafting combinator wouldn't recognize a chest that existed before it was built in some cases
+    - Fixed a crash after removing an overflow chest
+    - Fixed recipes not being enabled if circuit network tech was researched before the mod was added
+---------------------------------------------------------------------------------------------------
 Version: 0.10.2
   Changes:
     - Added a thumbnail
