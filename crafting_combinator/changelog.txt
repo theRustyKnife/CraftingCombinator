@@ -5,6 +5,7 @@ Date: 11. 04. 2019
     - New nicer gui
 ---------------------------------------------------------------------------------------------------
 Version: 0.10.3
+Date: 09. 04. 2019
   Bugfixes:
     - Fixed a crash when removing recipe combinator
     - Fixed that crafting combinator wouldn't recognize a chest that existed before it was built in some cases
@@ -12,10 +13,12 @@ Version: 0.10.3
     - Fixed recipes not being enabled if circuit network tech was researched before the mod was added
 ---------------------------------------------------------------------------------------------------
 Version: 0.10.2
+Date: 09. 04. 2019
   Changes:
     - Added a thumbnail
 ---------------------------------------------------------------------------------------------------
 Version: 0.10.1
+Date: 09. 04. 2019
   Changes:
     - Updated for Factorio 0.17
     - Recipe combinator is now a proper two-tile entity
@@ -26,69 +29,84 @@ Version: 0.10.1
     - Again, other things that I don't remember / am too lazy to list here :P
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.12
+Date: 13. 08. 2018
   Changes:
     - Added compatibility for recipes from Whistle Stop Factories (https://mods.factorio.com/mod/WhistleStopFactories)
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.11
+Date: 05. 08. 2018
   Bugfixes:
     - Possibly fixed a crash caused by combinators with no assembler (https://mods.factorio.com/mod/crafting_combinator/discussion/5b657d8c949d790009898aae)
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.10
+Date: 23. 07. 2018
   Bugfixes:
     - Fixed a typo that could cause crashes in some cases (https://github.com/theRustyKnife/CraftingCombinator/issues/41)
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.9
+Date: 13. 12. 2017
   Bugfixes:
     - Fixed occasional jamming of inserters with stack size > 1 (by Marek-Arnold: https://github.com/theRustyKnife/CraftingCombinator/pull/40)
     - Fixed module requests not working correctly because of API changes (https://mods.factorio.com/mod/crafting_combinator/discussion/5add7924a5e370000943332a)
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.8
+Date: 13. 12. 2017
   Changes:
     - Added compatibility for base game version 0.16
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.7
+Date: 13. 12. 2017
   Changes:
     - Added compatibility for Quarry (https://mods.factorio.com/mods/FuzzCat927/quarry)
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.6
+Date: 04. 11. 2017
   Bugfixes:
     - Fixed crash with Bottleneck (https://mods.factorio.com/mods/trold/Bottleneck)
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.5
+Date: 04. 11. 2017
   Changes:
     - Added compatibility for Omnicompression (https://mods.factorio.com/mods/EmperorZelos/omnimatter_compression) and Compressed Materials (https://mods.factorio.com/mods/Nexela/compressor) (https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/18161)
     - Removed the flashing logistic network warning (https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/17387)
     - Added compatibility for New Game+ (https://mods.factorio.com/mods/Bilka/NewGamePlus)
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.4
+Date: 11. 06. 2017
   Bugfixes:
     - Fixed that Bottleneck read mode would get disabled when not appropriate (https://github.com/theRustyKnife/CraftingCombinator/issues/34)
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.3
+Date: 05. 06. 2017
   Bugfixes:
     - Fixed settings being lost when reviving combinators using Picker Extended (https://mods.factorio.com/mods/Nexela/PickerExtended)
     - Fixed that the data entities could get placed in large numbers when dragging a blueprint while placing it (https://github.com/theRustyKnife/CraftingCombinator/issues/31)
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.2
+Date: 28. 05. 2017
   Bugfixes:
     - Fixed a crash in the migration script
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.1
+Date: 28. 05. 2017
   Changes:
     - Added Omnimatter (https://mods.factorio.com/mods/EmperorZelos/omnimatter) compatibility (https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/14039)
   Bugfixes:
     - Fixed crash when loading without Bottleneck installed (https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/14118, https://github.com/theRustyKnife/CraftingCombinator/issues/28)
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.0
+Date: 27. 05. 2017
   Features:
     - Crafting combinator can read Bottleneck status (requires Bottleneck (https://mods.factorio.com/mods/trold/Bottleneck) 0.7.3 or higher)
 ---------------------------------------------------------------------------------------------------
 Version: 0.8.1
+Date: 17. 05. 2017
   Changes:
     - Multiply by input count can now be used with find recipes
     - Negative values are handled properly (not ignored as before)
 ---------------------------------------------------------------------------------------------------
 Version: 0.8.0
+Date: 16. 05. 2017
   Features:
     - Added an option to read crafting speed to crafting combinator
     - Added an option to multiply results by input count to recipe combinator
@@ -97,10 +115,12 @@ Version: 0.8.0
     - Fixed modules being carried back to storage in certain cases
 ---------------------------------------------------------------------------------------------------
 Version: 0.7.2
+Date: 08. 05. 2017
   Changes:
     - Moved the refresh rate configuration to mod settings
 ---------------------------------------------------------------------------------------------------
 Version: 0.7.1
+Date: 08. 05. 2017
   Changes:
     - Enabled sorting virtual recipes into groups
   Bugfixes:
@@ -109,10 +129,12 @@ Version: 0.7.1
     - Fixed broken localization
 ---------------------------------------------------------------------------------------------------
 Version: 0.7.0
+Date: 24. 04. 2017
   Changes:
     - Updated for Factorio 0.15
 ---------------------------------------------------------------------------------------------------
 Version: 0.6.2
+Date: 01. 04. 2017
   Bugfixes:
     - Fixed a crash when the root GUI element was clicked (https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/9454)
 ---------------------------------------------------------------------------------------------------
@@ -121,6 +143,7 @@ Version: 0.6.1
     - Fixed recipes not being enabled again (https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/4438)
 ---------------------------------------------------------------------------------------------------
 Version: 0.6.0
+Date: 01. 04. 2017
   Features:
     - Settings are saved in blueprints
     - Modules that have been removed due to recipe change can now be requested back into the assembler
@@ -128,14 +151,17 @@ Version: 0.6.0
     - Refresh rate is now configurable from in-game, individually for crafting and recipe combinators
 ---------------------------------------------------------------------------------------------------
 Version: 0.5.2
+Date: 26. 03. 2017
   Bugfixes:
     - Removed rocket part signal and made the rocket part item not hidden to fix https://forums.factorio.com/viewtopic.php?f=93&t=34405&start=40#p251643 and prevent flickering issues
 ---------------------------------------------------------------------------------------------------
 Version: 0.5.1
+Date: 26. 03. 2017
   Bugfixes:
     - Fixed that module would be moved even when not necessary which caused duplication (https://forums.factorio.com/viewtopic.php?f=93&t=34405&start=20#p251542)
 ---------------------------------------------------------------------------------------------------
 Version: 0.5.0
+Date: 25. 03. 2017
   Features:
     - Added configuration GUIs for combinators
     - Added product mode to recipe combinator
@@ -150,15 +176,18 @@ Version: 0.5.0
     - Many minor changes
 ---------------------------------------------------------------------------------------------------
 Version: 0.4.2
+Date: 10. 03. 2017
   Changes:
     - Added Recycling Machines (https://mods.factorio.com/mods/DRY411S/ZRecycling) compatibility
 ---------------------------------------------------------------------------------------------------
 Version: 0.4.1
+Date: 07. 03. 2017
   Bugfixes:
     - Fixed a crash when loading with AAI Programmable Vehicles
     - Fixed some virtual recipes would get the default icon when not necessary
 ---------------------------------------------------------------------------------------------------
 Version: 0.4.0
+Date: 17. 02. 2017
   Changes:
     - Changed the way virtual recipes are generated which should increase compatibilty (thanks to Nexela (https://github.com/theRustyKnife/CraftingCombinator/pull/4))
     - Combinators are color coded now (by Nexela (https://github.com/theRustyKnife/CraftingCombinator/pull/4))
@@ -167,18 +196,22 @@ Version: 0.4.0
     - Added a subgroup for virtual recipes (once more by Nexela (https://github.com/theRustyKnife/CraftingCombinator/pull/4))
 ---------------------------------------------------------------------------------------------------
 Version: 0.3.3
+Date: 25. 12. 2016
   Bugfixes:
     - Fixed a crash caused by a rounding error in recipe combinator
 ---------------------------------------------------------------------------------------------------
 Version: 0.3.2
+Date: 04. 12. 2016
   Bugfixes:
     - Fixed crash when placing a combinator after reloading a game (https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/5908)
 ---------------------------------------------------------------------------------------------------
 Version: 0.3.1
+Date: 01. 12. 2016
   Bugfixes:
     - Fixed wrong path for no-icon icon and an error in migration script (https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/5869)
 ---------------------------------------------------------------------------------------------------
 Version: 0.3.0
+Date: 01. 12. 2016
   Features:
     - Added support for external special case and icon definitions
     - Added an invisible active provider chest where the items from the assembler are put when recipe changes
@@ -187,33 +220,40 @@ Version: 0.3.0
     - Moved special cases to the locale mod
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.2
+Date: 19. 10. 2016
   Features:
     - Added crafting time to recipe combinator output (thanks to LuziferSenpai (https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/4654))
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.1
+Date: 16. 10. 2016
   Bugfixes:
     - Fixed a crash when removing a recipe combinator in a new game (https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/4644)
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.0
+Date: 16. 10. 2016
   Features:
     - Added recipe combinator (thanks to Igie (https://mods.factorio.com/mods/theRustyKnife/crafting_combinator/discussion/4421))
   Changes:
     - Moved localisation into another mod
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.4
+Date: 11. 10. 2016
   Changes:
     - Changed to work with any and all (hopefully) crafting machine (chemplants, refineries too)
     - Added locale for some mods
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.3
+Date: 09. 10. 2016
   Changes:
     - Recipe for combinator is enabled when the mod is added to the game
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.2
+Date: 09. 10.2016
   Changes:
     - Added a special case system to solve a recipe naming problem
     - Translations for vanilla virtual recipes
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.1
+Date: 09. 10. 2016
   Other:
     - Initial release
