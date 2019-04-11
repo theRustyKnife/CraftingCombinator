@@ -2,6 +2,7 @@ local config = require 'config'
 local cc_control = require 'script.cc'
 local rc_control = require 'script.rc'
 local util = require 'script.util'
+local gui = require 'script.gui'
 local settings_parser = require 'script.settings-parser'
 
 
@@ -145,24 +146,32 @@ end)
 script.on_event(defines.events.on_gui_checked_state_changed, function(event)
 	local element = event.element
 	if element and element.valid and element.name and element.name:match('^crafting_combinator:') then
-		local gui_name, unit_number, element_name = util.parse_gui_name(element.name)
+		local gui_name, unit_number, element_name = gui.parse_entity_gui_name(element.name)
 		
-		if gui_name == 'cc' then global.cc.data[unit_number]:on_checked_changed(element_name, element.state, element); end
-		if gui_name == 'rc' then global.rc.data[unit_number]:on_checked_changed(element_name, element.state, element); end
+		if gui_name == 'crafting-combinator' then
+			global.cc.data[unit_number]:on_checked_changed(element_name, element.state, element)
+		end
+		if gui_name == 'recipe-combinator' then
+			global.rc.data[unit_number]:on_checked_changed(element_name, element.state, element)
+		end
 	end
 end)
 script.on_event(defines.events.on_gui_text_changed, function(event)
 	local element = event.element
 	if element and element.valid and element.name and element.name:match('^crafting_combinator:') then
-		local gui_name, unit_number, element_name = util.parse_gui_name(element.name)
-		if gui_name == 'rc' then global.rc.data[unit_number]:on_text_changed(element_name, element.text); end
+		local gui_name, unit_number, element_name = gui.parse_entity_gui_name(element.name)
+		if gui_name == 'recipe-combinator' then
+			global.rc.data[unit_number]:on_text_changed(element_name, element.text)
+		end
 	end
 end)
 script.on_event(defines.events.on_gui_click, function(event)
 	local element = event.element
 	if element and element.valid and element.name and element.name:match('^crafting_combinator:') then
-		local gui_name, unit_number, element_name = util.parse_gui_name(element.name)
-		if gui_name == 'cc' then global.cc.data[unit_number]:on_click(element_name, element); end
+		local gui_name, unit_number, element_name = gui.parse_entity_gui_name(element.name)
+		if gui_name == 'crafting-combinator' then
+			global.cc.data[unit_number]:on_click(element_name, element)
+		end
 	end
 end)
 
