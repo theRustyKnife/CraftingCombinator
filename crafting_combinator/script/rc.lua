@@ -1,5 +1,6 @@
 local config = require 'config'
 local util = require 'script.util'
+local gui = require 'script.gui'
 local settings_parser = require 'script.settings-parser'
 local recipe_selector = require 'script.recipe-selector'
 
@@ -139,86 +140,19 @@ end
 
 
 function _M:open(player_index)
-	--TODO: Make this look decent
-	local player = game.get_player(player_index)
-	local gui = player.gui.center
-	local name = 'crafting_combinator:rc:'..tostring(self.entity.unit_number)
-	
-	local frame = gui.add {
-		type = 'frame',
-		name = name,
-		caption = {'entity-name.'..config.RC_NAME},
-		direction = 'vertical',
-	}
-	
-	local mode_container = frame.add {
-		type = 'flow',
-		name = name..':mode',
-		direction = 'vertical',
-	}
-	mode_container.add {
-		type = 'label',
-		name = name..':mode:caption',
-		caption = {'crafting_combinator_gui.mode'},
-		style = 'caption_label',
-	}
-	
-	mode_container.add {
-		type = 'radiobutton',
-		name = name..':mode:ing',
-		caption = {'crafting_combinator_gui.mode-ing'},
-		state = self.settings.mode == 'ing',
-	}
-	mode_container.add {
-		type = 'radiobutton',
-		name = name..':mode:prod',
-		caption = {'crafting_combinator_gui.mode-prod'},
-		state = self.settings.mode == 'prod',
-	}
-	mode_container.add {
-		type = 'radiobutton',
-		name = name..':mode:rec',
-		caption = {'crafting_combinator_gui.mode-rec'},
-		state = self.settings.mode == 'rec',
-	}
-	
-	local misc_container = frame.add {
-		type = 'flow',
-		name = name..':misc',
-		direction = 'vertical',
-	}
-	misc_container.add {
-		type = 'label',
-		name = name..':misc:caption',
-		caption = {'crafting_combinator_gui.misc'},
-		style = 'caption_label',
-	}
-	
-	misc_container.add {
-		type = 'checkbox',
-		name = name..':misc:multiply-by-input',
-		caption = {'crafting_combinator_gui.multiply-by-input'},
-		state = self.settings.multiply_by_input,
-	}
-	
-	local time_multiplier_container = misc_container.add {
-		type = 'flow',
-		name = name..':misc:time-multiplier',
-		direction = 'horizontal',
-	}
-	time_multiplier_container.add {
-		type = 'label',
-		name = name..':misc:time-multiplier:caption',
-		caption = {'crafting_combinator_gui.time-multiplier'},
-	}
-	time_multiplier_container.add {
-		type = 'textfield',
-		name = name..':misc:time-multiplier:value',
-		text = tostring(self.settings.time_multiplier),
-	}
-	
-	player.opened = frame
-	return frame
+	gui.entity(self.entity, {
+		gui.section {
+			name = 'mode',
+			gui.radio('ing', self.settings.mode, 'mode-ing'),
+			gui.radio('prod', self.settings.mode, 'mode-prod'),
+			gui.radio('rec', self.settings.mode, 'mode-rec'),
+		},
+		gui.section {
+			name = 'misc',
+			gui.checkbox('multiply-by-input', self.settings.multiply_by_input),
+			gui.number_picker('time-multiplier', self.settings.time_multiplier),
+		}
+	}):open(player_index)
 end
 
 function _M:on_checked_changed(name, state, element)
@@ -227,7 +161,7 @@ function _M:on_checked_changed(name, state, element)
 		self.settings.mode = name
 		for _, el in pairs(element.parent.children) do
 			if el.type == 'radiobutton' then
-				local _, _, el_name = util.parse_gui_name(el.name)
+				local _, _, el_name = gui.parse_entity_gui_name(el.name)
 				el.state = el_name == 'mode:'..name
 			end
 		end

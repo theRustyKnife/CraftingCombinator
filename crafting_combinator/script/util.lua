@@ -30,14 +30,6 @@ function _M.deepcopy(object)
 end
 
 
-function _M.parse_gui_name(name)
-	local gui_name = name:gsub('^crafting_combinator:', '')
-	local unit_number = gui_name:gsub('^.-:', '')
-	local element_name = unit_number:gsub('^.-:', '')
-	return gui_name:gsub(':.*$', ''), tonumber((unit_number:gsub(':.*$', ''))), element_name
-end
-
-
 local _module_limitations
 function _M.module_limitations()
 	if not _module_limitations then

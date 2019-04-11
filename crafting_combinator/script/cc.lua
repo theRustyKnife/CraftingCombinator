@@ -1,4 +1,5 @@
 local util = require 'script.util'
+local gui = require 'script.gui'
 local settings_parser = require 'script.settings-parser'
 local recipe_selector = require 'script.recipe-selector'
 local config = require 'config'
@@ -171,91 +172,24 @@ end
 
 
 function _M:open(player_index)
-	--TODO: Make this look decent
-	local player = game.get_player(player_index)
-	local gui = player.gui.center
-	local name = 'crafting_combinator:cc:'..tostring(self.entity.unit_number)
-	
-	local frame = gui.add {
-		type = 'frame',
-		name = name,
-		caption = {'entity-name.'..config.CC_NAME},
-		direction = 'vertical',
-	}
-	
-	local mode_container = frame.add {
-		type = 'flow',
-		name = name..':mode',
-		direction = 'vertical',
-	}
-	mode_container.add {
-		type = 'label',
-		name = name..':mode:caption',
-		caption = {'crafting_combinator_gui.mode'},
-		style = 'caption_label',
-	}
-	
-	mode_container.add {
-		type = 'checkbox',
-		name = name..':mode:set',
-		caption = {'crafting_combinator_gui.mode-set'},
-		state = self.settings.mode.set,
-	}
-	mode_container.add {
-		type = 'checkbox',
-		name = name..':mode:read',
-		caption = {'crafting_combinator_gui.mode-read'},
-		state = self.settings.mode.read,
-	}
-	
-	local misc_container = frame.add {
-		type = 'flow',
-		name = name..':misc',
-		direction = 'vertical',
-	}
-	misc_container.add {
-		type = 'label',
-		name = name..':misc:caption',
-		caption = {'crafting_combinator_gui.misc'},
-		style = 'caption_label',
-	}
-	
-	misc_container.add {
-		type = 'checkbox',
-		name = name..':misc:discard-items',
-		caption = {'crafting_combinator_gui.discard-items'},
-		state = self.settings.discard_items,
-	}
-	misc_container.add {
-		type = 'checkbox',
-		name = name..':misc:empty-inserters',
-		caption = {'crafting_combinator_gui.empty-inserters'},
-		state = self.settings.empty_inserters,
-	}
-	misc_container.add {
-		type = 'checkbox',
-		name = name..':misc:read-speed',
-		caption = {'crafting_combinator_gui.read-speed'},
-		state = self.settings.read_speed,
-	}
-	if game.active_mods['Bottleneck'] then
-		misc_container.add {
-			type = 'checkbox',
-			name = name..':misc:read-bottleneck',
-			caption = {'crafting_combinator_gui.read-bottleneck'},
-			state = self.settings.read_bottleneck,
+	gui.entity(self.entity, {
+		title_elements = {
+			gui.button('open-module-chest'),
+		},
+		
+		gui.section {
+			name = 'mode',
+			gui.checkbox('set', self.settings.mode.set, 'mode-set'),
+			gui.checkbox('read', self.settings.mode.read, 'mode-set'),
+		},
+		gui.section {
+			name = 'misc',
+			gui.checkbox('discard-items', self.settings.discard_items),
+			gui.checkbox('empty-inserters', self.settings.empty_inserters),
+			gui.checkbox('read-speed', self.settings.read_speed),
+			game.active_mods['Bottleneck'] and gui.checkbox('read-bottleneck', self.settings.read_bottleneck) or false,
 		}
-	end
-	
-	frame.add {
-		type = 'button',
-		name = name..':open-module-chest',
-		caption = {'crafting_combinator_gui.open-module-chest'},
-		mouse_button_filter = {'left'},
-	}
-	
-	player.opened = frame
-	return frame
+	}):open(player_index)
 end
 
 function _M:on_checked_changed(name, state)
@@ -266,7 +200,7 @@ function _M:on_checked_changed(name, state)
 end
 
 function _M:on_click(name, element)
-	if name == 'open-module-chest' then
+	if name == 'title:open-module-chest' then
 		game.get_player(element.player_index).opened = self.module_chest
 	end
 end
