@@ -174,6 +174,7 @@ end
 function _M:open(player_index)
 	gui.entity(self.entity, {
 		title_elements = {
+			gui.spacer(),
 			gui.button('open-module-chest'),
 		},
 		

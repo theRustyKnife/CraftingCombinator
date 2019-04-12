@@ -89,6 +89,16 @@ function _M.section(specs)
 	return specs
 end
 
+function _M.spacer()
+	local specs = {}
+	function specs:build(root)
+		local res = root.add { type = 'flow' }
+		res.style.horizontally_stretchable = true
+		return res
+	end
+	return specs
+end
+
 function _M.checkbox(name, state, locale_key)
 	local specs = {}
 	function specs:build(root)
