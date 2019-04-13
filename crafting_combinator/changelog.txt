@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.10.5
+Date: 13. 04. 2019
+  Changes:
+    - An ultimately small tweak to the gui
+  Bugfixes:
+    - Fixed wrong locale key for read recipe checkbox
+---------------------------------------------------------------------------------------------------
 Version: 0.10.4
 Date: 11. 04. 2019
   Changes:
