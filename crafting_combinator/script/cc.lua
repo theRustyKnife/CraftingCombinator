@@ -181,7 +181,7 @@ function _M:open(player_index)
 		gui.section {
 			name = 'mode',
 			gui.checkbox('set', self.settings.mode.set, 'mode-set'),
-			gui.checkbox('read', self.settings.mode.read, 'mode-set'),
+			gui.checkbox('read', self.settings.mode.read, 'mode-read'),
 		},
 		gui.section {
 			name = 'misc',
