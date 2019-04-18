@@ -222,7 +222,7 @@ function _M:read_recipe(params)
 end
 
 function _M:read_speed(params)
-	local count = game.entity_prototypes[self.assembler.name].crafting_speed * 100
+	local count = self.assembler.crafting_speed * 100
 	table.insert(params, {
 		signal = {type = 'virtual', name = config.SPEED_SIGNAL_NAME},
 		count = count,
