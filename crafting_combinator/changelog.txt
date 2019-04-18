@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.10.6
+Date: 18. 04. 2019
+  Changes:
+    - Crafting combinator will set the machine to no recipe if the fluid inputs/outputs aren't compatible (https://forums.factorio.com/viewtopic.php?f=190&t=34405&start=120#p422961)
+    - Assembler speed reading mode now accounts for modules and beacons (https://forums.factorio.com/viewtopic.php?f=190&t=34405&start=120#p422961)
+---------------------------------------------------------------------------------------------------
 Version: 0.10.5
 Date: 13. 04. 2019
   Changes:
