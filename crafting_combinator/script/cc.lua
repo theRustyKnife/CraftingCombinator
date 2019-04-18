@@ -263,6 +263,8 @@ function _M:set_recipe()
 	end
 	
 	self.assembler.set_recipe(recipe)
+	local new_recipe = self.assembler.get_recipe()
+	if new_recipe and new_recipe ~= recipe then self.assembler.set_recipe(nil); end --TODO: Some notification?
 	
 	-- Move modules and items back into the machine
 	self:insert_modules()
