@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.10.7
+Date: 20. 04. 2019
+  Bugfixes:
+    - Fixed compatibility with Creative Mod (https://mods.factorio.com/mod/creative-mod) (https://forums.factorio.com/viewtopic.php?f=190&t=34405&start=120#p424003)
+  Features:
+    - Add option to clear fluidboxes on recipe change (https://forums.factorio.com/viewtopic.php?f=190&t=34405&start=120#p423990)
+---------------------------------------------------------------------------------------------------
 Version: 0.10.6
 Date: 18. 04. 2019
   Changes:
