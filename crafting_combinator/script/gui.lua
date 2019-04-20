@@ -41,7 +41,7 @@ function _M.entity(entity, specs)
 	
 	local entity_name = entity.name:match('[^:]*$')
 	local unit_number = entity.unit_number
-	local entity_locale = game.entity_prototypes[entity.name].localised_name
+	local entity_locale = entity.prototype.localised_name
 	
 	function specs:build(root)
 		local main = root.add {

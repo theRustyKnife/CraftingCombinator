@@ -103,7 +103,7 @@ function _M.destroy(entity, player_index)
 					if r < stack.count then
 						stack.count = stack.count - r
 						-- Clone the entity as replacement and tell the player the inventory is full
-						game.get_player(player_index).print{'inventory-restriction.player-inventory-full', game.item_prototypes[stack.name].localised_name}
+						game.get_player(player_index).print{'inventory-restriction.player-inventory-full', stack.prototype.localised_name}
 						
 						-- Replace the entity if a player was trying to pick it up
 						local old_entity = combinator.entity
@@ -140,7 +140,7 @@ end
 
 function _M.update_assemblers(surface, assembler, ignore)
 	local combinators = surface.find_entities_filtered {
-		area = util.area(game.entity_prototypes[assembler.name].selection_box):expand(config.ASSEMBLER_SEARCH_DISTANCE) + assembler.position,
+		area = util.area(assembler.prototype.selection_box):expand(config.ASSEMBLER_SEARCH_DISTANCE) + assembler.position,
 		name = config.CC_NAME,
 	}
 	for _, entity in pairs(combinators) do global.cc.data[entity.unit_number]:find_assembler(ignore and assembler or nil); end
@@ -148,7 +148,7 @@ end
 
 function _M.update_chests(surface, chest, ignore)
 	local combinators = surface.find_entities_filtered {
-		area = util.area(game.entity_prototypes[chest.name].selection_box):expand(config.CHEST_SEARCH_DISTANCE) + chest.position,
+		area = util.area(chest.prototype.selection_box):expand(config.CHEST_SEARCH_DISTANCE) + chest.position,
 		name = config.CC_NAME,
 	}
 	for _, entity in pairs(combinators) do global.cc.data[entity.unit_number]:find_chest(ignore and chest or nil); end
@@ -381,7 +381,7 @@ function _M:empty_inserters()
 	local target = self.inventories.chest
 	
 	for _, inserter in pairs(self.assembler.surface.find_entities_filtered {
-				area = util.area(game.entity_prototypes[self.assembler.name].selection_box):expand(config.INSERTER_SEARCH_RADIUS) + self.assembler.position,
+				area = util.area(self.assembler.prototype.selection_box):expand(config.INSERTER_SEARCH_RADIUS) + self.assembler.position,
 				type = 'inserter',
 			}) do
 		if inserter.drop_target == self.assembler then
