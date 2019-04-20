@@ -18,6 +18,7 @@ return {
 			read = false,
 		},
 		discard_items = false,
+		discard_fluids = true,
 		empty_inserters = true,
 		read_speed = false,
 		read_bottleneck = false,

@@ -15,6 +15,7 @@ _M.settings_parser = settings_parser {
 		read = {'r', 'bool'},
 	},
 	discard_items = {'d', 'bool'},
+	discard_fluids = {'f', 'bool'},
 	empty_inserters = {'i', 'bool'},
 	read_speed = {'s', 'bool'},
 	read_bottleneck = {'b', 'bool'},
@@ -186,6 +187,7 @@ function _M:open(player_index)
 		gui.section {
 			name = 'misc',
 			gui.checkbox('discard-items', self.settings.discard_items),
+			gui.checkbox('discard-fluids', self.settings.discard_fluids),
 			gui.checkbox('empty-inserters', self.settings.empty_inserters),
 			gui.checkbox('read-speed', self.settings.read_speed),
 			game.active_mods['Bottleneck'] and gui.checkbox('read-bottleneck', self.settings.read_bottleneck) or false,
@@ -254,6 +256,11 @@ function _M:set_recipe()
 			local tick = game.tick + config.INSERTER_EMPTY_DELAY
 			global.cc.inserter_empty_queue[tick] = global.cc.inserter_empty_queue[tick] or {}
 			table.insert(global.cc.inserter_empty_queue[tick], self)
+		end
+		
+		-- Clear fluidboxes
+		if self.settings.discard_fluids then
+			for i=1, #self.assembler.fluidbox do self.assembler.fluidbox[i] = nil; end
 		end
 	end
 	
