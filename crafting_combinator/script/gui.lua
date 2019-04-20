@@ -106,7 +106,7 @@ function _M.checkbox(name, state, locale_key)
 			type = 'checkbox',
 			name = elem_name(root, name),
 			caption = locale(locale_key or name),
-			state = state,
+			state = state and true or false,
 		}
 	end
 	return specs
