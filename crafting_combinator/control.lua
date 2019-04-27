@@ -180,7 +180,7 @@ script.on_event(defines.events.on_built_entity, on_built)
 script.on_event(defines.events.on_robot_built_entity, on_built)
 
 script.on_event(defines.events.on_pre_player_mined_item, on_destroyed)
-script.on_event(defines.events.on_robot_mined_entity, on_destroyed)
+script.on_event(defines.events.on_robot_pre_mined, on_destroyed)
 script.on_event(defines.events.on_entity_died, on_destroyed)
 
 script.on_event(defines.events.on_pre_ghost_deconstructed, function(event)
