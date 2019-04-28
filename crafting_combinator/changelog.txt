@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.10.8
+Date: 28. 04. 2019
+  Bugfixes:
+    - Fixed crash when insta-deconstructing combinators with Creative Mod (https://mods.factorio.com/mod/creative-mod) (https://mods.factorio.com/mod/crafting_combinator/discussion/5cbd74eb2b2f55000be9856a)
+    - Fixed that crafting combinators wouldn't use each other's module chests for overflow sometimes
+---------------------------------------------------------------------------------------------------
 Version: 0.10.7
 Date: 20. 04. 2019
   Bugfixes:
