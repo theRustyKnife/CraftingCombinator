@@ -68,6 +68,9 @@ function _M.create(entity)
 	table.insert(global.cc.ordered, combinator)
 	combinator:find_assembler()
 	combinator:find_chest()
+	
+	-- Other combinators can use the module chest as overflow output, so let them know it's there
+	_M.update_chests(entity.surface, combinator.module_chest)
 end
 
 function _M.mark_for_deconstruction(entity)
