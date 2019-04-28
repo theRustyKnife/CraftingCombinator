@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.10.9
+Date: 28. 04. 2019
+  Bugfixes:
+    - Fixed that undoing contruction of crafting combinator wouldn't deconstruct the combinator properly (https://mods.factorio.com/mod/crafting_combinator/discussion/5cc5ed2a40ecdc000d919fba)
+---------------------------------------------------------------------------------------------------
 Version: 0.10.8
 Date: 28. 04. 2019
   Bugfixes:
