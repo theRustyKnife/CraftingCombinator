@@ -83,6 +83,13 @@ function _M.cancel_deconstruction(entity)
 	combinator.enabled = true
 	combinator:update()
 end
+function _M.fix_undo_deconstruction(entity, player_index)
+	local combinator = global.cc.data[entity.unit_number]
+	local player = player_index and game.get_player(player_index)
+	local force = player and player.force or entity.force
+	entity.cancel_deconstruction(force, player)
+	combinator.module_chest.order_deconstruction(force, player)
+end
 
 function _M.destroy_by_robot(entity)
 	local combinator_entity = entity.surface.find_entity(config.CC_NAME, entity.position)

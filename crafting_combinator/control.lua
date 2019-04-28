@@ -189,6 +189,7 @@ script.on_event(defines.events.on_pre_ghost_deconstructed, function(event)
 end)
 
 script.on_event(defines.events.on_marked_for_deconstruction, function(event)
+	if event.entity.name == config.CC_NAME then cc_control.fix_undo_deconstruction(event.entity, event.player_index); end
 	if event.entity.name == config.MODULE_CHEST_NAME then cc_control.mark_for_deconstruction(event.entity); end
 end)
 script.on_event(defines.events.on_cancelled_deconstruction, function(event)
