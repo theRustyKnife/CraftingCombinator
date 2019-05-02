@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.10.10
+Date: 02. 05. 2019
+  Bugfixes:
+    - Fixed that some recipes wouldn't get a signal, even if they needed it
+    - Added compatibility for Omnipermute (https://mods.factorio.com/mod/omnimatter_permutation)
+---------------------------------------------------------------------------------------------------
 Version: 0.10.9
 Date: 28. 04. 2019
   Bugfixes:
