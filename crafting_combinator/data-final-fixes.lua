@@ -29,11 +29,16 @@ local function is_ignored(name)
 	return false
 end
 
+local function is_hidden(recipe) -- Just end me please.
+	if recipe.normal then return recipe.normal.hidden
+	else return recipe.hidden; end
+end
+
 local function needs_signal(recipe)
 	if type(recipe) == 'string' then recipe = data.raw['recipe'][recipe]; end
 	local name = recipe.name
 	return not (
-			recipe.hidden
+			is_hidden(recipe)
 			or is_ignored(name)
 			or is_result(recipe, name)
 			or data.raw['virtual-signal'][name]
