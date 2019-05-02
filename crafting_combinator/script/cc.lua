@@ -105,7 +105,7 @@ function _M.destroy(entity, player_index)
 	if player_index then
 		local inventory = combinator.inventories.module_chest
 		if not inventory.is_empty() then
-			local target = player_index and game.get_player(player_index).get_inventory(defines.inventory.player_main)
+			local target = player_index and game.get_player(player_index).get_inventory(defines.inventory.character_main)
 			for i = 1, #inventory do
 				local stack = inventory[i]
 				if stack.valid_for_read then
