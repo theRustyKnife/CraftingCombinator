@@ -7,5 +7,6 @@
 	"description": "Includes combinators that allow you to set or read the recipe of any crafting machine, get ingredients or products of a recipe and more!",
 	"homepage": "https://mods.factorio.com/mods/crafting_combinator",
 	"dependencies": ["base", "?Bottleneck>=0.7.3",
-		"(?)ZRecycling", "(?)omnimatter", "(?)omnimatter_compression", "(?)compressor", "(?)quarry", "(?)WhistleStopFactories", "(?)creative-mod"]
+		"(?)omnimatter", "(?)omnimatter_compression", "(?)omnimatter_permutation", "(?)omnimatter_crystal",
+		"(?)ZRecycling", "(?)compressor", "(?)quarry", "(?)WhistleStopFactories", "(?)creative-mod"]
 }
