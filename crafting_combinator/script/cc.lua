@@ -136,6 +136,8 @@ function _M.destroy(entity, player_index)
 		end
 	end
 	
+	-- Notify other combinators that the chest was destroyed
+	_M.update_chests(entity.surface, combinator.module_chest, true)
 	if player_index then combinator.module_chest.destroy(); end
 	settings_parser.destroy(entity)
 	
