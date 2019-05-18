@@ -337,7 +337,7 @@ end
 
 function _M:move_items()
 	if self.settings.discard_items then return true; end
-	local target = self.inventories.chest
+	local target = self:get_chest_inventory()
 	
 	-- Compensate for half-finished crafts
 	-- Do this first to avoid losing a lot of items
@@ -390,7 +390,7 @@ function _M:on_chest_full()
 end
 
 function _M:empty_inserters()
-	local target = self.inventories.chest
+	local target = self:get_chest_inventory()
 	
 	for _, inserter in pairs(self.assembler.surface.find_entities_filtered {
 				area = util.area(self.assembler.prototype.selection_box):expand(config.INSERTER_SEARCH_RADIUS) + self.assembler.position,
@@ -435,6 +435,13 @@ function _M:find_chest(chest_to_ignore)
 	}[1]
 	if self.chest == chest_to_ignore then self.chest = nil; end
 	self.inventories.chest = self.chest and self.chest.get_inventory(defines.inventory.chest)
+end
+
+function _M:get_chest_inventory()
+	local inventory = self.inventories.chest
+	if not inventory or inventory.valid then return inventory; end
+	self:find_chest()
+	return self.inventories.chest
 end
 
 
