@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.10.13
+Date: 18. 05. 2019
+  Bugfixes:
+    - Fixed a crash when the overflow chest became invalid without an event (https://mods.factorio.com/mod/crafting_combinator/discussion/5cced07bbdcf51000b5c6a82)
+---------------------------------------------------------------------------------------------------
 Version: 0.10.12
 Date: 06. 05. 2019
   Bugfixes:
