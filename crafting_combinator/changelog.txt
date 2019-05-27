@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.10.14
+Date: 27. 05. 2019
+  Bugfixes:
+    - Fixed that icons and locale for virtual recipes were completely broken
+    - Fixed the no-icon icon scale
+---------------------------------------------------------------------------------------------------
 Version: 0.10.13
 Date: 18. 05. 2019
   Bugfixes:
