@@ -85,7 +85,7 @@ local function get_icons(recipe)
 	end
 	
 	log("Icon not found for: "..recipe.name)
-	return {{icon = '__core__/graphics/clear.png'}}
+	return {{icon = '__core__/graphics/clear.png', icon_size = 128}}
 end
 
 local function get_locale(recipe)
