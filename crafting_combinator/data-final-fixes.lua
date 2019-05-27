@@ -4,7 +4,8 @@ local config = require 'config'
 local item_types = {}
 for type, prototypes in pairs(data.raw) do
 	-- Anything that's an item has to have the stack_size property, so that's how we find item types
-	if next(prototypes) and next(prototypes).stack_size ~= nil then table.insert(item_types, type); end
+	local key, value = next(prototypes)
+	if key ~= nil and value.stack_size ~= nil then table.insert(item_types, type); end
 end
 
 
