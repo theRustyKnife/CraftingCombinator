@@ -119,6 +119,7 @@ function _M:find_ingredients_and_products(forced)
 				if self.settings.multiply_by_input then t_amount = t_amount * input_count; end
 				local amount = math.floor(t_amount)
 				if t_amount % 1 > 0 then amount = amount + 1; end
+				amount = (amount + 2147483648) % 4294967296 - 2147483648 -- Simulate 32bit integer overflow
 				
 				table.insert(params, {
 					signal = {type = ing.type, name = ing.name},
