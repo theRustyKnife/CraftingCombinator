@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.10.15
+Date: 02. 06. 2019
+  Bugfixes:
+    - Fixed crash when recipe combinator output got too large (https://mods.factorio.com/mod/crafting_combinator/discussion/5cf3a425c2846d000c2477d1)
+---------------------------------------------------------------------------------------------------
 Version: 0.10.14
 Date: 27. 05. 2019
   Bugfixes:
