@@ -4,7 +4,9 @@ local config = require 'config'
 local _M = {}
 
 
-local function get_entity(entity) return entity.surface.find_entity(config.SETTINGS_ENTITY_NAME, entity.position); end
+local function get_entity(entity, position)
+	return entity.surface.find_entity(config.SETTINGS_ENTITY_NAME, position or entity.position)
+end
 local function get_or_create_entity(entity)
 	return get_entity(entity) or entity.surface.create_entity {
 		name = config.SETTINGS_ENTITY_NAME,
@@ -76,6 +78,11 @@ end
 function _M.update(defs, entity, settings)
 	local e = get_or_create_entity(entity)
 	e.alert_parameters = {alert_message = _M.dump(defs, settings)}
+end
+
+function _M.move_entity(entity, original_position)
+	local e = get_entity(entity, original_position)
+	if e then e.teleport(entity.position); end
 end
 
 function _M.destroy(entity)
