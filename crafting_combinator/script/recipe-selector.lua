@@ -10,15 +10,16 @@ function _M.get_recipe(entity, items_to_ignore, connector_id)
 	
 	local res = nil
 	local count = nil
+	local return_signal = nil
 	for _, signal in pairs(signals) do
 		local recipe = entity.force.recipes[signal.signal.name]
 		if recipe and recipe.enabled then
 			local c = signal.count - (items_to_ignore[recipe.name] or 0)
-			if count == nil or c > count then res = recipe; count = c; end
+			if count == nil or c > count then res = recipe; count = c; return_signal = signal.signal; end
 		end
 	end
 	
-	return res, count
+	return res, count, return_signal
 end
 
 
@@ -65,6 +66,21 @@ function _M.get_signal(recipe)
 		name = recipe,
 		type = (game.item_prototypes[recipe] and 'item') or (game.fluid_prototypes[recipe] and 'fluid') or 'virtual'
 	}
+end
+
+
+function _M.calculate_crafting_amount(recipe, signal, count)
+	-- count when the signal is a recipe
+	local amount = count
+	for i, prod in pairs(recipe.products) do
+		if prod.type == signal.type and prod.name == signal.name then
+			-- when it is a product return how often you have to do the recipe
+			amount = tonumber(prod.amount or prod.amount_min or prod.amount_max)
+			amount = math.ceil(count / amount)
+			break
+		end
+	end
+	return amount
 end
 
 

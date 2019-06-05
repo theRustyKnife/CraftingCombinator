@@ -102,7 +102,7 @@ function _M:find_recipe()
 end
 
 function _M:find_ingredients_and_products(forced)
-	local recipe, input_count = recipe_selector.get_recipe(self.entity, nil, defines.circuit_connector_id.combinator_input)
+	local recipe, input_count, signal = recipe_selector.get_recipe(self.entity, nil, defines.circuit_connector_id.combinator_input)
 	
 	if self.recipe ~= recipe or forced or (self.settings.multiply_by_input and self.input_count ~= input_count) then
 		self.recipe = recipe
@@ -111,12 +111,15 @@ function _M:find_ingredients_and_products(forced)
 		local params = {}
 		
 		if recipe then
+			local crafting_amount = 1
+			if self.settings.multiply_by_input then
+				crafting_amount = recipe_selector.calculate_crafting_amount(recipe, signal, input_count)
+			end
 			for i, ing in pairs(
 						self.settings.mode == 'prod' and recipe.products or
 						self.settings.mode == 'ing' and recipe.ingredients or {}
 					) do
-				local t_amount = tonumber(ing.amount or ing.amount_min or ing.amount_max)
-				if self.settings.multiply_by_input then t_amount = t_amount * input_count; end
+				local t_amount = tonumber(ing.amount or ing.amount_min or ing.amount_max) * crafting_amount
 				local amount = math.floor(t_amount)
 				if t_amount % 1 > 0 then amount = amount + 1; end
 				amount = (amount + 2147483648) % 4294967296 - 2147483648 -- Simulate 32bit integer overflow
