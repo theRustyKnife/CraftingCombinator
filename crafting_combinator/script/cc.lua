@@ -445,4 +445,10 @@ function _M:get_chest_inventory()
 end
 
 
+function _M:update_inner_positions()
+	settings_parser.move_entity(self.entity, self.module_chest.position)
+	self.module_chest.teleport(self.entity.position)
+end
+
+
 return _M

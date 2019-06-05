@@ -28,6 +28,16 @@ local function on_load()
 	rc_control.on_load()
 	cc_rate = settings.global[config.REFRESH_RATE_CC_NAME].value
 	rc_rate = settings.global[config.REFRESH_RATE_RC_NAME].value
+	
+	if remote.interfaces['PickerDollies'] then
+		script.on_event(remote.call('PickerDollies', 'dolly_moved_entity_id'), function(event)
+			local entity = event.moved_entity
+			local combinator
+			if entity.name == config.CC_NAME then combinator = global.cc.data[entity.unit_number]
+			elseif entity.name == config.RC_NAME then combinator = global.rc.data[entity.unit_number]; end
+			if combinator then combinator:update_inner_positions(); end
+		end)
+	end
 end
 
 script.on_init(function()

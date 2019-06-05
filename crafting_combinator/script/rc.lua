@@ -182,4 +182,10 @@ function _M:on_text_changed(name, text)
 end
 
 
+function _M:update_inner_positions()
+	settings_parser.move_entity(self.entity, self.output_proxy.position)
+	self.output_proxy.teleport(self.entity.position)
+end
+
+
 return _M
