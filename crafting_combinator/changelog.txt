@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.10.16
+Date: 05. 06. 2019
+  Bugfixes:
+    - Fixed several issues with combinators moved using Picker Dollies (https://mods.factorio.com/mod/PickerDollies) (https://mods.factorio.com/mod/crafting_combinator/discussion/5cf3fd85c2846d000bce5896)
+---------------------------------------------------------------------------------------------------
 Version: 0.10.15
 Date: 02. 06. 2019
   Bugfixes:
