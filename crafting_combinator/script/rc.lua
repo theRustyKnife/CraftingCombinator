@@ -137,7 +137,7 @@ function _M:find_ingredients_and_products(forced)
 			
 			table.insert(params, {
 				signal = {type = 'virtual', name = config.TIME_SIGNAL_NAME},
-				count = math.floor(tonumber(recipe.energy) * self.settings.time_multiplier),
+				count = math.floor(tonumber(recipe.energy) * self.settings.time_multiplier * crafting_multiplier),
 				index = config.RC_SLOT_COUNT,
 			})
 		end
