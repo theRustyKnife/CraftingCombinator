@@ -103,7 +103,7 @@ local function get_locale(recipe)
 	elseif item and item.localised_name then key = item.localised_name
 	elseif result_item and result_item.type == 'fluid' then key = {'fluid-name.'..result_item.name}
 	elseif result_item then key = {'item-name.'..result_item.name}
-	elseif item and item.place_result then key = {'entity-name.'..result_item.place_result}
+	elseif item and item.place_result then key = {'entity-name.'..item.place_result}
 	elseif item and item.placed_as_equipment_result then key = {'equipment-name.'..item.placed_as_equipment_result}
 	end
 	return {'crafting_combinator.recipe-locale', key}
