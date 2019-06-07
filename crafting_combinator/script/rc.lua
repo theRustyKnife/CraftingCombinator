@@ -91,9 +91,10 @@ function _M:find_recipe()
 			self.entity.force.recipes)
 	count = self.settings.multiply_by_input and count or 1
 	for _, recipe in pairs(recipes) do
+		local recipe_count = self.settings.divide_by_output and math.ceil(count/recipe.count) or count
 		table.insert(params, {
-			signal = recipe_selector.get_signal(recipe),
-			count = count,
+			signal = recipe_selector.get_signal(recipe.name),
+			count = recipe_count,
 			index = index,
 		})
 		index = index + 1
@@ -124,6 +125,7 @@ function _M:find_ingredients_and_products(forced)
 						self.settings.mode == 'ing' and recipe.ingredients or {}
 					) do
 				local t_amount = tonumber(ing.amount or ing.amount_min or ing.amount_max) * crafting_multiplier
+				--t_amount = t_amount * (tonumber(ing.probability) or 1) --this is only the expected amount
 				local amount = math.floor(t_amount)
 				if t_amount % 1 > 0 then amount = amount + 1; end
 				amount = (amount + 2147483648) % 4294967296 - 2147483648 -- Simulate 32bit integer overflow
