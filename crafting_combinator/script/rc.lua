@@ -24,9 +24,8 @@ function _M.init_global()
 	global.rc.ordered = global.rc.ordered or {}
 	local crafting_machines = {}
 	for name,prototype in pairs(game.entity_prototypes) do
-		if prototype.crafting_categories and prototype.type ~= "character" then
+		if prototype.crafting_categories and game.forces[1].recipes[name] then
 			for categorie in pairs(prototype.crafting_categories) do
-				log( categorie .. " with " .. name .. " is " .. prototype.type)
 				crafting_machines[categorie] = crafting_machines[categorie] or {}
 				table.insert(crafting_machines[categorie],name)
 			end
@@ -164,11 +163,14 @@ function _M:find_machines(forced)
 		local params = {}
 		if recipe and recipe.category then
 			for i, mac in pairs(global.rc.machines[recipe.category] or {}) do
-				table.insert(params, {
-					signal = recipe_selector.get_signal(mac),
-					count = 1,
-					index = i,
-				})
+				local mac_res = self.entity.force.recipes[mac]
+				if mac_res and mac_res.enabled then
+					table.insert(params, {
+						signal = recipe_selector.get_signal(mac),
+						count = self.settings.multiply_by_input and input_count or 1,
+						index = i,
+					})
+				end
 			end
 		end
 		self.control_behavior.parameters = {enabled = true, parameters = params}
