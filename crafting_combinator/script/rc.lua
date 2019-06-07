@@ -22,6 +22,17 @@ function _M.init_global()
 	global.rc = global.rc or {}
 	global.rc.data = global.rc.data or {}
 	global.rc.ordered = global.rc.ordered or {}
+	local crafting_machines = {}
+	for name,prototype in pairs(game.entity_prototypes) do
+		if prototype.crafting_categories and prototype.type ~= "character" then
+			for categorie in pairs(prototype.crafting_categories) do
+				log( categorie .. " with " .. name .. " is " .. prototype.type)
+				crafting_machines[categorie] = crafting_machines[categorie] or {}
+				table.insert(crafting_machines[categorie],name)
+			end
+		end
+	end
+	global.rc.machines = crafting_machines
 end
 
 function _M.on_load()
@@ -78,8 +89,13 @@ function _M.destroy(entity)
 end
 
 function _M:update(forced)
-	if self.settings.mode ~= 'rec' then self:find_ingredients_and_products(forced); end
-	if self.settings.mode == 'rec' then self:find_recipe(); end
+	if self.settings.mode == 'rec' then
+		self:find_recipe()
+	elseif self.settings.mode == 'mac' then
+		self:find_machines(forced);
+	else
+		self:find_ingredients_and_products(forced);
+	end
 end
 
 function _M:find_recipe()
@@ -140,6 +156,26 @@ function _M:find_ingredients_and_products(forced)
 end
 
 
+function _M:find_machines(forced)
+	local recipe, input_count = recipe_selector.get_recipe(self.entity, nil, defines.circuit_connector_id.combinator_input)
+
+	if self.recipe ~= recipe or forced then
+		self.recipe = recipe
+		local params = {}
+		if recipe and recipe.category then
+			for i, mac in pairs(global.rc.machines[recipe.category] or {}) do
+				table.insert(params, {
+					signal = recipe_selector.get_signal(mac),
+					count = 1,
+					index = i,
+				})
+			end
+		end
+		self.control_behavior.parameters = {enabled = true, parameters = params}
+	end
+end
+
+
 function _M:open(player_index)
 	gui.entity(self.entity, {
 		gui.section {
@@ -147,6 +183,7 @@ function _M:open(player_index)
 			gui.radio('ing', self.settings.mode, 'mode-ing'),
 			gui.radio('prod', self.settings.mode, 'mode-prod'),
 			gui.radio('rec', self.settings.mode, 'mode-rec'),
+			gui.radio('mac', self.settings.mode, 'mode-mac'),
 		},
 		gui.section {
 			name = 'misc',
