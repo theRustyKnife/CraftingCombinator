@@ -42,9 +42,9 @@ local function on_load()
 end
 
 script.on_init(function()
-	update_bottleneck()
 	cc_control.init_global()
 	rc_control.init_global()
+	update_bottleneck()
 	on_load()
 end)
 script.on_load(on_load)
