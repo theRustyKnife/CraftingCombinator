@@ -71,19 +71,4 @@ function _M.get_signal(recipe)
 end
 
 
-function _M.calculate_crafting_amount(recipe, signal, count)
-	-- count when the signal is a recipe
-	local amount = count
-	for i, prod in pairs(recipe.products) do
-		if prod.type == signal.type and prod.name == signal.name then
-			-- when it is a product return how often you have to do the recipe
-			amount = tonumber(prod.amount or prod.amount_min or prod.amount_max)
-			amount = math.ceil(count / amount)
-			break
-		end
-	end
-	return amount
-end
-
-
 return _M

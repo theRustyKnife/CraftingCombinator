@@ -117,9 +117,6 @@ function _M:find_ingredients_and_products(forced)
 			if self.settings.multiply_by_input then
 				crafting_multiplier = input_count
 			end
-			if self.settings.divide_by_output then
-				crafting_multiplier = recipe_selector.calculate_crafting_amount(recipe, signal, crafting_multiplier)
-			end
 			for i, ing in pairs(
 						self.settings.mode == 'prod' and recipe.products or
 						self.settings.mode == 'ing' and recipe.ingredients or {}
