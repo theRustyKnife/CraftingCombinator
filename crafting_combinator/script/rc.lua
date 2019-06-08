@@ -176,14 +176,14 @@ function _M:on_checked_changed(name, state, element)
 				el.state = el_name == 'mode:'..name
 			end
 		end
-	end
-	if category == 'misc' then
-		self.settings[name] = state
-		if name == 'multiply_by_input' then
-			element.parent.children[2].enabled = state
-			element.parent.children[2].state = false
+		local divide_box = element.parent.parent.children[3].children[2]
+		if (name == 'rec') ~= divide_box.enabled then
+			divide_box.enabled = name == 'rec'
+			divide_box.state = false
+			self.settings.divide_by_output = false
 		end
 	end
+	if category == 'misc' then self.settings[name] = state; end
 	
 	self.settings_parser:update(self.entity, self.settings)
 	self:update(true)
