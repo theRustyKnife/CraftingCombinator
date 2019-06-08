@@ -177,7 +177,13 @@ function _M:on_checked_changed(name, state, element)
 			end
 		end
 	end
-	if category == 'misc' then self.settings[name] = state; end
+	if category == 'misc' then
+		self.settings[name] = state
+		if name == 'multiply_by_input' then
+			element.parent.children[2].enabled = state
+			element.parent.children[2].state = false
+		end
+	end
 	
 	self.settings_parser:update(self.entity, self.settings)
 	self:update(true)
