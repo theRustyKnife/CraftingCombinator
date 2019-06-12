@@ -44,7 +44,7 @@ return {
 	
 	MODULE_CHEST_SIZE = 100,
 	
-	RC_SLOT_COUNT = 20,
+	RC_SLOT_COUNT = 40,
 	
 	-- Recipes matching any of these strings will not get a virtual recipe
 	RECIPES_TO_IGNORE = {

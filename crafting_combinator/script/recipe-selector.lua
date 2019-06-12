@@ -34,7 +34,7 @@ function _M.get_highest_signal(signals)
 	return res, count or 0
 end
 
-function _M.get_recipes(signals, recipes)
+function _M.get_recipes(signals, recipes, use_products)
 	if not signals then return {}, 0; end
 	local highest, count = _M.get_highest_signal(signals)
 	if not highest then return {}, 0; end
@@ -47,7 +47,7 @@ function _M.get_recipes(signals, recipes)
 	
 	for name, recipe in pairs(recipes) do
 		if not recipe.hidden and recipe.enabled then
-			for _, product in pairs(recipe.products) do
+			for _, product in pairs(use_products and recipe.products or recipe.ingredients) do
 				if product.name == item.name and (item.type == 'fluid' or item.type == product.type) then
 					local amount = tonumber(product.amount or product.amount_min or product.amount_max) or 1
 					amount = amount * (tonumber(product.probability) or 1)

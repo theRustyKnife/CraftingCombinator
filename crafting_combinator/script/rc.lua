@@ -103,7 +103,7 @@ function _M.destroy(entity)
 end
 
 function _M:update(forced)
-	if self.settings.mode == 'rec' then self:find_recipe()
+	if self.settings.mode == 'rec' or self.settings.mode == 'rec_ing' then self:find_recipe()
 	elseif self.settings.mode == 'mac' then self:find_machines(forced)
 	else self:find_ingredients_and_products(forced); end
 end
@@ -113,7 +113,8 @@ function _M:find_recipe()
 	local index = 1
 	local recipes, count = recipe_selector.get_recipes(
 			self.entity.get_merged_signals(defines.circuit_connector_id.combinator_input),
-			self.entity.force.recipes)
+			self.entity.force.recipes,
+			self.settings.mode == 'rec')
 	count = self.settings.multiply_by_input and count or 1
 	for _, recipe in pairs(recipes) do
 		local recipe_count = self.settings.divide_by_output and math.ceil(count/recipe.count) or count
@@ -123,6 +124,7 @@ function _M:find_recipe()
 			index = index,
 		})
 		index = index + 1
+		if index > config.RC_SLOT_COUNT then break; end
 	end
 	
 	self.control_behavior.parameters = {enabled = true, parameters = params}
@@ -204,10 +206,18 @@ function _M:open(player_index)
 	local root = gui.entity(self.entity, {
 		gui.section {
 			name = 'mode',
+<<<<<<< HEAD
 			gui.radio('ing', self.settings.mode, {locale='mode-ing', tooltip=true}),
 			gui.radio('prod', self.settings.mode, {locale='mode-prod', tooltip=true}),
 			gui.radio('rec', self.settings.mode, {locale='mode-rec', tooltip=true}),
 			gui.radio('mac', self.settings.mode, {locale='mode-mac', tooltip=true}),
+=======
+			gui.radio('ing', self.settings.mode, 'mode-ing'),
+			gui.radio('prod', self.settings.mode, 'mode-prod'),
+			gui.radio('rec_ing', self.settings.mode, 'mode-rec-ing'),
+			gui.radio('rec', self.settings.mode, 'mode-rec'),
+			gui.radio('mac', self.settings.mode, 'mode-mac'),
+>>>>>>> Add recipe by ingredient mode and rename modes
 		},
 		gui.section {
 			name = 'misc',
