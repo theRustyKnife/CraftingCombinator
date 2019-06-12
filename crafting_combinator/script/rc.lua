@@ -22,16 +22,29 @@ function _M.init_global()
 	global.rc = global.rc or {}
 	global.rc.data = global.rc.data or {}
 	global.rc.ordered = global.rc.ordered or {}
-	local crafting_machines = {}
-	for name,prototype in pairs(game.entity_prototypes) do
-		if prototype.crafting_categories and game.forces[1].recipes[name] then
-			for categorie in pairs(prototype.crafting_categories) do
-				crafting_machines[categorie] = crafting_machines[categorie] or {}
-				table.insert(crafting_machines[categorie],name)
+end
+
+function _M.build_machine_cache()
+	_M.item_map = {}
+	_M.category_map = {}
+	for name, prototype in pairs(game.entity_prototypes) do
+		if prototype.crafting_categories and prototype.items_to_place_this then
+			for category in pairs(prototype.crafting_categories) do
+				_M.category_map[category] = _M.category_map[category] or {}
+				for _, item in pairs(prototype.items_to_place_this) do
+					_M.item_map[item.name] = {}
+					table.insert(_M.category_map[category], item.name)
+				end
 			end
 		end
 	end
-	global.rc.machines = crafting_machines
+	for _, recipe in pairs(game.recipe_prototypes) do
+		for _, product in pairs(recipe.products) do
+			if _M.item_map[product.name] ~= nil then
+				table.insert(_M.item_map[product.name], recipe.name)
+			end
+		end
+	end
 end
 
 function _M.on_load()
@@ -158,18 +171,26 @@ end
 function _M:find_machines(forced)
 	local recipe, input_count = recipe_selector.get_recipe(self.entity, nil, defines.circuit_connector_id.combinator_input)
 
-	if self.recipe ~= recipe or forced then
+	if self.recipe ~= recipe or forced or (self.settings.multiply_by_input and self.input_count ~= input_count) then
 		self.recipe = recipe
+		self.input_count = input_count
+		if _M.item_map == nil then _M.build_machine_cache(); end
+
 		local params = {}
+		local index = 1
 		if recipe and recipe.category then
-			for i, mac in pairs(global.rc.machines[recipe.category] or {}) do
-				local mac_res = self.entity.force.recipes[mac]
-				if mac_res and mac_res.enabled then
-					table.insert(params, {
-						signal = recipe_selector.get_signal(mac),
-						count = self.settings.multiply_by_input and input_count or 1,
-						index = i,
-					})
+			for i, item in pairs(_M.category_map[recipe.category] or {}) do
+				for _, recipe in pairs(_M.item_map[item]) do
+					local mac_res = self.entity.force.recipes[recipe]
+					if mac_res and not mac_res.hidden and mac_res.enabled then
+						table.insert(params, {
+							signal = recipe_selector.get_signal(item),
+							count = self.settings.multiply_by_input and input_count or 1,
+							index = i,
+						})
+						index = index + 1
+						break
+					end
 				end
 			end
 		end
