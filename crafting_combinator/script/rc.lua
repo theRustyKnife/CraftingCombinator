@@ -13,6 +13,7 @@ _M.settings_parser = settings_parser {
 	mode = {'m', 'string'},
 	multiply_by_input = {'i', 'bool'},
 	time_multiplier = {'t', 'number'},
+	differ_output = {'d', 'bool'},
 }
 
 
@@ -120,7 +121,7 @@ function _M:find_recipe()
 	for _, recipe in pairs(recipes) do
 		table.insert(params, {
 			signal = recipe_selector.get_signal(recipe),
-			count = count,
+			count = self.settings.differ_output and index or count,
 			index = index,
 		})
 		index = index + 1
@@ -151,7 +152,7 @@ function _M:find_ingredients_and_products(forced)
 				
 				table.insert(params, {
 					signal = {type = ing.type, name = ing.name},
-					count = amount,
+					count = self.settings.differ_output and i or amount,
 					index = i,
 				})
 			end
@@ -185,7 +186,8 @@ function _M:find_machines(forced)
 					if mac_res and not mac_res.hidden and mac_res.enabled then
 						table.insert(params, {
 							signal = recipe_selector.get_signal(item),
-							count = self.settings.multiply_by_input and input_count or 1,
+							count = self.settings.multiply_by_input and input_count or
+								self.settings.differ_output and i or 1,
 							index = i,
 						})
 						index = index + 1
@@ -212,6 +214,7 @@ function _M:open(player_index)
 			name = 'misc',
 			gui.checkbox('multiply-by-input', self.settings.multiply_by_input),
 			gui.number_picker('time-multiplier', self.settings.time_multiplier),
+			gui.checkbox('differ-output', self.settings.differ_output),
 		}
 	}):open(player_index)
 end
