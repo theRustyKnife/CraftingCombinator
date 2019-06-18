@@ -12,6 +12,7 @@ local combinator_mt = {__index = _M}
 _M.settings_parser = settings_parser {
 	mode = {'m', 'string'},
 	multiply_by_input = {'i', 'bool'},
+	divide_by_output = {'o', 'bool'},
 	time_multiplier = {'t', 'number'},
 	differ_output = {'d', 'bool'},
 }
@@ -119,9 +120,10 @@ function _M:find_recipe()
 			self.entity.force.recipes)
 	count = self.settings.multiply_by_input and count or 1
 	for _, recipe in pairs(recipes) do
+		local recipe_count = self.settings.divide_by_output and math.ceil(count/recipe.count) or count
 		table.insert(params, {
-			signal = recipe_selector.get_signal(recipe),
-			count = self.settings.differ_output and index or count,
+			signal = recipe_selector.get_signal(recipe.name),
+			count = self.settings.differ_output and index or recipe_count,
 			index = index,
 		})
 		index = index + 1
@@ -131,7 +133,7 @@ function _M:find_recipe()
 end
 
 function _M:find_ingredients_and_products(forced)
-	local recipe, input_count = recipe_selector.get_recipe(self.entity, nil, defines.circuit_connector_id.combinator_input)
+	local recipe, input_count, signal = recipe_selector.get_recipe(self.entity, nil, defines.circuit_connector_id.combinator_input)
 	
 	if self.recipe ~= recipe or forced or (self.settings.multiply_by_input and self.input_count ~= input_count) then
 		self.recipe = recipe
@@ -140,12 +142,16 @@ function _M:find_ingredients_and_products(forced)
 		local params = {}
 		
 		if recipe then
+			local crafting_multiplier = 1
+			if self.settings.multiply_by_input then
+				crafting_multiplier = input_count
+			end
 			for i, ing in pairs(
 						self.settings.mode == 'prod' and recipe.products or
 						self.settings.mode == 'ing' and recipe.ingredients or {}
 					) do
-				local t_amount = tonumber(ing.amount or ing.amount_min or ing.amount_max)
-				if self.settings.multiply_by_input then t_amount = t_amount * input_count; end
+				local t_amount = tonumber(ing.amount or ing.amount_min or ing.amount_max) * crafting_multiplier
+				--t_amount = t_amount * (tonumber(ing.probability) or 1) --this is only the expected amount
 				local amount = math.floor(t_amount)
 				if t_amount % 1 > 0 then amount = amount + 1; end
 				amount = (amount + 2147483648) % 4294967296 - 2147483648 -- Simulate 32bit integer overflow
@@ -159,7 +165,7 @@ function _M:find_ingredients_and_products(forced)
 			
 			table.insert(params, {
 				signal = {type = 'virtual', name = config.TIME_SIGNAL_NAME},
-				count = math.floor(tonumber(recipe.energy) * self.settings.time_multiplier),
+				count = math.floor(tonumber(recipe.energy) * self.settings.time_multiplier * crafting_multiplier),
 				index = config.RC_SLOT_COUNT,
 			})
 		end
@@ -213,6 +219,7 @@ function _M:open(player_index)
 		gui.section {
 			name = 'misc',
 			gui.checkbox('multiply-by-input', self.settings.multiply_by_input),
+			gui.checkbox('divide-by-output', self.settings.divide_by_output),
 			gui.number_picker('time-multiplier', self.settings.time_multiplier),
 			gui.checkbox('differ-output', self.settings.differ_output),
 		}
@@ -228,6 +235,12 @@ function _M:on_checked_changed(name, state, element)
 				local _, _, el_name = gui.parse_entity_gui_name(el.name)
 				el.state = el_name == 'mode:'..name
 			end
+		end
+		local divide_box = element.parent.parent.children[3].children[2]
+		if (name == 'rec') ~= divide_box.enabled then
+			divide_box.enabled = name == 'rec'
+			divide_box.state = false
+			self.settings.divide_by_output = false
 		end
 	end
 	if category == 'misc' then self.settings[name] = state; end

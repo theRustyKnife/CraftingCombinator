@@ -12,6 +12,7 @@ local function update_bottleneck(changes)
 	if not changes or (changes.mod_changes and changes.mod_changes['Bottleneck']) then
 		if game.active_mods['Bottleneck'] then global.BOTTLENECK_STATES = remote.call('Bottleneck', 'get_states')
 		else global.BOTTLENECK_STATES = nil; end
+		cc_control.on_load()
 	end
 end
 local function enable_recipes()
@@ -41,9 +42,9 @@ local function on_load()
 end
 
 script.on_init(function()
-	update_bottleneck()
 	cc_control.init_global()
 	rc_control.init_global()
+	update_bottleneck()
 	on_load()
 end)
 script.on_load(on_load)
