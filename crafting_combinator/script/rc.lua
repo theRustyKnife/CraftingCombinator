@@ -106,7 +106,7 @@ function _M:update(forced)
 	if self.settings.mode == 'rec' then self:find_recipe()
 	elseif self.settings.mode == 'mac' then self:find_machines(forced)
 	else self:find_ingredients_and_products(forced); end
-	end
+end
 
 function _M:find_recipe()
 	local params = {}
@@ -204,17 +204,17 @@ function _M:open(player_index)
 	local root = gui.entity(self.entity, {
 		gui.section {
 			name = 'mode',
-			gui.radio('ing', self.settings.mode, 'mode-ing'),
-			gui.radio('prod', self.settings.mode, 'mode-prod'),
-			gui.radio('rec', self.settings.mode, 'mode-rec'),
-			gui.radio('mac', self.settings.mode, 'mode-mac'),
+			gui.radio('ing', self.settings.mode, {locale='mode-ing', tooltip=true}),
+			gui.radio('prod', self.settings.mode, {locale='mode-prod', tooltip=true}),
+			gui.radio('rec', self.settings.mode, {locale='mode-rec', tooltip=true}),
+			gui.radio('mac', self.settings.mode, {locale='mode-mac', tooltip=true}),
 		},
 		gui.section {
 			name = 'misc',
-			gui.checkbox('multiply-by-input', self.settings.multiply_by_input),
-			gui.checkbox('divide-by-output', self.settings.divide_by_output),
+			gui.checkbox('multiply-by-input', self.settings.multiply_by_input, {tooltip=true}),
+			gui.checkbox('divide-by-output', self.settings.divide_by_output, {tooltip=true}),
+			gui.checkbox('differ-output', self.settings.differ_output, {tooltip=true}),
 			gui.number_picker('time-multiplier', self.settings.time_multiplier),
-			gui.checkbox('differ-output', self.settings.differ_output),
 		}
 	}):open(player_index)
 	
