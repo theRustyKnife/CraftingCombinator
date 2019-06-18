@@ -246,9 +246,12 @@ end
 
 function _M:udpate_disabled_checkboxes(root)
 	self:disable_checkbox(root, 'misc:divide-by-output', 'divide_by_output',
-			self.settings.mode == 'rec')
+			self.settings.mode == 'rec' and not self.settings.differ_output)
 	self:disable_checkbox(root, 'misc:multiply-by-input', 'multiply_by_input',
-			not self.settings.divide_by_output, true)
+			not self.settings.divide_by_output and not self.settings.differ_output,
+			self.settings.divide_by_output or self.settings.multiply_by_input)
+	self:disable_checkbox(root, 'misc:differ-output', 'differ_output',
+			not self.settings.multiply_by_input)
 end
 
 function _M:disable_checkbox(root, name, setting_name, enable, set_state)
