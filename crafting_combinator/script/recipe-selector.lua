@@ -10,15 +10,16 @@ function _M.get_recipe(entity, items_to_ignore, connector_id)
 	
 	local res = nil
 	local count = nil
+	local return_signal = nil
 	for _, signal in pairs(signals) do
 		local recipe = entity.force.recipes[signal.signal.name]
 		if recipe and recipe.enabled then
 			local c = signal.count - (items_to_ignore[recipe.name] or 0)
-			if count == nil or c > count then res = recipe; count = c; end
+			if count == nil or c > count then res = recipe; count = c; return_signal = signal.signal; end
 		end
 	end
 	
-	return res, count
+	return res, count, return_signal
 end
 
 
@@ -49,7 +50,9 @@ function _M.get_recipes(signals, recipes)
 		if not recipe.hidden and recipe.enabled then
 			for _, product in pairs(recipe.products) do
 				if product.name == item.name and (item.type == 'fluid' or item.type == product.type) then
-					table.insert(res, name)
+					local amount = tonumber(product.amount or product.amount_min or product.amount_max) or 1
+					--amount = amount * (tonumber(product.probability) or 1) --this is only the expected amount
+					table.insert(res, {name=name,count=amount})
 					break
 				end
 			end
