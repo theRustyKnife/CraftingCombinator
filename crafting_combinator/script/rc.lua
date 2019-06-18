@@ -13,8 +13,8 @@ _M.settings_parser = settings_parser {
 	mode = {'m', 'string'},
 	multiply_by_input = {'i', 'bool'},
 	divide_by_output = {'o', 'bool'},
-	time_multiplier = {'t', 'number'},
 	differ_output = {'d', 'bool'},
+	time_multiplier = {'t', 'number'},
 }
 
 
@@ -103,14 +103,10 @@ function _M.destroy(entity)
 end
 
 function _M:update(forced)
-	if self.settings.mode == 'rec' then
-		self:find_recipe()
-	elseif self.settings.mode == 'mac' then
-		self:find_machines(forced);
-	else
-		self:find_ingredients_and_products(forced);
+	if self.settings.mode == 'rec' then self:find_recipe()
+	elseif self.settings.mode == 'mac' then self:find_machines(forced)
+	else self:find_ingredients_and_products(forced); end
 	end
-end
 
 function _M:find_recipe()
 	local params = {}
