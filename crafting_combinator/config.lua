@@ -27,6 +27,7 @@ return {
 		mode = 'ing',
 		multiply_by_input = false,
 		divide_by_output = false,
+		differ_output = false,
 		time_multiplier = 10,
 	},
 	
