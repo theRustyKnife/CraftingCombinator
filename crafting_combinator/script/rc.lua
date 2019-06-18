@@ -147,7 +147,7 @@ end
 
 
 function _M:open(player_index)
-	gui.entity(self.entity, {
+	local root = gui.entity(self.entity, {
 		gui.section {
 			name = 'mode',
 			gui.radio('ing', self.settings.mode, 'mode-ing'),
@@ -161,6 +161,8 @@ function _M:open(player_index)
 			gui.number_picker('time-multiplier', self.settings.time_multiplier),
 		}
 	}):open(player_index)
+	
+	self:hide_divide_checkbox(root)
 end
 
 function _M:on_checked_changed(name, state, element)
