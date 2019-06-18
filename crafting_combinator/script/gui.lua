@@ -18,6 +18,18 @@ local function elem_name(parent, name)
 end
 local function locale(key) return {LOCALE_CATEGORY..'.'..key}; end
 
+local function parse_common_options(options, name)
+	if type(options) == 'string' then options = {locale = options}; end
+	options = options or {}
+	
+	local locale_key = options.locale or name
+	options.locale = locale(locale_key)
+	if options.tooltip == true then options.tooltip = locale_key..'_tooltip'; end
+	options.tooltip = options.tooltip and locale(options.tooltip)
+	
+	return options
+end
+
 
 function _M.find_element(root, name)
 	for _, child in pairs(root.children) do
@@ -129,26 +141,30 @@ function _M.spacer()
 	return specs
 end
 
-function _M.checkbox(name, state, locale_key)
+function _M.checkbox(name, state, options)
+	options = parse_common_options(options, name)
 	local specs = {}
 	function specs:build(root)
 		return root.add {
 			type = 'checkbox',
 			name = elem_name(root, name),
-			caption = locale(locale_key or name),
+			caption = options.locale,
+			tooltip = options.tooltip,
 			state = state and true or false,
 		}
 	end
 	return specs
 end
 
-function _M.radio(name, selected, locale_key)
+function _M.radio(name, selected, options)
+	options = parse_common_options(options, name)
 	local specs = {}
 	function specs:build(root)
 		return root.add {
 			type = 'radiobutton',
 			name = elem_name(root, name),
-			caption = locale(locale_key or name),
+			caption = options.locale,
+			tooltip = options.tooltip,
 			state = selected == name,
 		}
 	end
