@@ -113,18 +113,15 @@ function _M:find_ingredients_and_products(forced)
 		local params = {}
 		
 		if recipe then
-			local crafting_multiplier = 1
-			if self.settings.multiply_by_input then
-				crafting_multiplier = input_count
-			end
+			local crafting_multiplier = self.settings.multiply_by_input and input_count or 1
 			for i, ing in pairs(
 						self.settings.mode == 'prod' and recipe.products or
 						self.settings.mode == 'ing' and recipe.ingredients or {}
 					) do
-				local t_amount = tonumber(ing.amount or ing.amount_min or ing.amount_max) * crafting_multiplier
-				--t_amount = t_amount * (tonumber(ing.probability) or 1) --this is only the expected amount
-				local amount = math.floor(t_amount)
-				if t_amount % 1 > 0 then amount = amount + 1; end
+				local amount = math.ceil(
+					tonumber(ing.amount or ing.amount_min or ing.amount_max) * crafting_multiplier
+					--* (tonumber(ing.probability) or 1) --this is only the expected amount
+				)
 				amount = (amount + 2147483648) % 4294967296 - 2147483648 -- Simulate 32bit integer overflow
 				
 				table.insert(params, {
