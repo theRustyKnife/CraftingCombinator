@@ -173,17 +173,23 @@ function _M:on_checked_changed(name, state, element)
 				el.state = el_name == 'mode:'..name
 			end
 		end
-		local divide_box = element.parent.parent.children[3].children[2]
-		if (name == 'rec') ~= divide_box.enabled then
-			divide_box.enabled = name == 'rec'
-			divide_box.state = false
-			self.settings.divide_by_output = false
-		end
+		
+		self:hide_divide_checkbox(game.get_player(element.player_index).gui.center)
 	end
 	if category == 'misc' then self.settings[name] = state; end
 	
 	self.settings_parser:update(self.entity, self.settings)
 	self:update(true)
+end
+
+function _M:hide_divide_checkbox(root)
+	local checkbox = gui.find_element(root, gui.name(self.entity, 'misc:divide-by-output'))
+	local enable = self.settings.mode == 'rec'
+	if checkbox.enabled ~= enable then
+		checkbox.enabled = enable
+		checkbox.state = false
+		self.settings.divide_by_output = false
+	end
 end
 
 function _M:on_text_changed(name, text)
