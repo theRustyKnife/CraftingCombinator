@@ -46,6 +46,9 @@ function _M.name(...)
 end
 
 
+function _M.get_root(element) return game.get_player(element.player_index).gui.center; end
+
+
 function _M.parse_entity_gui_name(name)
 	local gui_name = name:gsub('^'..MOD_NAME..':', '')
 	local unit_number = gui_name:gsub('^.-:', '')

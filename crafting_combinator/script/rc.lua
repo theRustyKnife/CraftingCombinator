@@ -159,7 +159,7 @@ function _M:open(player_index)
 		}
 	}):open(player_index)
 	
-	self:hide_divide_checkbox(root)
+	self:disable_checkbox(root, 'misc:divide-by-output', 'divide_by_output', self.settings.mode == 'rec')
 end
 
 function _M:on_checked_changed(name, state, element)
@@ -173,7 +173,7 @@ function _M:on_checked_changed(name, state, element)
 			end
 		end
 		
-		self:hide_divide_checkbox(game.get_player(element.player_index).gui.center)
+		self:disable_checkbox(gui.get_root(element), 'misc:divide-by-output', 'divide_by_output', name == 'rec')
 	end
 	if category == 'misc' then self.settings[name] = state; end
 	
@@ -181,13 +181,13 @@ function _M:on_checked_changed(name, state, element)
 	self:update(true)
 end
 
-function _M:hide_divide_checkbox(root)
-	local checkbox = gui.find_element(root, gui.name(self.entity, 'misc:divide-by-output'))
-	local enable = self.settings.mode == 'rec'
+function _M:disable_checkbox(root, name, setting_name, enable, set_state)
+	set_state = set_state or false
+	local checkbox = gui.find_element(root, gui.name(self.entity, name))
 	if checkbox.enabled ~= enable then
 		checkbox.enabled = enable
-		checkbox.state = false
-		self.settings.divide_by_output = false
+		checkbox.state = set_state
+		self.settings[setting_name] = set_state
 	end
 end
 
