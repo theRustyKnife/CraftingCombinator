@@ -10,16 +10,15 @@ function _M.get_recipe(entity, items_to_ignore, connector_id)
 	
 	local res = nil
 	local count = nil
-	local return_signal = nil
 	for _, signal in pairs(signals) do
 		local recipe = entity.force.recipes[signal.signal.name]
 		if recipe and recipe.enabled then
 			local c = signal.count - (items_to_ignore[recipe.name] or 0)
-			if count == nil or c > count then res = recipe; count = c; return_signal = signal.signal; end
+			if count == nil or c > count then res = recipe; count = c; end
 		end
 	end
 	
-	return res, count, return_signal
+	return res, count
 end
 
 

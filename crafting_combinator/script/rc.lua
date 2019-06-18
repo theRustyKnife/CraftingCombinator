@@ -104,7 +104,7 @@ function _M:find_recipe()
 end
 
 function _M:find_ingredients_and_products(forced)
-	local recipe, input_count, signal = recipe_selector.get_recipe(self.entity, nil, defines.circuit_connector_id.combinator_input)
+	local recipe, input_count = recipe_selector.get_recipe(self.entity, nil, defines.circuit_connector_id.combinator_input)
 	
 	if self.recipe ~= recipe or forced or (self.settings.multiply_by_input and self.input_count ~= input_count) then
 		self.recipe = recipe
