@@ -13,10 +13,37 @@ local function build_list(specs, root)
 end
 
 local function elem_name(parent, name)
-	if parent.name and parent.name:match('^'..MOD_NAME) then return parent.name..':'..name
+	if parent and parent.name and parent.name:match('^'..MOD_NAME) then return parent.name..':'..name
 	else return MOD_NAME..':'..name; end
 end
 local function locale(key) return {LOCALE_CATEGORY..'.'..key}; end
+
+
+function _M.find_element(root, name)
+	for _, child in pairs(root.children) do
+		if child.name == '' then
+			local subresult = _M.find_element(child, name)
+			if subresult ~= nil then return subresult; end
+		elseif child.name == name then return child
+		elseif name:sub(1, #child.name) == child.name then return _M.find_element(child, name); end
+	end
+	return nil
+end
+
+function _M.entity_name(entity) return entity.name:match('[^:]*$')..':'..tostring(entity.unit_number); end
+
+function _M.name(...)
+	local args = table.pack(...)
+	local name = MOD_NAME
+	for i=1, args.n do
+		local step = args[i]
+		if type(step) == 'string' then name = name..':'..step
+		elseif type(step) == 'table' then
+			if type(step.__self) == 'userdata' then name = name..':'.._M.entity_name(step); end
+		end
+	end
+	return name
+end
 
 
 function _M.parse_entity_gui_name(name)
