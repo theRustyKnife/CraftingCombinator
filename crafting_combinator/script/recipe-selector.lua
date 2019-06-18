@@ -50,7 +50,7 @@ function _M.get_recipes(signals, recipes)
 			for _, product in pairs(recipe.products) do
 				if product.name == item.name and (item.type == 'fluid' or item.type == product.type) then
 					local amount = tonumber(product.amount or product.amount_min or product.amount_max) or 1
-					--amount = amount * (tonumber(product.probability) or 1) --this is only the expected amount
+					amount = amount * (tonumber(product.probability) or 1)
 					table.insert(res, {name=name,count=amount})
 					break
 				end

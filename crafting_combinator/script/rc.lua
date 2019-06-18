@@ -145,7 +145,7 @@ function _M:find_ingredients_and_products(forced)
 					) do
 				local amount = math.ceil(
 					tonumber(ing.amount or ing.amount_min or ing.amount_max) * crafting_multiplier
-					--* (tonumber(ing.probability) or 1) --this is only the expected amount
+					* (tonumber(ing.probability) or 1)
 				)
 				amount = (amount + 2147483648) % 4294967296 - 2147483648 -- Simulate 32bit integer overflow
 				
