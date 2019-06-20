@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.11.1
+Date: 20. 06. 2019
+  Bugfixes:
+    - Fixed inconsistent vary signal strengths in machine mode (https://github.com/theRustyKnife/CraftingCombinator/pull/51)
+  Changes:
+    - Added missing German locale (https://github.com/theRustyKnife/CraftingCombinator/pull/50)
+---------------------------------------------------------------------------------------------------
 Version: 0.11.0
 Date: 18. 06. 2019
   Features:
