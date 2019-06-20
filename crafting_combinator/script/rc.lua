@@ -179,15 +179,15 @@ function _M:find_machines(forced)
 		local params = {}
 		local index = 1
 		if recipe and recipe.category then
-			for i, item in pairs(_M.category_map[recipe.category] or {}) do
+			for _, item in pairs(_M.category_map[recipe.category] or {}) do
 				for _, recipe in pairs(_M.item_map[item]) do
 					local mac_res = self.entity.force.recipes[recipe]
 					if mac_res and not mac_res.hidden and mac_res.enabled then
 						table.insert(params, {
 							signal = recipe_selector.get_signal(item),
 							count = self.settings.multiply_by_input and input_count or
-								self.settings.differ_output and i or 1,
-							index = i,
+								self.settings.differ_output and index or 1,
+							index = index,
 						})
 						index = index + 1
 						break
