@@ -417,7 +417,9 @@ function _M:find_assembler(assembler_to_ignore)
 		position = util.position(self.entity.position):shift(self.entity.direction, config.ASSEMBLER_DISTANCE),
 		type = 'assembling-machine',
 	}[1]
-	if self.assembler == assembler_to_ignore then self.assembler = nil; end
+	if self.assembler and (self.assembler == assembler_to_ignore or self.assembler.prototype.fixed_recipe) then
+		self.assembler = nil
+	end
 	
 	if self.assembler then
 		self.inventories.assembler = {
