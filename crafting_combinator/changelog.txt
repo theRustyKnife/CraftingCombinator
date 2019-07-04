@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.11.2
+Date: 04. 07. 2019
+  Bugfixes:
+    - Fixed that crafting combinators could change recipes of assemblers with a fixed recipe (https://mods.factorio.com/mod/crafting_combinator/discussion/5d1d3623cde101000dd8b0b2)
+---------------------------------------------------------------------------------------------------
 Version: 0.11.1
 Date: 20. 06. 2019
   Bugfixes:
