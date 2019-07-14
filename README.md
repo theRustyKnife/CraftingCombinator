@@ -23,8 +23,8 @@ The signal with highest count will be selected.
 Send a recipe signal to the input side. Then depending on the configuration, the outputs will appear on the other end.
 - Ingredient mode will output the ingredients of the recipe
 - Product mode will output the products of the recipe
-- Recipe of an ingredient mode will output the signals for recipes that consume the given item
-- Recipe of a pruduct mode will output the signals for recipes that produce the given item
+- Recipe-of-an-ingredient mode will output the signals for recipes that consume the given item
+- Recipe-of-a-product mode will output the signals for recipes that produce the given item
 - Machine mode will output the buildings in which the given item can be made
 
 **You can discuss and ask questions on the [forum](https://forums.factorio.com/viewtopic.php?f=93&t=34405)!**
