@@ -34,5 +34,5 @@ Thanks to [Nexela](https://mods.factorio.com/mods/Nexela) it is no longer necess
 
 # Credits #
 **[LuziferSenpai](https://mods.factorio.com/mods/LuziferSenpai) for the original idea and some of the code.**  
-[MPX](https://mods.factorio.com/mods/MPX) for the german locale and some of the code.
-[me](https://mods.factorio.com/mods/theRustyKnife) for the rest of the code.  
+[MPX](https://mods.factorio.com/mods/MPX) for the german locale and some of the code.  
+[Me](https://mods.factorio.com/mods/theRustyKnife) for the rest of the code.  
