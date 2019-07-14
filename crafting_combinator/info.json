@@ -7,5 +7,5 @@
 	"description": "Includes combinators that allow you to set or read the recipe of any crafting machine, get ingredients or products of a recipe and more!",
 	"dependencies": ["base>=0.17.35", "?Bottleneck>=0.7.3",
 		"(?)omnimatter", "(?)omnimatter_compression", "(?)omnimatter_permutation", "(?)omnimatter_crystal",
-		"(?)ZRecycling", "(?)compressor", "(?)quarry", "(?)WhistleStopFactories", "(?)creative-mod"]
+		"(?)ZRecycling", "(?)compressor", "(?)quarry", "(?)WhistleStopFactories", "(?)creative-mod", "(?)pypetroleumhandling"]
 }
