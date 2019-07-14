@@ -206,18 +206,11 @@ function _M:open(player_index)
 	local root = gui.entity(self.entity, {
 		gui.section {
 			name = 'mode',
-<<<<<<< HEAD
 			gui.radio('ing', self.settings.mode, {locale='mode-ing', tooltip=true}),
 			gui.radio('prod', self.settings.mode, {locale='mode-prod', tooltip=true}),
+			gui.radio('rec_ing', self.settings.mode, {locale='mode-rec-ing', tooltip=true}),
 			gui.radio('rec', self.settings.mode, {locale='mode-rec', tooltip=true}),
 			gui.radio('mac', self.settings.mode, {locale='mode-mac', tooltip=true}),
-=======
-			gui.radio('ing', self.settings.mode, 'mode-ing'),
-			gui.radio('prod', self.settings.mode, 'mode-prod'),
-			gui.radio('rec_ing', self.settings.mode, 'mode-rec-ing'),
-			gui.radio('rec', self.settings.mode, 'mode-rec'),
-			gui.radio('mac', self.settings.mode, 'mode-mac'),
->>>>>>> Add recipe by ingredient mode and rename modes
 		},
 		gui.section {
 			name = 'misc',
