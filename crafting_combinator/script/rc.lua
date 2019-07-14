@@ -116,8 +116,9 @@ function _M:find_recipe()
 			self.entity.force.recipes,
 			self.settings.mode == 'rec')
 	count = self.settings.multiply_by_input and count or 1
+	local round = self.settings.mode == 'rec_ing' and math.floor or math.ceil
 	for _, recipe in pairs(recipes) do
-		local recipe_count = self.settings.divide_by_output and math.ceil(count/recipe.count) or count
+		local recipe_count = self.settings.divide_by_output and round(count/recipe.count) or count
 		table.insert(params, {
 			signal = recipe_selector.get_signal(recipe.name),
 			count = self.settings.differ_output and index or recipe_count,
@@ -245,7 +246,7 @@ end
 
 function _M:udpate_disabled_checkboxes(root)
 	self:disable_checkbox(root, 'misc:divide-by-output', 'divide_by_output',
-			self.settings.mode == 'rec' and not self.settings.differ_output)
+			(self.settings.mode == 'rec' or self.settings.mode == 'rec_ing') and not self.settings.differ_output)
 	self:disable_checkbox(root, 'misc:multiply-by-input', 'multiply_by_input',
 			not self.settings.divide_by_output and not self.settings.differ_output,
 			self.settings.divide_by_output or self.settings.multiply_by_input)
