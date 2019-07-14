@@ -65,7 +65,9 @@ end
 function _M.get_signal(recipe)
 	return {
 		name = recipe,
-		type = (game.item_prototypes[recipe] and 'item') or (game.fluid_prototypes[recipe] and 'fluid') or 'virtual'
+		type = (game.item_prototypes[recipe] and 'item') or 
+			(game.fluid_prototypes[recipe] and 'fluid') or 
+			(game.virtual_signal_prototypes[recipe] and 'virtual') or 'invalid'
 	}
 end
 

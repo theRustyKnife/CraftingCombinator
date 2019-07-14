@@ -122,7 +122,11 @@ function _M:find_recipe()
 			count = self.settings.differ_output and index or recipe_count,
 			index = index,
 		})
-		index = index + 1
+		if params[#params].signal.type == 'invalid' then
+			params[#params] = nil
+		else
+			index = index + 1
+		end
 	end
 	
 	self.control_behavior.parameters = {enabled = true, parameters = params}
@@ -189,7 +193,11 @@ function _M:find_machines(forced)
 								self.settings.differ_output and index or 1,
 							index = index,
 						})
-						index = index + 1
+						if params[#params].signal.type == 'invalid' then
+							params[#params] = nil
+						else
+							index = index + 1
+						end
 						break
 					end
 				end
