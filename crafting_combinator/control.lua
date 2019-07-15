@@ -1,3 +1,5 @@
+require 'script.bootstrap'
+
 local config = require 'config'
 local cc_control = require 'script.cc'
 local rc_control = require 'script.rc'
