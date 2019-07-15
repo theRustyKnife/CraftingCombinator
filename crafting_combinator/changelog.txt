@@ -3,9 +3,9 @@ Version:
 Date:
   Features:
   Bugfixes:
+    - Fixed crashes when unknown mods add recipes in data-final-fixes.lua
   Changes:
-Version: 0.11.3
-Date: 15. 07. 2019
+    - Added compatibility for Pyanodons Petroleum Handling (https://mods.factorio.com/mod/pypetroleumhandling)
 ---------------------------------------------------------------------------------------------------
 Version: 0.11.2
 Date: 04. 07. 2019
