@@ -3,6 +3,7 @@ Version:
 Date:
   Features:
   Bugfixes:
+    - Fixed missing names and icons of generated signals
   Changes:
 ---------------------------------------------------------------------------------------------------
 Version: 0.11.2
