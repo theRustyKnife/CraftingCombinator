@@ -1,7 +1,7 @@
 local config = require 'config'
 
 
-local item_types = {}
+local item_types = {"fluid"} -- so that fluids have names and icons too (without stack_size)
 for type, prototypes in pairs(data.raw) do
 	-- Anything that's an item has to have the stack_size property, so that's how we find item types
 	local key, value = next(prototypes)
@@ -90,21 +90,20 @@ local function get_icons(recipe)
 end
 
 local function get_locale(recipe)
-	local item, result_item
+	local item
 	local results = get_possible_results(recipe)
 	for _, type in pairs(item_types) do
-		item = data.raw[type][recipe.name]
-		result_item = data.raw[type][results[1]]
-		if item or result_item then break; end
+		item = data.raw[type][recipe.name] or data.raw[type][results[1]]
+		if item then break; end
 	end
 	
 	local key = {'recipe-name.'..recipe.name}
 	if recipe.localised_name then key = recipe.localised_name
 	elseif item and item.localised_name then key = item.localised_name
-	elseif result_item and result_item.type == 'fluid' then key = {'fluid-name.'..result_item.name}
-	elseif result_item then key = {'item-name.'..result_item.name}
+	elseif item and item.type == 'fluid' then key = {'fluid-name.'..item.name}
 	elseif item and item.place_result then key = {'entity-name.'..item.place_result}
 	elseif item and item.placed_as_equipment_result then key = {'equipment-name.'..item.placed_as_equipment_result}
+	elseif item then key = {'item-name.'..item.name}
 	end
 	return {'crafting_combinator.recipe-locale', key}
 end
@@ -116,8 +115,9 @@ local function get_order(recipe)
 end
 
 
-for name, recipe in pairs(data.raw['recipe']) do
+local function make_signal_for_recipe(name, recipe)
 	if needs_signal(recipe) then
+		print("Generating virtual signal for recipe `"..tostring(name).."`")
 		local subgroup = config.UNSORTED_RECIPE_SUBGROUP
 		if recipe.subgroup then
 			local group = data.raw['item-group'][data.raw['item-subgroup'][recipe.subgroup].group]
@@ -143,3 +143,16 @@ for name, recipe in pairs(data.raw['recipe']) do
 		}}
 	end
 end
+
+
+-- Generate signals for all existing recipes that need it
+for name, recipe in pairs(data.raw['recipe']) do make_signal_for_recipe(name, recipe); end
+
+-- Listen for other mods adding recipes beyond this point and make signals for them if necessary
+--TODO: Make this preserve the original metatable if there is one
+setmetatable(data.raw['recipe'], {
+	__newindex = function(self, key, value)
+		rawset(self, key, value)
+		make_signal_for_recipe(key, value)
+	end
+})
