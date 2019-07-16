@@ -2,7 +2,7 @@
 Version:
 Date:
   Features:
-    - Added recipe by ingredient mode to recipe combinator (https://github.com/theRustyKnife/CraftingCombinator/pull/55/)
+    - Added usage mode to recipe combinator (https://github.com/theRustyKnife/CraftingCombinator/pull/55/)
   Bugfixes:
   Changes:
 ---------------------------------------------------------------------------------------------------
