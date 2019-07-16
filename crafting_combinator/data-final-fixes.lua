@@ -116,8 +116,9 @@ local function get_order(recipe)
 end
 
 
-for name, recipe in pairs(data.raw['recipe']) do
+local function make_signal_for_recipe(name, recipe)
 	if needs_signal(recipe) then
+		print("Generating virtual signal for recipe `"..tostring(name).."`")
 		local subgroup = config.UNSORTED_RECIPE_SUBGROUP
 		if recipe.subgroup then
 			local group = data.raw['item-group'][data.raw['item-subgroup'][recipe.subgroup].group]
@@ -143,3 +144,16 @@ for name, recipe in pairs(data.raw['recipe']) do
 		}}
 	end
 end
+
+
+-- Generate signals for all existing recipes that need it
+for name, recipe in pairs(data.raw['recipe']) do make_signal_for_recipe(name, recipe); end
+
+-- Listen for other mods adding recipes beyond this point and make signals for them if necessary
+--TODO: Make this preserve the original metatable if there is one
+setmetatable(data.raw['recipe'], {
+	__newindex = function(self, key, value)
+		rawset(self, key, value)
+		make_signal_for_recipe(key, value)
+	end
+})
