@@ -103,7 +103,7 @@ function _M.destroy(entity)
 end
 
 function _M:update(forced)
-	if self.settings.mode == 'rec' then self:find_recipe()
+	if self.settings.mode == 'rec' or self.settings.mode == 'use' then self:find_recipe()
 	elseif self.settings.mode == 'mac' then self:find_machines(forced)
 	else self:find_ingredients_and_products(forced); end
 end
@@ -113,16 +113,19 @@ function _M:find_recipe()
 	local index = 1
 	local recipes, count = recipe_selector.get_recipes(
 			self.entity.get_merged_signals(defines.circuit_connector_id.combinator_input),
-			self.entity.force.recipes)
+			self.entity.force.recipes,
+			self.settings.mode == 'rec')
 	count = self.settings.multiply_by_input and count or 1
+	local round = self.settings.mode == 'use' and math.floor or math.ceil
 	for _, recipe in pairs(recipes) do
-		local recipe_count = self.settings.divide_by_output and math.ceil(count/recipe.count) or count
+		local recipe_count = self.settings.divide_by_output and round(count/recipe.count) or count
 		table.insert(params, {
 			signal = recipe_selector.get_signal(recipe.name),
 			count = self.settings.differ_output and index or recipe_count,
 			index = index,
 		})
 		index = index + 1
+		if index > config.RC_SLOT_COUNT then break; end
 	end
 	
 	self.control_behavior.parameters = {enabled = true, parameters = params}
@@ -206,6 +209,7 @@ function _M:open(player_index)
 			name = 'mode',
 			gui.radio('ing', self.settings.mode, {locale='mode-ing', tooltip=true}),
 			gui.radio('prod', self.settings.mode, {locale='mode-prod', tooltip=true}),
+			gui.radio('use', self.settings.mode, {locale='mode-use', tooltip=true}),
 			gui.radio('rec', self.settings.mode, {locale='mode-rec', tooltip=true}),
 			gui.radio('mac', self.settings.mode, {locale='mode-mac', tooltip=true}),
 		},
@@ -242,7 +246,7 @@ end
 
 function _M:udpate_disabled_checkboxes(root)
 	self:disable_checkbox(root, 'misc:divide-by-output', 'divide_by_output',
-			self.settings.mode == 'rec' and not self.settings.differ_output)
+			(self.settings.mode == 'rec' or self.settings.mode == 'use') and not self.settings.differ_output)
 	self:disable_checkbox(root, 'misc:multiply-by-input', 'multiply_by_input',
 			not self.settings.divide_by_output and not self.settings.differ_output,
 			self.settings.divide_by_output or self.settings.multiply_by_input)

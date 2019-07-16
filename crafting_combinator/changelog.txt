@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version:
+Date:
+  Features:
+    - Added usage mode to recipe combinator (https://github.com/theRustyKnife/CraftingCombinator/pull/55/)
+  Bugfixes:
+  Changes:
+---------------------------------------------------------------------------------------------------
 Version: 0.11.2
 Date: 04. 07. 2019
   Bugfixes:
