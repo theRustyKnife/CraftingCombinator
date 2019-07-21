@@ -89,6 +89,13 @@ data:extend {
 		inventory_size = config.MODULE_CHEST_SIZE,
 		picture = trans,
 		minable = {mining_time = 0.2, result = cc.name},
+		
+		-- Disguise the chest as the combinator itself, so it looks right in deconstruction planner filters
+		localised_name = {'entity-name.crafting_combinator:crafting-combinator'},
+		icon = cc.icon,
+		icon_size = cc.icon_size,
+		subgroup = cc_item.subgroup,
+		order = 'z-'..cc_item.order, -- For some reason the z- prefix is added to auto-generated order strings
 	},
 	{
 		type = 'item',
