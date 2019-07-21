@@ -4,6 +4,7 @@ Date:
   Features:
     - Added usage mode to recipe combinator (https://github.com/theRustyKnife/CraftingCombinator/pull/55/)
   Bugfixes:
+    - Fixed missing names and icons of generated signals
   Changes:
 ---------------------------------------------------------------------------------------------------
 Version: 0.11.2
