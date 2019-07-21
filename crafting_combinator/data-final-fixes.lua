@@ -176,11 +176,13 @@ end
 -- Generate signals for all existing recipes that need it
 for name, recipe in pairs(data.raw['recipe']) do process_recipe(name, recipe); end
 
+
+local raw_recipe_mt = getmetatable(data.raw['recipe']) or {}
+setmetatable(data.raw['recipe'], raw_recipe_mt)
+
 -- Listen for other mods adding recipes beyond this point and make signals for them if necessary
---TODO: Make this preserve the original metatable if there is one
-setmetatable(data.raw['recipe'], {
-	__newindex = function(self, key, value)
-		rawset(self, key, value)
-		process_recipe(key, value)
-	end
-})
+local super_newindex = raw_recipe_mt.__newindex or rawset
+function raw_recipe_mt.__newindex(self, key, value)
+	process_recipe(key, value)
+	super_newindex(self, key, value)
+end
