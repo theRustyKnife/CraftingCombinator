@@ -1,11 +1,12 @@
 ---------------------------------------------------------------------------------------------------
-Version:
-Date:
+Version: 0.12.0
+Date: 21. 07. 2019
   Features:
     - Added usage mode to recipe combinator (https://github.com/theRustyKnife/CraftingCombinator/pull/55/)
   Bugfixes:
-    - Fixed missing names and icons of generated signals
-  Changes:
+    - Fixed missing names and icons of generated signals (https://github.com/theRustyKnife/CraftingCombinator/pull/57)
+    - Fixed that mods adding recipes in data-final-fixes.lua could cause a crash (https://github.com/theRustyKnife/CraftingCombinator/pull/56)
+    - Disguised the module chest as the craftgin combinator, so it looks right in deconstruction planner filters (https://github.com/theRustyKnife/CraftingCombinator/issues/54)
 ---------------------------------------------------------------------------------------------------
 Version: 0.11.2
 Date: 04. 07. 2019
