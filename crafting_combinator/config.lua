@@ -45,6 +45,8 @@ return {
 	MODULE_CHEST_SIZE = 100,
 	
 	RC_SLOT_COUNT = 40,
+	-- This is the number of extra slots on top of the max ingredient count
+	RC_SLOT_RESERVE = 5, -- 5 is arbitrary, but large enough
 	
 	-- Recipes matching any of these strings will not get a virtual recipe
 	RECIPES_TO_IGNORE = {

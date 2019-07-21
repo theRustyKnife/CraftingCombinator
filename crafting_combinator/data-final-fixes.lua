@@ -71,6 +71,20 @@ local function get_possible_results(recipe)
 	return res
 end
 
+local function get_max_ingredient_count(recipe)
+	local max = 0
+	local function check(tab)
+		local size = type(tab.ingredients) == 'table' and table_size(tab.ingredients) or 0
+		if size > max then max = size; end
+	end
+	
+	check(recipe)
+	if recipe.expensive then check(recipe.expensive); end
+	if recipe.normal then check(recipe.normal); end
+	
+	return max
+end
+
 local function get_icons(recipe)
 	if recipe.icon then return {{icon = recipe.icon}}; end
 	if recipe.icons then return recipe.icons; end
@@ -145,14 +159,28 @@ local function make_signal_for_recipe(name, recipe)
 end
 
 
+local rc = data.raw['constant-combinator'][config.RC_PROXY_NAME]
+local function process_recipe(name, recipe)
+	make_signal_for_recipe(name, recipe)
+	
+	-- Expand the rc slots, just in case there is some insance recipe with a hundred ingredients or something...
+	local required_slots = get_max_ingredient_count(recipe) + config.RC_SLOT_RESERVE
+	if required_slots > rc.item_slot_count then
+		print(("Expanding rc slots to %d"):format(required_slots))
+		rc.item_slot_count = required_slots
+	end
+	--TODO: Do the same for products?
+end
+
+
 -- Generate signals for all existing recipes that need it
-for name, recipe in pairs(data.raw['recipe']) do make_signal_for_recipe(name, recipe); end
+for name, recipe in pairs(data.raw['recipe']) do process_recipe(name, recipe); end
 
 -- Listen for other mods adding recipes beyond this point and make signals for them if necessary
 --TODO: Make this preserve the original metatable if there is one
 setmetatable(data.raw['recipe'], {
 	__newindex = function(self, key, value)
 		rawset(self, key, value)
-		make_signal_for_recipe(key, value)
+		process_recipe(key, value)
 	end
 })
