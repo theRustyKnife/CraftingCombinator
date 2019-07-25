@@ -144,8 +144,17 @@ local function get_order(recipe)
 end
 
 
+local recipes_waiting_for_groups = {}
+
 local function make_signal_for_recipe(name, recipe)
 	if needs_signal(recipe) then
+		if data.raw['item-subgroup'][recipe.subgroup] == nil then
+			print("Recipe `"..tostring(name).."` needs subgroup `"..tostring(recipe.subgroup).."` which doesn't exist yet - waiting for it to be created...")
+			recipes_waiting_for_groups[recipe.subgroup] = recipes_waiting_for_groups[recipe.subgroup] or {}
+			table.insert(recipes_waiting_for_groups[recipe.subgroup], recipe)
+			return
+		end
+		
 		print("Generating virtual signal for recipe `"..tostring(name).."`")
 		local subgroup = config.UNSORTED_RECIPE_SUBGROUP
 		if recipe.subgroup then
@@ -212,12 +221,29 @@ end
 for name, recipe in pairs(data.raw['recipe']) do process_recipe(name, recipe); end
 
 
-local raw_recipe_mt = getmetatable(data.raw['recipe']) or {}
-setmetatable(data.raw['recipe'], raw_recipe_mt)
+local function hook_newindex(table, hook)
+	local raw_mt = getmetatable(table) or {}
+	setmetatable(table, raw_mt)
+	local super_newindex = raw_mt.__newindex or rawset
+	function raw_mt.__newindex(self, key, value)
+		hook(self, key, value, function() return super_newindex(self, key, value); end)
+	end
+end
+
 
 -- Listen for other mods adding recipes beyond this point and make signals for them if necessary
-local super_newindex = raw_recipe_mt.__newindex or rawset
-function raw_recipe_mt.__newindex(self, key, value)
+hook_newindex(data.raw['recipe'], function(self, key, value, super)
 	if value ~= nil then process_recipe(key, value); end --TODO: Remove signals for recipes that get removed
-	super_newindex(self, key, value)
-end
+	super()
+end)
+
+--Listen for other mods adding subgroups, so we can finish processing recipes that need them
+hook_newindex(data.raw['item-subgroup'], function(self, key, value, super)
+	super()
+	
+	local recipes = recipes_waiting_for_groups[key]
+	if recipes ~= nil then
+		recipes_waiting_for_groups[key] = nil
+		for _, recipe in pairs(recipes) do make_signal_for_recipe(recipe.name, recipe); end
+	end
+end)
