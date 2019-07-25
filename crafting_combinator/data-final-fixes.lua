@@ -183,6 +183,6 @@ setmetatable(data.raw['recipe'], raw_recipe_mt)
 -- Listen for other mods adding recipes beyond this point and make signals for them if necessary
 local super_newindex = raw_recipe_mt.__newindex or rawset
 function raw_recipe_mt.__newindex(self, key, value)
-	process_recipe(key, value)
+	if value ~= nil then process_recipe(key, value); end --TODO: Remove signals for recipes that get removed
 	super_newindex(self, key, value)
 end
