@@ -148,7 +148,7 @@ local recipes_waiting_for_groups = {}
 
 local function make_signal_for_recipe(name, recipe)
 	if needs_signal(recipe) then
-		if data.raw['item-subgroup'][recipe.subgroup] == nil then
+		if recipe.subgroup and data.raw['item-subgroup'][recipe.subgroup] == nil then
 			print("Recipe `"..tostring(name).."` needs subgroup `"..tostring(recipe.subgroup).."` which doesn't exist yet - waiting for it to be created...")
 			recipes_waiting_for_groups[recipe.subgroup] = recipes_waiting_for_groups[recipe.subgroup] or {}
 			table.insert(recipes_waiting_for_groups[recipe.subgroup], recipe)
