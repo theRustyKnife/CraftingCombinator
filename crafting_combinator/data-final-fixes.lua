@@ -71,6 +71,21 @@ local function get_possible_results(recipe)
 	return res
 end
 
+local function get_possible_ingredients(recipe)
+	local res = {}
+	local function _get_ingredients(tab)
+		if tab.ingredients then
+			for _, ingredient in pairs(tab.ingredients) do table.insert(res, get_result_name(ingredient)); end
+		end
+	end
+	
+	_get_ingredients(recipe)
+	if recipe.expensive then _get_ingredients(recipe.expensive); end
+	if recipe.normal then _get_ingredients(recipe.normal); end
+	
+	return res
+end
+
 local function get_max_ingredient_count(recipe)
 	local max = 0
 	local function check(tab)
@@ -160,16 +175,36 @@ end
 
 
 local rc = data.raw['constant-combinator'][config.RC_PROXY_NAME]
+local result_counts = {recipes = {}, uses = {}}
+
 local function process_recipe(name, recipe)
 	make_signal_for_recipe(name, recipe)
 	
-	-- Expand the rc slots, just in case there is some insance recipe with a hundred ingredients or something...
+	-- Expand the rc slots, just in case there is some insane recipe with a hundred ingredients or something...
 	local required_slots = get_max_ingredient_count(recipe) + config.RC_SLOT_RESERVE
 	if required_slots > rc.item_slot_count then
 		print(("Expanding rc slots to %d"):format(required_slots))
 		rc.item_slot_count = required_slots
 	end
 	--TODO: Do the same for products?
+	
+	for _, result in pairs(get_possible_results(recipe)) do
+		local count = (result_counts.recipes[result] or 0) + 1
+		result_counts.recipes[result] = count
+		if count + config.RC_SLOT_RESERVE > rc.item_slot_count then
+			print("Expanding rc slots to fit recipes for "..tostring(result).." ("..tostring(count)..")")
+			rc.item_slot_count = count + config.RC_SLOT_RESERVE
+		end
+	end
+	
+	for _, ingredient in pairs(get_possible_ingredients(recipe)) do
+		local count = (result_counts.uses[ingredient] or 0) + 1
+		result_counts.uses[ingredient] = count
+		if count + config.RC_SLOT_RESERVE > rc.item_slot_count then
+			print("Expanding rc slots to fit uses of "..tostring(ingredient).." ("..tostring(count)..")")
+			rc.item_slot_count = count + config.RC_SLOT_RESERVE
+		end
+	end
 end
 
 

@@ -49,6 +49,12 @@ function _M.build_machine_cache()
 	end
 end
 
+local _rc_slot_count = nil
+function _M.get_rc_slot_count()
+	if _rc_slot_count == nil then _rc_slot_count = game.entity_prototypes[config.RC_PROXY_NAME].item_slot_count; end
+	return _rc_slot_count
+end
+
 function _M.on_load()
 	for _, combinator in pairs(global.rc.data) do setmetatable(combinator, combinator_mt); end
 end
@@ -125,7 +131,7 @@ function _M:find_recipe()
 			index = index,
 		})
 		index = index + 1
-		if index > config.RC_SLOT_COUNT then break; end
+		if index > _M.get_rc_slot_count() then break; end
 	end
 	
 	self.control_behavior.parameters = {enabled = true, parameters = params}
@@ -162,7 +168,7 @@ function _M:find_ingredients_and_products(forced)
 			table.insert(params, {
 				signal = {type = 'virtual', name = config.TIME_SIGNAL_NAME},
 				count = math.floor(tonumber(recipe.energy) * self.settings.time_multiplier * crafting_multiplier),
-				index = config.RC_SLOT_COUNT,
+				index = _M.get_rc_slot_count(),
 			})
 		end
 		
