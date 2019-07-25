@@ -201,6 +201,9 @@ function _M.number_picker(name, value)
 			type = 'textfield',
 			name = elem_name(container, 'value'),
 			text = tostring(value or 0),
+			numeric = true,
+			allow_negative = true,
+			allow_decimal = true,
 		}
 		text_field.style.width = 100
 		return container
