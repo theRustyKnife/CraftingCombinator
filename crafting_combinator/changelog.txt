@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.12.1
+Date: 25. 07. 2019
+  Bugfixes:
+    - Fixed a crash when other mods removed recipes (https://mods.factorio.com/mod/crafting_combinator/discussion/5d3971180f01ac002dc97be3)
+    - Fixed that recipe combinator wouldn't output everything if there was a lot of results (https://github.com/theRustyKnife/CraftingCombinator/issues/59)
+---------------------------------------------------------------------------------------------------
 Version: 0.12.0
 Date: 21. 07. 2019
   Features:
