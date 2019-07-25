@@ -58,7 +58,7 @@ function _M.name(...)
 end
 
 
-function _M.get_root(element) return game.get_player(element.player_index).gui.center; end
+function _M.get_root(element) return game.get_player(element.player_index).gui.screen; end
 
 
 function _M.parse_entity_gui_name(name)
@@ -71,7 +71,7 @@ end
 
 function _M.open(spec, player_index, root)
 	local player = game.get_player(player_index)
-	local root = root or player.gui.center
+	local root = root or player.gui.screen
 	local element = spec:build(root)
 	player.opened = element
 	return element
@@ -87,17 +87,19 @@ function _M.entity(entity, specs)
 	
 	function specs:build(root)
 		local main = root.add {
-			type = 'flow',
+			type = 'frame',
 			name = elem_name(root, entity_name..':'..tostring(unit_number)),
 			direction = 'vertical',
+			style = 'outer_frame',
 		}
-		main.style.vertical_spacing = 0
+		main.auto_center = true
 		
 		local title = main.add {
 			type = 'frame',
 			name = elem_name(main, 'title'),
 			caption = entity_locale,
 			direction = 'horizontal',
+			style = 'inner_frame_in_outer_frame',
 		}
 		local preview = title.add {
 			type = 'entity-preview',
@@ -105,6 +107,8 @@ function _M.entity(entity, specs)
 			style = 'entity_button_base',
 		}
 		preview.entity = entity
+		
+		title.drag_target = main
 		
 		if self.title_elements then build_list(self.title_elements, title); end
 		
@@ -123,6 +127,9 @@ function _M.section(specs)
 			caption = specs.caption or locale(specs.name),
 			direction = 'vertical',
 		}
+		if root.parent and root.parent == _M.get_root(root) and root.type == 'frame' then
+			frame.drag_target = root
+		end
 		
 		build_list(self, frame)
 		
