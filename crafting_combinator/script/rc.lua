@@ -228,7 +228,7 @@ function _M:open(player_index)
 		}
 	}):open(player_index)
 	
-	self:udpate_disabled_checkboxes(root)
+	self:update_disabled_checkboxes(root)
 end
 
 function _M:on_checked_changed(name, state, element)
@@ -244,13 +244,13 @@ function _M:on_checked_changed(name, state, element)
 	end
 	if category == 'misc' then self.settings[name] = state; end
 	
-	self:udpate_disabled_checkboxes(gui.get_root(element))
+	self:update_disabled_checkboxes(gui.get_root(element))
 	
 	self.settings_parser:update(self.entity, self.settings)
 	self:update(true)
 end
 
-function _M:udpate_disabled_checkboxes(root)
+function _M:update_disabled_checkboxes(root)
 	self:disable_checkbox(root, 'misc:divide-by-output', 'divide_by_output',
 			(self.settings.mode == 'rec' or self.settings.mode == 'use') and not self.settings.differ_output)
 	self:disable_checkbox(root, 'misc:multiply-by-input', 'multiply_by_input',
