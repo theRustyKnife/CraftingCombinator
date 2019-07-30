@@ -167,7 +167,8 @@ function _M:find_ingredients_and_products(forced)
 			
 			table.insert(params, {
 				signal = {type = 'virtual', name = config.TIME_SIGNAL_NAME},
-				count = math.floor(tonumber(recipe.energy) * self.settings.time_multiplier * crafting_multiplier),
+				-- Again, simulate 32bit integer overflow 
+				count = (math.floor(tonumber(recipe.energy) * self.settings.time_multiplier * crafting_multiplier) + 2147483648) % 4294967296 - 2147483648,
 				index = _M.get_rc_slot_count(),
 			})
 		end
