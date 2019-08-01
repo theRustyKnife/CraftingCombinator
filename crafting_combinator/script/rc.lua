@@ -156,18 +156,17 @@ function _M:find_ingredients_and_products(forced)
 					tonumber(ing.amount or ing.amount_min or ing.amount_max) * crafting_multiplier
 					* (tonumber(ing.probability) or 1)
 				)
-				amount = (amount + 2147483648) % 4294967296 - 2147483648 -- Simulate 32bit integer overflow
 				
 				table.insert(params, {
 					signal = {type = ing.type, name = ing.name},
-					count = self.settings.differ_output and i or amount,
+					count = self.settings.differ_output and i or util.simulate_overflow(amount),
 					index = i,
 				})
 			end
 			
 			table.insert(params, {
 				signal = {type = 'virtual', name = config.TIME_SIGNAL_NAME},
-				count = math.floor(tonumber(recipe.energy) * self.settings.time_multiplier * crafting_multiplier),
+				count = util.simulate_overflow(math.floor(tonumber(recipe.energy) * self.settings.time_multiplier * crafting_multiplier)),
 				index = _M.get_rc_slot_count(),
 			})
 		end

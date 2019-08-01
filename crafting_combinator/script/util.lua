@@ -45,6 +45,9 @@ function _M.module_limitations()
 end
 
 
+function _M.simulate_overflow(number) return (number + 2147483648) % 4294967296 - 2147483648; end
+
+
 function _M.class(tab)
 	tab = tab or {}
 	tab.__mt = {__index = tab}
