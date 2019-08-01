@@ -30,7 +30,7 @@ local function parse_common_options(options, name)
 	
 	options.locale_key = options.locale or name
 	options.locale = locale(options.locale_key)
-	if options.tooltip == true then options.tooltip = options.locale_key..'_tooltip'; end
+	if options.tooltip == true then options.tooltip = options.locale_key..':tooltip'; end
 	options.tooltip = options.tooltip and locale(options.tooltip)
 	
 	return options
