@@ -9,7 +9,17 @@ local _M = {}
 local combinator_mt = {__index = _M}
 
 
+local CHEST_POSITION_NAMES = {'behind', 'left', 'right'}
+local CHEST_POSITIONS = {}; for key, name in pairs(CHEST_POSITION_NAMES) do CHEST_POSITIONS[name] = key; end
+local CHEST_DIRECTIONS = {
+	[CHEST_POSITIONS.behind] = 180,
+	[CHEST_POSITIONS.right] = 90,
+	[CHEST_POSITIONS.left] = -90,
+}
+
+
 _M.settings_parser = settings_parser {
+	chest_position = {'c', 'int'},
 	mode = {'m',
 		set = {'s', 'bool'},
 		read = {'r', 'bool'},
@@ -431,8 +441,9 @@ function _M:find_assembler(assembler_to_ignore)
 end
 
 function _M:find_chest(chest_to_ignore)
+	local direction = util.direction(self.entity.direction):rotate(CHEST_DIRECTIONS[self.settings.chest_position])
 	self.chest = self.entity.surface.find_entities_filtered {
-		position = util.position(self.entity.position):shift(self.entity.direction, config.CHEST_DISTANCE),
+		position = util.position(self.entity.position):shift(direction, config.CHEST_DISTANCE),
 		type = {'container', 'logistic-container'},
 	}[1]
 	if self.chest == chest_to_ignore then self.chest = nil; end

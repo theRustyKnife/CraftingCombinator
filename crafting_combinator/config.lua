@@ -13,6 +13,7 @@ return {
 	UNSORTED_RECIPE_SUBGROUP = 'crafting_combinator:virtual-recipe-subgroup:unsorted',
 	
 	CC_DEFAULT_SETTINGS = {
+		chest_position = 1, -- 1 = Behind, 2 = Left, 3 = Right
 		mode = {
 			set = true,
 			read = false,
@@ -33,7 +34,7 @@ return {
 	
 	ASSEMBLER_DISTANCE = 1,
 	ASSEMBLER_SEARCH_DISTANCE = 2,
-	CHEST_DISTANCE = -1,
+	CHEST_DISTANCE = 1,
 	CHEST_SEARCH_DISTANCE = 2,
 	INSERTER_SEARCH_RADIUS = 3,
 	
