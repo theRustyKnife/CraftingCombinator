@@ -61,6 +61,34 @@ function _M.class(tab)
 end
 
 
+_M.direction = _M.class()
+function _M.direction:__new(direction)
+	if type(direction) == 'table' then return direction; end
+	self.direction = (direction or 0) % 8
+end
+
+_M.direction.VECTOR_MAP = {
+	[defines.direction.north]     = { 0, -1},
+	[defines.direction.northeast] = { 1, -1},
+	[defines.direction.east]      = { 1,  0},
+	[defines.direction.southeast] = { 1,  1},
+	[defines.direction.south]     = { 0,  1},
+	[defines.direction.southwest] = {-1,  1},
+	[defines.direction.west]      = {-1,  0},
+	[defines.direction.northwest] = {-1, -1},
+}
+
+function _M.direction:get() return self.direction; end
+
+function _M.direction:vector() return _M.position(table.unpack(_M.direction.VECTOR_MAP[self:get()])); end
+
+function _M.direction:rotate(degrees)
+	local round = degrees > 0 and math.floor or math.ceil
+	steps = round((degrees % 360) / 45)
+	return _M.direction(self.direction + steps)
+end
+
+
 _M.position = _M.class()
 function _M.position:__new(x, y)
 	if x and not y then
@@ -80,16 +108,10 @@ function _M.position.__mt:__mul(q)
 	return _M.position(self.x * q, self.y * q)
 end
 
-function _M.position.direction_vector(direction)
-	if     direction == defines.direction.north then return _M.position( 0, -1)
-	elseif direction == defines.direction.south then return _M.position( 0,  1)
-	elseif direction == defines.direction.east  then return _M.position( 1,  0)
-	elseif direction == defines.direction.west  then return _M.position(-1,  0)
-	end
-end
+function _M.position.direction_vector(direction) return _M.direction(direction):vector(); end
 
 function _M.position:shift(direction, distance)
-	return self + (_M.position.direction_vector(direction) * distance)
+	return self + (_M.direction(direction):vector() * distance)
 end
 
 function _M.position:expand(x, y) return _M.area(self):expand(x, y); end
