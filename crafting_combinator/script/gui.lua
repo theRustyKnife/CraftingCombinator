@@ -116,7 +116,14 @@ function _M.entity(entity, specs)
 		
 		title.drag_target = main
 		
-		if self.title_elements then build_list(self.title_elements, title); end
+		if self.title_elements then
+			local title_container = title.add {
+				type = 'flow',
+				direction = 'vertical',
+			}
+			title_container.style.horizontal_align = 'right'
+			build_list(self.title_elements, title_container)
+		end
 		
 		build_list(self, main)
 		
