@@ -197,8 +197,8 @@ end
 function _M:open(player_index)
 	gui.entity(self.entity, {
 		title_elements = {
-			gui.spacer(),
 			gui.button('open-module-chest'),
+			gui.dropdown('chest-position', CHEST_POSITION_NAMES, self.settings.chest_position, {tooltip=true}),
 		},
 		
 		gui.section {
@@ -222,6 +222,14 @@ function _M:on_checked_changed(name, state)
 	if category == 'mode' then self.settings.mode[name] = state; end
 	if category == 'misc' then self.settings[name] = state; end
 	self.settings_parser:update(self.entity, self.settings)
+end
+
+function _M:on_selection_changed(name, selected)
+	if name == 'title:chest-position:value' then
+		self.settings.chest_position = selected
+		self.settings_parser:update(self.entity, self.settings)
+		self:find_chest()
+	end
 end
 
 function _M:on_click(name, element)

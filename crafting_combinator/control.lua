@@ -169,6 +169,15 @@ script.on_event(defines.events.on_gui_checked_state_changed, function(event)
 		end
 	end
 end)
+script.on_event(defines.events.on_gui_selection_state_changed, function(event)
+	local element = event.element
+	if element and element.valid and element.name and element.name:match('^crafting_combinator:') then
+		local gui_name, unit_number, element_name = gui.parse_entity_gui_name(element.name)
+		if gui_name == 'crafting-combinator' then
+			global.cc.data[unit_number]:on_selection_changed(element_name, element.selected_index)
+		end
+	end
+end)
 script.on_event(defines.events.on_gui_text_changed, function(event)
 	local element = event.element
 	if element and element.valid and element.name and element.name:match('^crafting_combinator:') then
