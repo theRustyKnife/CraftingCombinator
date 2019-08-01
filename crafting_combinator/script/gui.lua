@@ -12,8 +12,14 @@ local function build_list(specs, root)
 	return root
 end
 
+local function find_parent_name(parent)
+	if not parent then return nil; end
+	if parent.name ~= '' then return parent.name; end
+	return parent.parent and find_parent_name(parent.parent)
+end
 local function elem_name(parent, name)
-	if parent and parent.name and parent.name:match('^'..MOD_NAME) then return parent.name..':'..name
+	local parent_name = find_parent_name(parent)
+	if parent_name and parent_name:match('^'..MOD_NAME) then return parent_name..':'..name
 	else return MOD_NAME..':'..name; end
 end
 local function locale(key) return {LOCALE_CATEGORY..'.'..key}; end
