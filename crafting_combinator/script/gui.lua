@@ -28,9 +28,9 @@ local function parse_common_options(options, name)
 	if type(options) == 'string' then options = {locale = options}; end
 	options = options or {}
 	
-	local locale_key = options.locale or name
-	options.locale = locale(locale_key)
-	if options.tooltip == true then options.tooltip = locale_key..'_tooltip'; end
+	options.locale_key = options.locale or name
+	options.locale = locale(options.locale_key)
+	if options.tooltip == true then options.tooltip = options.locale_key..'_tooltip'; end
 	options.tooltip = options.tooltip and locale(options.tooltip)
 	
 	return options
@@ -187,6 +187,36 @@ function _M.radio(name, selected, options)
 			tooltip = options.tooltip,
 			state = selected == name,
 		}
+	end
+	return specs
+end
+
+function _M.dropdown(name, items, selected, options)
+	options = parse_common_options(options, name)
+	local item_names = {}
+	for k, item in pairs(items) do item_names[k] = locale(options.locale_key..':'..item); end
+	
+	local specs = {}
+	function specs:build(root)
+		local container = root.add {
+			type = 'flow',
+			name = elem_name(root, name),
+			direction = 'horizontal',
+		}
+		container.style.vertical_align = 'center'
+		container.add {
+			type = 'label',
+			name = elem_name(container, 'caption'),
+			caption = options.locale,
+			tooltip = options.tooltip,
+		}
+		container.add {
+			type = 'drop-down',
+			name = elem_name(container, 'value'),
+			items = item_names,
+			selected_index = selected,
+		}
+		return container
 	end
 	return specs
 end
