@@ -212,6 +212,7 @@ function _M.number_picker(name, value)
 			name = elem_name(root, name),
 			direction = 'horizontal',
 		}
+		container.style.vertical_align = 'center'
 		container.add {
 			type = 'label',
 			name = elem_name(container, 'caption'),
