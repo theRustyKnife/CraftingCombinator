@@ -52,6 +52,7 @@ end)
 script.on_load(on_load)
 
 script.on_configuration_changed(function(changes)
+	late_migrations(changes)
 	update_bottleneck(changes)
 	enable_recipes()
 end)
