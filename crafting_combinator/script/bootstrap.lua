@@ -37,7 +37,7 @@ _G.late_migrations = setmetatable({__migrations = {}, __ordered = {}, __versione
 		if migration.version then table.insert(self.__versioned, migration)
 		else table.insert(self.__ordered, migration); end
 		
-		log("Registered late migration "..migration_tostring(migration))
+		print("Registered late migration "..migration_tostring(migration))
 	end,
 	
 	__call = function(self, changes)
