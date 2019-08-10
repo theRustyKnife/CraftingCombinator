@@ -25,9 +25,10 @@ _G.late_migrations = setmetatable({__migrations = {}, __ordered = {}, __versione
 		if type(migration) == 'function' then migration = {apply=migration}; end
 		migration.name = name
 		migration.version = migration.version or parse_version(migration.name)
+		local _apply = migration.apply
 		function migration:apply(changes)
 			log("Applying late migration "..migration_tostring(self))
-			self.apply(changes)
+			_apply(changes)
 		end
 		
 		assert(self.__migrations[migration.name] == nil, "Late migration with name "..tostring(migration.name).." already exists")
