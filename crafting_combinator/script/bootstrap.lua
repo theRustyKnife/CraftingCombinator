@@ -41,7 +41,7 @@ _G.late_migrations = setmetatable({__migrations = {}, __ordered = {}, __versione
 	end,
 	
 	__call = function(self, changes)
-		table.sort(self.__versioned, function(m1, m2) return m1 <= m2; end)
+		table.sort(self.__versioned, function(m1, m2) return m1.version <= m2.version; end)
 		for _, migration in ipairs(self.__versioned) do migration:apply(changes); end
 		for _, migration in ipairs(self.__ordered) do migration:apply(changes); end
 	end,
