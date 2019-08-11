@@ -64,7 +64,7 @@ function _M.create(entity)
 			force = entity.force,
 			create_build_effect_smoke = false,
 		},
-		settings = _M.settings_parser:read(entity, util.deepcopy(config.CC_DEFAULT_SETTINGS)),
+		settings = _M.settings_parser:read_or_default(entity, util.deepcopy(config.CC_DEFAULT_SETTINGS)),
 		inventories = {},
 		items_to_ignore = {},
 		last_flying_text_tick = -config.FLYING_TEXT_INTERVAL,

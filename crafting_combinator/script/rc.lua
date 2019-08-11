@@ -72,7 +72,7 @@ function _M.create(entity)
 			create_build_effect_smoke = false,
 		},
 		input_control_behavior = entity.get_or_create_control_behavior(),
-		settings = _M.settings_parser:read(entity, util.deepcopy(config.RC_DEFAULT_SETTINGS)),
+		settings = _M.settings_parser:read_or_default(entity, util.deepcopy(config.RC_DEFAULT_SETTINGS)),
 	}, combinator_mt)
 	
 	entity.connect_neighbour {

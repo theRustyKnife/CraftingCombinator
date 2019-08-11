@@ -91,6 +91,14 @@ function _M.destroy(entity)
 end
 
 
+function _M.fill_defaults(target, defaults)
+	for key, value in pairs(defaults) do
+		if target[key] == nil then target[key] = value
+		elseif type(value) == 'table' then _M.fill_defaults(target[key], value); end
+	end
+end
+
+
 return setmetatable(_M, {__call=function(cls, defs)
 	return {
 		defs = _M.def(defs),
@@ -98,5 +106,11 @@ return setmetatable(_M, {__call=function(cls, defs)
 		dump = function(self, tab) return _M.dump(self.defs, tab); end,
 		read = function(self, entity, default) return _M.read(self.defs, entity, default); end,
 		update = function(self, entity, settings) return _M.update(self.defs, entity, settings); end,
+		
+		read_or_default = function(self, entity, default)
+			local res = self:read(entity, default)
+			_M.fill_defaults(res, default)
+			return res
+		end,
 	}
 end})
