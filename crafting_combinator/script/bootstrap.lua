@@ -22,9 +22,16 @@ end
 -- A nice alternative to stuffing everything into on_configuration_changed with seven hundred ifs
 _G.late_migrations = setmetatable({__migrations = {}, __ordered = {}, __versioned = {}}, {
 	__newindex = function(self, name, migration)
-		if type(migration) == 'function' then migration = {apply=migration}; end
-		migration.name = name
-		migration.version = migration.version or parse_version(migration.name)
+		if type(name) == 'table' then
+			assert(type(migration) == 'function')
+			name.apply = migration
+			migration = name
+		else
+			if type(migration) == 'function' then migration = {apply=migration}; end
+			migration.name = name
+			migration.version = migration.version or parse_version(migration.name)
+		end
+		
 		local _apply = migration.apply
 		function migration:apply(changes)
 			log("Applying late migration "..migration_tostring(self))
