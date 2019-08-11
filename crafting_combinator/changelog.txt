@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.13.3
+Date: 11. 08. 2019
+  Bugfixes:
+    - Fixed that old combinators in blueprints didn't get their settings updated, which caused crashes (https://mods.factorio.com/mod/crafting_combinator/discussion/5d4f0c0d70bc67000ca3e6b5)
+---------------------------------------------------------------------------------------------------
 Version: 0.13.2
 Date: 10. 08. 2019
   Bugfixes:
