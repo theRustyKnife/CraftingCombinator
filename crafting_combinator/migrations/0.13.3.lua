@@ -1,9 +1,9 @@
 local config = require 'config'
 local cc_control = require 'script.cc'
+local settings_parser = require 'script.settings-parser'
 
 
-cc_control.on_load()
 log("Adding missing settings to combinators...")
 for _, combinator in pairs(global.cc.data) do
-	cc_control.settings_parser:fill_defaults(combinator.settings, config.CC_DEFAULT_SETTINGS)
+	settings_parser.fill_defaults(combinator.settings, config.CC_DEFAULT_SETTINGS)
 end
