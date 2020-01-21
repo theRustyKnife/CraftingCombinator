@@ -1,3 +1,5 @@
+local icons = require '__rusty-locale__.icons'
+
 local config = require 'config'
 
 
@@ -20,7 +22,7 @@ end
 local cc_item = table.deepcopy(data.raw['item']['constant-combinator'])
 cc_item.name = cc.name
 cc_item.place_result = cc.name
-cc_item.icon = cc.icon
+cc_item.icons = icons.of(cc)
 cc_item.subgroup = 'circuit-network'
 cc_item.order = 'c[combinators]-m[crafting-combinator]'
 
@@ -40,7 +42,7 @@ rc.energy_usage_per_tick = '1W'
 local rc_item = table.deepcopy(data.raw['item']['arithmetic-combinator'])
 rc_item.name = rc.name
 rc_item.place_result = rc.name
-rc_item.icon = rc.icon
+rc_item.icons = icons.of(rc)
 rc_item.subgroup = 'circuit-network'
 rc_item.order = 'c[combinators]-m[recipe-combinator]'
 
@@ -76,8 +78,7 @@ data:extend {
 		flags = {'hidden'},
 		stack_size = 1,
 		place_result = config.MODULE_CHEST_NAME,
-		icon = cc.icon,
-		icon_size = cc.icon_size,
+		icons = icons.of(cc),
 	},
 	{
 		type = 'container',
@@ -92,8 +93,7 @@ data:extend {
 		
 		-- Disguise the chest as the combinator itself, so it looks right in deconstruction planner filters
 		localised_name = {'entity-name.crafting_combinator:crafting-combinator'},
-		icon = cc.icon,
-		icon_size = cc.icon_size,
+		icons = icons.of(cc),
 		subgroup = cc_item.subgroup,
 		order = 'z-'..cc_item.order, -- For some reason the z- prefix is added to auto-generated order strings
 	},
