@@ -129,7 +129,6 @@ local function make_signal_for_recipe(name, recipe)
 			localised_description = locale.description,
 			icons = icons.of(recipe),
 			subgroup = subgroup,
-			icon_size = 32, --TODO: This can't possibly work correctly...
 			order = get_order(recipe),
 		}}
 	end
