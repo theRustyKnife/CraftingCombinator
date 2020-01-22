@@ -294,14 +294,14 @@ function _M:set_recipe()
 		end
 	end
 	
-	-- Move modules if necessary
 	if recipe and recipe ~= a_recipe then
-		self:move_modules(recipe)
+		self:move_modules(recipe) -- Move modules if necessary
+		
+		-- Finally attempt to switch the recipe
+		self.assembler.set_recipe(recipe)
+		local new_recipe = self.assembler.get_recipe()
+		if new_recipe and new_recipe ~= recipe then self.assembler.set_recipe(nil); end --TODO: Some notification?
 	end
-	
-	self.assembler.set_recipe(recipe)
-	local new_recipe = self.assembler.get_recipe()
-	if new_recipe and new_recipe ~= recipe then self.assembler.set_recipe(nil); end --TODO: Some notification?
 	
 	-- Move modules and items back into the machine
 	self:insert_modules()
@@ -360,10 +360,10 @@ function _M:move_items()
 	-- Compensate for half-finished crafts
 	-- Do this first to avoid losing a lot of items
 	if self.assembler.crafting_progress > 0 then
-		if not target then return false; end
 		local success = true
 		for _, ing in pairs(self.assembler.get_recipe().ingredients) do
 			if ing.type == 'item' then
+				if not target then return false; end
 				local r = target.insert{name = ing.name, count = ing.amount}
 				if r < ing.amount then success = false; end
 			end
