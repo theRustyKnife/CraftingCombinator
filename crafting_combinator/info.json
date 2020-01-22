@@ -1,9 +1,9 @@
 {
 	"name": "crafting_combinator",
-	"version": "0.13.4",
+	"version": "0.13.5",
 	"factorio_version": "0.18",
 	"title": "Crafting Combinator",
 	"author": "LuziferSenpai and TheRustyKnife",
 	"description": "Includes combinators that allow you to set or read the recipe of any crafting machine, get ingredients or products of a recipe and more!",
-	"dependencies": ["base>=0.17.59", "rusty-locale", "?Bottleneck>=0.7.3"]
+	"dependencies": ["base", "rusty-locale", "?Bottleneck>=0.7.3"]
 }
