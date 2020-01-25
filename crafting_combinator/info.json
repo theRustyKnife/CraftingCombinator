@@ -5,5 +5,5 @@
 	"title": "Crafting Combinator",
 	"author": "LuziferSenpai and TheRustyKnife",
 	"description": "Includes combinators that allow you to set or read the recipe of any crafting machine, get ingredients or products of a recipe and more!",
-	"dependencies": ["base", "rusty-locale", "?Bottleneck>=0.7.3"]
+	"dependencies": ["base", "rusty-locale"]
 }

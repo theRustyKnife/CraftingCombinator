@@ -57,4 +57,15 @@ return {
 	},
 	
 	FLYING_TEXT_INTERVAL = 180,
+	
+	MACHINE_STATUS_SIGNALS = {
+		working = 'signal-green',
+		no_power = 'signal-red',
+		no_fuel = 'signal-red',
+		low_power = 'signal-yellow',
+		fluid_ingredient_shortage = 'signal-red',
+		fluid_production_overload = 'signal-yellow',
+		item_ingredient_shortage = 'signal-red',
+		item_production_overload = 'signal-yellow',
+	},
 }

@@ -17,6 +17,13 @@ local CHEST_DIRECTIONS = {
 	[CHEST_POSITIONS.left] = -90,
 }
 
+local STATUS_SIGNALS = {}
+for name, signal in pairs(config.MACHINE_STATUS_SIGNALS) do
+	if defines.entity_status[name] then
+		STATUS_SIGNALS[defines.entity_status[name]] = signal
+	end
+end
+
 
 _M.settings_parser = settings_parser {
 	chest_position = {'c', 'int'},
@@ -28,7 +35,7 @@ _M.settings_parser = settings_parser {
 	discard_fluids = {'f', 'bool'},
 	empty_inserters = {'i', 'bool'},
 	read_speed = {'s', 'bool'},
-	read_bottleneck = {'b', 'bool'},
+	read_machine_status = {'st', 'bool'},
 }
 
 
@@ -41,13 +48,7 @@ function _M.init_global()
 	global.cc.inserter_empty_queue = {}
 end
 
-local BOTTLENECK_STATES
 function _M.on_load()
-	BOTTLENECK_STATES = global.BOTTLENECK_STATES and {
-		[global.BOTTLENECK_STATES.STOPPED] = 'signal-red',
-		[global.BOTTLENECK_STATES.FULL] = 'signal-yellow',
-		[global.BOTTLENECK_STATES.RUNNING] = 'signal-green',
-	}
 	for _, combinator in pairs(global.cc.data) do setmetatable(combinator, combinator_mt); end
 end
 
@@ -187,7 +188,7 @@ function _M:update()
 		end
 		if self.settings.mode.read then self:read_recipe(params); end
 		if self.settings.read_speed then self:read_speed(params); end
-		if global.BOTTLENECK_STATES and self.settings.read_bottleneck then self:read_bottleneck(params); end
+		if self.settings.read_machine_status then self:read_machine_status(params); end
 	end
 	
 	self.control_behavior.parameters = {enabled = true, parameters = params}
@@ -212,7 +213,7 @@ function _M:open(player_index)
 			gui.checkbox('discard-fluids', self.settings.discard_fluids),
 			gui.checkbox('empty-inserters', self.settings.empty_inserters),
 			gui.checkbox('read-speed', self.settings.read_speed),
-			game.active_mods['Bottleneck'] and gui.checkbox('read-bottleneck', self.settings.read_bottleneck) or false,
+			gui.checkbox('read-machine-status', self.settings.read_machine_status),
 		}
 	}):open(player_index)
 end
@@ -263,14 +264,15 @@ function _M:read_speed(params)
 	self.items_to_ignore[config.SPEED_SIGNAL_NAME] = count
 end
 
-function _M:read_bottleneck(params)
-	local state = (remote.call('Bottleneck', 'get_signal_data', self.assembler.unit_number) or {}).status
+function _M:read_machine_status(params)
+	local signal = STATUS_SIGNALS[self.assembler.status or "A dummy string to avoid indexing by nil"]
+	if signal == nil then return end
 	table.insert(params, {
-		signal = {type = 'virtual', name = BOTTLENECK_STATES[state]},
+		signal = {type = 'virtual', name = signal},
 		count = 1,
 		index = 3,
 	})
-	self.items_to_ignore[BOTTLENECK_STATES[state]] = 1
+	self.items_to_ignore[signal] = 1
 end
 
 function _M:set_recipe()

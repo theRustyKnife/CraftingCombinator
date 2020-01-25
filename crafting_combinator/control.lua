@@ -10,13 +10,6 @@ local settings_parser = require 'script.settings-parser'
 
 local cc_rate, rc_rate = 1, 1
 
-local function update_bottleneck(changes)
-	if not changes or (changes.mod_changes and changes.mod_changes['Bottleneck']) then
-		if game.active_mods['Bottleneck'] then global.BOTTLENECK_STATES = remote.call('Bottleneck', 'get_states')
-		else global.BOTTLENECK_STATES = nil; end
-		cc_control.on_load()
-	end
-end
 local function enable_recipes()
 	for _, force in pairs(game.forces) do
 		if force.technologies['circuit-network'].researched then
@@ -46,14 +39,12 @@ end
 script.on_init(function()
 	cc_control.init_global()
 	rc_control.init_global()
-	update_bottleneck()
 	on_load()
 end)
 script.on_load(on_load)
 
 script.on_configuration_changed(function(changes)
 	late_migrations(changes)
-	update_bottleneck(changes)
 	enable_recipes()
 end)
 
