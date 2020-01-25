@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.14.0
+Date: 25. 01. 2020
+  Changes:
+    - Replaced Bottleneck readout with a custom implementation that should behave like old Bottleneck (https://mods.factorio.com/mod/crafting_combinator/discussion/5e2be80927e828000b01db25)
+    - Removed Bottleneck dependency (https://mods.factorio.com/mod/Bottleneck)
+---------------------------------------------------------------------------------------------------
 Version: 0.13.5
 Date: 22. 01. 2020
   Changes:
