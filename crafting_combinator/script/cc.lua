@@ -68,6 +68,7 @@ function _M.create(entity)
 		items_to_ignore = {},
 		last_flying_text_tick = -config.FLYING_TEXT_INTERVAL,
 		enabled = true,
+		last_recipe = false,
 	}, combinator_mt)
 	
 	combinator.module_chest.destructible = false
@@ -300,7 +301,12 @@ function _M:read_machine_status(params)
 end
 
 function _M:set_recipe()
-	local recipe = recipe_selector.get_recipe(self.entity)
+	local changed, recipe = recipe_selector.get_recipe(self.entity, nil, self.last_recipe and self.last_recipe.name)
+	if changed then self.last_recipe = recipe
+	else recipe = self.last_recipe; end
+	
+	if recipe and (recipe.hidden or not recipe.enabled) then recipe = nil; end
+	
 	local a_recipe = self.assembler.get_recipe()
 	
 	-- Move items if necessary

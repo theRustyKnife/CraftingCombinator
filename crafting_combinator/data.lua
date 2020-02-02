@@ -147,6 +147,20 @@ data:extend {
 		circuit_wire_connection_points = {con_point, con_point, con_point, con_point},
 		draw_circuit_wires = false,
 	},
+	{
+		type = 'lamp',
+		name = config.SIGNAL_CACHE_NAME,
+		flags = {'placeable-off-grid'},
+		collision_mask = {},
+		circuit_wire_max_distance = 3,
+		circuit_wire_connection_points = {con_point, con_point, con_point, con_point},
+		draw_circuit_wires = false,
+		
+		picture_on = trans,
+		picture_off = trans,
+		energy_source = {type = 'void'},
+		energy_usage_per_tick = '1W',
+	},
 	
 	{
 		type = 'item-group',

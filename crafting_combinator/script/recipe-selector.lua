@@ -1,64 +1,67 @@
+local signals = require 'script.signals'
+
+
 local _M = {}
 
 
-function _M.get_recipe(entity, items_to_ignore, connector_id)
-	items_to_ignore = items_to_ignore or {}
-	local signals
-	if connector_id ~= nil then signals = entity.get_merged_signals(connector_id)
-	else signals = entity.get_merged_signals(); end
-	if not signals then return nil; end
+function _M.get_recipe(entity, circuit_id, last_name, last_count)
+	local highest = signals.get_highest(entity, circuit_id, last_count ~= nil)
 	
-	local res = nil
-	local count = nil
-	for _, signal in pairs(signals) do
-		local recipe = entity.force.recipes[signal.signal.name]
-		if recipe and recipe.enabled then
-			local c = signal.count - (items_to_ignore[recipe.name] or 0)
-			if count == nil or c > count then res = recipe; count = c; end
-		end
+	if not highest then
+		if last_name == nil then return false; end
+		return true, nil, 0
 	end
 	
-	return res, count
+	if last_name == highest.signal.name and (last_count == nil or last_count == highest.count) then return false; end
+	return true, entity.force.recipes[highest.signal.name], highest.count
 end
 
 
-function _M.get_highest_signal(signals)
-	local res = nil
-	local count = nil
+local get_recipes_cache = {
+	ingredients = {
+		item = {},
+		fluid = {},
+	},
+	products = {
+		item = {},
+		fluid = {},
+	},
+}
+function _M.get_recipes(entity, circuit_id, mode, last_signal, last_count)
+	local highest = signals.get_highest(entity, circuit_id, last_count ~= nil)
 	
-	for _, signal in pairs(signals) do
-		local c = signal.count
-		if count == nil or c > count then res, count = signal.signal.name, c; end
+	if not highest or highest.signal.type == 'virtual' then
+		if last_signal == nil then return false; end
+		return true, {}, 0, nil
 	end
 	
-	return res, count or 0
-end
-
-function _M.get_recipes(signals, recipes, use_products)
-	if not signals then return {}, 0; end
-	local highest, count = _M.get_highest_signal(signals)
-	if not highest then return {}, 0; end
+	if last_signal
+		and last_signal.name == highest.signal.name
+		and last_signal.type == highest.signal.type
+		and (last_count == nil or last_count == highest.count)
+	then return false; end
 	
-	local res = {}
-	local item
-	if game.item_prototypes[highest] then item = {name = highest, type = 'item'}
-	elseif game.fluid_prototypes[highest] then item = {name = highest, type = 'fluid'}
-	else item = {}; end
+	local cache = get_recipes_cache[mode][highest.signal.type]
+	local force_index = entity.force.index
+	cache[force_index] = cache[force_index] or {}
+	if cache[force_index][highest.signal.name] then
+		return true, cache[force_index][highest.signal.name], highest.count, highest.signal
+	end
 	
-	for name, recipe in pairs(recipes) do
-		if not recipe.hidden and recipe.enabled then
-			for _, product in pairs(use_products and recipe.products or recipe.ingredients) do
-				if product.name == item.name and (item.type == 'fluid' or item.type == product.type) then
-					local amount = tonumber(product.amount or product.amount_min or product.amount_max) or 1
-					amount = amount * (tonumber(product.probability) or 1)
-					table.insert(res, {name=name,count=amount})
-					break
-				end
+	local results = {}
+	for name, recipe in pairs(entity.force.recipes) do
+		for _, product in pairs(recipe[mode]) do
+			if product.name == highest.signal.name and product.type == highest.signal.type then
+				local amount = tonumber(product.amount or product.amount_min or product.amount_max) or 1
+				amount = amount * (tonumber(product.probability) or 1)
+				table.insert(results, {recipe = recipe, amount = amount})
+				break
 			end
 		end
 	end
 	
-	return res, count
+	cache[force_index][highest.signal.name] = results
+	return true, results, highest.count, highest.signal
 end
 
 

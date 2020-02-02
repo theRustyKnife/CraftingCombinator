@@ -3,6 +3,7 @@ require 'script.bootstrap'
 local config = require 'config'
 local cc_control = require 'script.cc'
 local rc_control = require 'script.rc'
+local signals = require 'script.signals'
 local util = require 'script.util'
 local gui = require 'script.gui'
 local settings_parser = require 'script.settings-parser'
@@ -39,6 +40,7 @@ end
 script.on_init(function()
 	cc_control.init_global()
 	rc_control.init_global()
+	signals.init_global()
 	on_load()
 end)
 script.on_load(on_load)

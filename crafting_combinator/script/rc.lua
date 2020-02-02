@@ -73,6 +73,9 @@ function _M.create(entity)
 		},
 		input_control_behavior = entity.get_or_create_control_behavior(),
 		settings = _M.settings_parser:read_or_default(entity, util.deepcopy(config.RC_DEFAULT_SETTINGS)),
+		last_signal = false,
+		last_name = false,
+		last_count = false,
 	}, combinator_mt)
 	
 	entity.connect_neighbour {
@@ -109,102 +112,132 @@ function _M.destroy(entity)
 end
 
 function _M:update(forced)
+	if forced then
+		self.last_signal = false
+		self.last_name = false
+		self.last_count = false
+	end
+	
 	if self.settings.mode == 'rec' or self.settings.mode == 'use' then self:find_recipe()
 	elseif self.settings.mode == 'mac' then self:find_machines(forced)
 	else self:find_ingredients_and_products(forced); end
 end
 
 function _M:find_recipe()
+	local changed, recipes, count, signal = recipe_selector.get_recipes(
+		self.entity, defines.circuit_connector_id.combinator_input,
+		self.settings.mode == 'rec' and 'products' or 'ingredients',
+		self.last_signal, self.settings.multiply_by_input and self.last_count or nil
+	)
+	
+	if not changed then return; end
+	self.last_signal = signal
+	self.last_count = count
+	
 	local params = {}
 	local index = 1
-	local recipes, count = recipe_selector.get_recipes(
-			self.entity.get_merged_signals(defines.circuit_connector_id.combinator_input),
-			self.entity.force.recipes,
-			self.settings.mode == 'rec')
+	
 	count = self.settings.multiply_by_input and count or 1
 	local round = self.settings.mode == 'use' and math.floor or math.ceil
 	for _, recipe in pairs(recipes) do
-		local recipe_count = self.settings.divide_by_output and round(count/recipe.count) or count
-		table.insert(params, {
-			signal = recipe_selector.get_signal(recipe.name),
-			count = self.settings.differ_output and index or recipe_count,
-			index = index,
-		})
-		index = index + 1
-		if index > _M.get_rc_slot_count() then break; end
+		if not recipe.recipe.hidden and recipe.recipe.enabled then
+			local recipe_count = self.settings.divide_by_output and round(count/recipe.amount) or count
+			table.insert(params, {
+				signal = recipe_selector.get_signal(recipe.recipe.name),
+				count = self.settings.differ_output and index or recipe_count,
+				index = index,
+			})
+			index = index + 1
+			if index > _M.get_rc_slot_count() then break; end
+		end
 	end
 	
 	self.control_behavior.parameters = {enabled = true, parameters = params}
 end
 
-function _M:find_ingredients_and_products(forced)
-	local recipe, input_count = recipe_selector.get_recipe(self.entity, nil, defines.circuit_connector_id.combinator_input)
+function _M:find_ingredients_and_products()
+	local changed, recipe, input_count = recipe_selector.get_recipe(
+		self.entity,
+		defines.circuit_connector_id.combinator_input,
+		self.last_name,
+		self.settings.multiply_by_input and self.last_count or nil
+	)
 	
-	if self.recipe ~= recipe or forced or (self.settings.multiply_by_input and self.input_count ~= input_count) then
-		self.recipe = recipe
-		self.input_count = input_count
-		
-		local params = {}
-		
-		if recipe then
-			local crafting_multiplier = self.settings.multiply_by_input and input_count or 1
-			for i, ing in pairs(
-						self.settings.mode == 'prod' and recipe.products or
-						self.settings.mode == 'ing' and recipe.ingredients or {}
-					) do
-				local amount = math.ceil(
-					tonumber(ing.amount or ing.amount_min or ing.amount_max) * crafting_multiplier
-					* (tonumber(ing.probability) or 1)
-				)
-				
-				table.insert(params, {
-					signal = {type = ing.type, name = ing.name},
-					count = self.settings.differ_output and i or util.simulate_overflow(amount),
-					index = i,
-				})
-			end
+	if not changed then return; end
+	
+	self.last_name = recipe and recipe.name
+	self.last_count = input_count
+	
+	if recipe and (recipe.hidden or not recipe.enabled) then recipe = nil; end
+	
+	local params = {}
+	
+	if recipe then
+		local crafting_multiplier = self.settings.multiply_by_input and input_count or 1
+		for i, ing in pairs(
+					self.settings.mode == 'prod' and recipe.products or
+					self.settings.mode == 'ing' and recipe.ingredients or {}
+				) do
+			local amount = math.ceil(
+				tonumber(ing.amount or ing.amount_min or ing.amount_max) * crafting_multiplier
+				* (tonumber(ing.probability) or 1)
+			)
 			
 			table.insert(params, {
-				signal = {type = 'virtual', name = config.TIME_SIGNAL_NAME},
-				count = util.simulate_overflow(math.floor(tonumber(recipe.energy) * self.settings.time_multiplier * crafting_multiplier)),
-				index = _M.get_rc_slot_count(),
+				signal = {type = ing.type, name = ing.name},
+				count = self.settings.differ_output and i or util.simulate_overflow(amount),
+				index = i,
 			})
 		end
 		
-		self.control_behavior.parameters = {enabled = true, parameters = params}
+		table.insert(params, {
+			signal = {type = 'virtual', name = config.TIME_SIGNAL_NAME},
+			count = util.simulate_overflow(math.floor(tonumber(recipe.energy) * self.settings.time_multiplier * crafting_multiplier)),
+			index = _M.get_rc_slot_count(),
+		})
 	end
+	
+	self.control_behavior.parameters = {enabled = true, parameters = params}
 end
 
 
-function _M:find_machines(forced)
-	local recipe, input_count = recipe_selector.get_recipe(self.entity, nil, defines.circuit_connector_id.combinator_input)
+function _M:find_machines()
+	local changed, recipe, input_count = recipe_selector.get_recipe(
+		self.entity,
+		defines.circuit_connector_id.combinator_input,
+		self.last_name,
+		self.settings.multiply_by_input and self.last_count or nil
+	)
+	
+	if not changed then return; end
+	
+	self.last_name = recipe and recipe.name
+	self.last_count = input_count
+	
+	if recipe and (recipe.hidden or not recipe.enabled) then recipe = nil; end
+	
+	if _M.item_map == nil then _M.build_machine_cache(); end
 
-	if self.recipe ~= recipe or forced or (self.settings.multiply_by_input and self.input_count ~= input_count) then
-		self.recipe = recipe
-		self.input_count = input_count
-		if _M.item_map == nil then _M.build_machine_cache(); end
-
-		local params = {}
-		local index = 1
-		if recipe and recipe.category then
-			for _, item in pairs(_M.category_map[recipe.category] or {}) do
-				for _, recipe in pairs(_M.item_map[item]) do
-					local mac_res = self.entity.force.recipes[recipe]
-					if mac_res and not mac_res.hidden and mac_res.enabled then
-						table.insert(params, {
-							signal = recipe_selector.get_signal(item),
-							count = self.settings.multiply_by_input and input_count or
-								self.settings.differ_output and index or 1,
-							index = index,
-						})
-						index = index + 1
-						break
-					end
+	local params = {}
+	local index = 1
+	if recipe and recipe.category then
+		for _, item in pairs(_M.category_map[recipe.category] or {}) do
+			for _, recipe in pairs(_M.item_map[item]) do
+				local mac_res = self.entity.force.recipes[recipe]
+				if mac_res and not mac_res.hidden and mac_res.enabled then
+					table.insert(params, {
+						signal = recipe_selector.get_signal(item),
+						count = self.settings.multiply_by_input and input_count or
+							self.settings.differ_output and index or 1,
+						index = index,
+					})
+					index = index + 1
+					break
 				end
 			end
 		end
-		self.control_behavior.parameters = {enabled = true, parameters = params}
 	end
+	self.control_behavior.parameters = {enabled = true, parameters = params}
 end
 
 

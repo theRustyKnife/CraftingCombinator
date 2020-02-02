@@ -6,6 +6,7 @@ return {
 	REFRESH_RATE_CC_NAME = 'crafting_combinator:refresh-rate-cc',
 	REFRESH_RATE_RC_NAME = 'crafting_combinator:refresh-rate-rc',
 	RC_PROXY_NAME = 'crafting_combinator:rc-proxy',
+	SIGNAL_CACHE_NAME = 'crafting_combinator:signal-cache',
 	TIME_SIGNAL_NAME = 'crafting_combinator:recipe-time',
 	SPEED_SIGNAL_NAME = 'crafting_combinator:crafting-speed',
 	GROUP_NAME = 'crafting_combinator:virtual-recipes',
