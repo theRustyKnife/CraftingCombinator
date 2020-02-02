@@ -296,8 +296,9 @@ function _M:set_recipe()
 		end
 	end
 	
-	if recipe and recipe ~= a_recipe then
-		self:move_modules(recipe) -- Move modules if necessary
+	if recipe ~= a_recipe then
+		 -- Move modules if necessary
+		if recipe then self:move_modules(recipe); end
 		
 		-- Finally attempt to switch the recipe
 		self.assembler.set_recipe(recipe)
