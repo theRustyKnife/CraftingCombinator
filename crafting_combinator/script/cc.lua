@@ -27,13 +27,11 @@ end
 
 _M.settings_parser = settings_parser {
 	chest_position = {'c', 'int'},
-	mode = {'m',
-		set = {'s', 'bool'},
-		read = {'r', 'bool'},
-	},
+	mode = {'m', 'string'},
 	discard_items = {'d', 'bool'},
 	discard_fluids = {'f', 'bool'},
 	empty_inserters = {'i', 'bool'},
+	read_recipe = {'r', 'bool'},
 	read_speed = {'s', 'bool'},
 	read_machine_status = {'st', 'bool'},
 }
@@ -182,13 +180,14 @@ function _M:update()
 	if self.enabled and self.assembler and self.assembler.valid then
 		self.assembler.active = true
 		
-		if self.settings.mode.set then
+		if self.settings.mode == 'w' then
 			self:set_recipe()
-			self.items_to_ignore = {} -- I hate this, but couldn't find a way to make it less terribad
 		end
-		if self.settings.mode.read then self:read_recipe(params); end
-		if self.settings.read_speed then self:read_speed(params); end
-		if self.settings.read_machine_status then self:read_machine_status(params); end
+		if self.settings.mode == 'r' then
+			if self.settings.read_recipe then self:read_recipe(params); end
+			if self.settings.read_speed then self:read_speed(params); end
+			if self.settings.read_machine_status then self:read_machine_status(params); end
+		end
 	end
 	
 	self.control_behavior.parameters = {enabled = true, parameters = params}
@@ -196,7 +195,7 @@ end
 
 
 function _M:open(player_index)
-	gui.entity(self.entity, {
+	local root = gui.entity(self.entity, {
 		title_elements = {
 			gui.button('open-module-chest'),
 			gui.dropdown('chest-position', CHEST_POSITION_NAMES, self.settings.chest_position, {tooltip=true}),
@@ -204,25 +203,53 @@ function _M:open(player_index)
 		
 		gui.section {
 			name = 'mode',
-			gui.checkbox('set', self.settings.mode.set, 'mode-set'),
-			gui.checkbox('read', self.settings.mode.read, 'mode-read'),
+			gui.radio('w', self.settings.mode, {locale='mode-write', tooltip=true}),
+			gui.radio('r', self.settings.mode, {locale='mode-read', tooltip=true}),
 		},
 		gui.section {
 			name = 'misc',
 			gui.checkbox('discard-items', self.settings.discard_items),
 			gui.checkbox('discard-fluids', self.settings.discard_fluids),
 			gui.checkbox('empty-inserters', self.settings.empty_inserters),
+			gui.checkbox('read-recipe', self.settings.read_recipe),
 			gui.checkbox('read-speed', self.settings.read_speed),
 			gui.checkbox('read-machine-status', self.settings.read_machine_status),
 		}
 	}):open(player_index)
+	
+	self:update_disabled_checkboxes(root)
 end
 
-function _M:on_checked_changed(name, state)
+function _M:on_checked_changed(name, state, element)
 	local category, name = name:gsub(':.*$', ''), name:gsub('^.-:', ''):gsub('-', '_')
-	if category == 'mode' then self.settings.mode[name] = state; end
+	if category == 'mode' then
+		self.settings.mode = name
+		for _, el in pairs(element.parent.children) do
+			if el.type == 'radiobutton' then
+				local _, _, el_name = gui.parse_entity_gui_name(el.name)
+				el.state = el_name == 'mode:'..name
+			end
+		end
+	end
 	if category == 'misc' then self.settings[name] = state; end
+	
+	self:update_disabled_checkboxes(gui.get_root(element))
+	
 	self.settings_parser:update(self.entity, self.settings)
+end
+
+function _M:update_disabled_checkboxes(root)
+	self:disable_checkbox(root, 'misc:discard-items', 'w')
+	self:disable_checkbox(root, 'misc:discard-fluids', 'w')
+	self:disable_checkbox(root, 'misc:empty-inserters', 'w')
+	self:disable_checkbox(root, 'misc:read-recipe', 'r')
+	self:disable_checkbox(root, 'misc:read-speed', 'r')
+	self:disable_checkbox(root, 'misc:read-machine-status', 'r')
+end
+
+function _M:disable_checkbox(root, name, mode)
+	local checkbox = gui.find_element(root, gui.name(self.entity, name))
+	checkbox.enabled = self.settings.mode == mode
 end
 
 function _M:on_selection_changed(name, selected)
@@ -250,7 +277,6 @@ function _M:read_recipe(params)
 			count = 1,
 			index = 1,
 		})
-		self.items_to_ignore[recipe.name] = 1
 	end
 end
 
@@ -261,7 +287,6 @@ function _M:read_speed(params)
 		count = count,
 		index = 2,
 	})
-	self.items_to_ignore[config.SPEED_SIGNAL_NAME] = count
 end
 
 function _M:read_machine_status(params)
@@ -272,11 +297,10 @@ function _M:read_machine_status(params)
 		count = 1,
 		index = 3,
 	})
-	self.items_to_ignore[signal] = 1
 end
 
 function _M:set_recipe()
-	local recipe = recipe_selector.get_recipe(self.entity, self.items_to_ignore)
+	local recipe = recipe_selector.get_recipe(self.entity)
 	local a_recipe = self.assembler.get_recipe()
 	
 	-- Move items if necessary

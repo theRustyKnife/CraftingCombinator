@@ -14,13 +14,11 @@ return {
 	
 	CC_DEFAULT_SETTINGS = {
 		chest_position = 1, -- 1 = Behind, 2 = Left, 3 = Right
-		mode = {
-			set = true,
-			read = false,
-		},
+		mode = 'w',
 		discard_items = false,
 		discard_fluids = true,
 		empty_inserters = true,
+		read_recipe = true,
 		read_speed = false,
 		read_bottleneck = false,
 	},
