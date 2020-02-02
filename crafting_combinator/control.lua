@@ -103,7 +103,7 @@ end
 script.on_event(defines.events.on_tick, function(event)
 	if global.cc.inserter_empty_queue[event.tick] then
 		for _, e in pairs(global.cc.inserter_empty_queue[event.tick]) do
-			if e.entity.valid and e.assembler.valid then e:empty_inserters(); end
+			if e.entity.valid and e.assembler and e.assembler.valid then e:empty_inserters(); end
 		end
 		global.cc.inserter_empty_queue[event.tick] = nil
 	end
