@@ -3,6 +3,7 @@ local util = require 'script.util'
 local gui = require 'script.gui'
 local settings_parser = require 'script.settings-parser'
 local recipe_selector = require 'script.recipe-selector'
+local signals = require 'script.signals'
 
 
 local _M = {}
@@ -101,6 +102,7 @@ function _M.destroy(entity)
 	
 	combinator.output_proxy.destroy()
 	settings_parser.destroy(entity)
+	signals.cache.drop(entity)
 	
 	global.rc.data[unit_number] = nil
 	for k, v in pairs(global.rc.ordered) do

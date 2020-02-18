@@ -3,6 +3,7 @@ local gui = require 'script.gui'
 local settings_parser = require 'script.settings-parser'
 local recipe_selector = require 'script.recipe-selector'
 local config = require 'config'
+local signals = require 'script.signals'
 
 
 local _M = {}
@@ -150,6 +151,7 @@ function _M.destroy(entity, player_index)
 	_M.update_chests(entity.surface, combinator.module_chest, true)
 	if player_index then combinator.module_chest.destroy(); end
 	settings_parser.destroy(entity)
+	signals.cache.drop(entity)
 	
 	global.cc.data[unit_number] = nil
 	for k, v in pairs(global.cc.ordered) do
