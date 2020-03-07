@@ -23,7 +23,7 @@ late_migrations['0.15.0'] = function(changes)
 	log(("Updating %d crafting combinators..."):format(table_size(global.cc.data)))
 	for _, combinator in pairs(global.cc.data) do
 		combinator.last_recipe = false
-		combinator.settings.read_recipe = combinator.settings.read
+		combinator.settings.read_recipe = true
 		combinator.settings.mode = combinator.settings.mode.set and 'w' or 'r'
 		combinator.settings_parser:update(combinator.entity, combinator.settings)
 	end
