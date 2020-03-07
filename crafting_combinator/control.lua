@@ -133,7 +133,8 @@ script.on_event(defines.events.on_entity_settings_pasted, function(event)
 	
 	destination.settings = util.deepcopy(source.settings)
 	destination.settings_parser:update(destination.entity, destination.settings)
-	if destination.entity.name == config.RC_NAME then destination:update(true); end
+	if destination.entity.name == config.RC_NAME then destination:update(true)
+	elseif destination.entity.name == config.CC_NAME then destination:copy(source); end
 end)
 
 

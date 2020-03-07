@@ -507,4 +507,9 @@ function _M:update_inner_positions()
 end
 
 
+function _M:copy(source)
+	self.inventories.module_chest.set_bar(source.inventories.module_chest.get_bar())
+end
+
+
 return _M
