@@ -59,7 +59,7 @@ local function count_entities_at(entity, name)
 end
 
 local function on_built(event)
-	local entity = event.created_entity
+	local entity = event.created_entity or event.entity
 	if entity.name == config.CC_NAME then cc_control.create(entity); end
 	if entity.name == config.RC_NAME then rc_control.create(entity); end
 	if entity.type == 'assembling-machine' then cc_control.update_assemblers(entity.surface, entity); end
@@ -195,10 +195,13 @@ end)
 
 script.on_event(defines.events.on_built_entity, on_built)
 script.on_event(defines.events.on_robot_built_entity, on_built)
+script.on_event(defines.events.script_raised_built, on_built)
+script.on_event(defines.events.script_raised_revive, on_built)
 
 script.on_event(defines.events.on_pre_player_mined_item, on_destroyed)
 script.on_event(defines.events.on_robot_pre_mined, on_destroyed)
 script.on_event(defines.events.on_entity_died, on_destroyed)
+script.on_event(defines.events.script_raised_destroy, on_destroyed)
 
 script.on_event(defines.events.on_pre_ghost_deconstructed, function(event)
 	event.entity = event.ghost
