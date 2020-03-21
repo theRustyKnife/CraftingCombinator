@@ -4,6 +4,16 @@ local icons = require '__rusty-locale__.icons'
 local config = require 'config'
 
 
+local function hook_newindex(table, hook)
+	local raw_mt = getmetatable(table) or {}
+	setmetatable(table, raw_mt)
+	local super_newindex = raw_mt.__newindex or rawset
+	function raw_mt.__newindex(self, key, value)
+		hook(self, key, value, function() return super_newindex(self, key, value); end)
+	end
+end
+
+
 local function _is_result(item, result, results)
 	if item == result then return true; end
 	for _, result in pairs(results or {}) do
@@ -106,6 +116,18 @@ local function make_signal_for_recipe(name, recipe)
 			return
 		end
 		
+		local recipe_icons = icons.of(recipe, nil, true)
+		if not recipe_icons then
+			local message = "Recipe `%s` doesn't specify valid icons."
+			if mods['omnilib'] then message = message.." Please ask the author of said recipe to kindly fix their shit, instead of resorting to lazy cop-outs."; end
+			log(message:format(name))
+			hook_newindex(recipe, function(self, key, value, super)
+				super()
+				if key == 'icon_size' then make_signal_for_recipe(self.name, self); end
+			end)
+			return
+		end
+		
 		print("Generating virtual signal for recipe `"..tostring(name).."`")
 		local subgroup = config.UNSORTED_RECIPE_SUBGROUP
 		if recipe.subgroup then
@@ -127,7 +149,7 @@ local function make_signal_for_recipe(name, recipe)
 			name = name,
 			localised_name = {'crafting_combinator.recipe-locale', locale.name},
 			localised_description = locale.description,
-			icons = icons.of(recipe),
+			icons = recipe_icons,
 			subgroup = subgroup,
 			order = get_order(recipe),
 		}}
@@ -171,16 +193,6 @@ end
 
 -- Generate signals for all existing recipes that need it
 for name, recipe in pairs(data.raw['recipe']) do process_recipe(name, recipe); end
-
-
-local function hook_newindex(table, hook)
-	local raw_mt = getmetatable(table) or {}
-	setmetatable(table, raw_mt)
-	local super_newindex = raw_mt.__newindex or rawset
-	function raw_mt.__newindex(self, key, value)
-		hook(self, key, value, function() return super_newindex(self, key, value); end)
-	end
-end
 
 
 -- Listen for other mods adding recipes beyond this point and make signals for them if necessary
