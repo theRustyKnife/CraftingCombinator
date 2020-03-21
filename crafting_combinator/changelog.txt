@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.15.1
+Date: 21. 03. 2020
+  Bugfixes:
+    - Added a workaround for certain mods making recipes without proper icon definition (https://mods.factorio.com/mod/crafting_combinator/discussion/5e746463de88d4000bf619b2)
+---------------------------------------------------------------------------------------------------
 Version: 0.15.0
 Date: 07. 03. 2020
   Changes:
