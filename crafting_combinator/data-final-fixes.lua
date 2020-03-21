@@ -116,7 +116,7 @@ local function make_signal_for_recipe(name, recipe)
 			return
 		end
 		
-		local recipe_icons = icons.of(recipe, nil, true)
+		local recipe_icons = icons.of(recipe, true)
 		if not recipe_icons then
 			local message = "Recipe `%s` doesn't specify valid icons."
 			if mods['omnilib'] then message = message.." Please ask the author of said recipe to kindly fix their shit, instead of resorting to lazy cop-outs."; end
