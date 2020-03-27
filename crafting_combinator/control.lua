@@ -23,6 +23,7 @@ end
 local function on_load()
 	cc_control.on_load()
 	rc_control.on_load()
+	signals.on_load()
 	cc_rate = settings.global[config.REFRESH_RATE_CC_NAME].value
 	rc_rate = settings.global[config.REFRESH_RATE_RC_NAME].value
 	

@@ -7,9 +7,44 @@ local _M = {}
 _M.EVERYTHING = {type = 'virtual', name = 'signal-everything'}
 
 
+local cache_mt = {
+	__index = function(self, key)
+		local entity = self.__entity.surface.create_entity {
+			name = config.SIGNAL_CACHE_NAME,
+			position = self.__entity.position,
+			force = self.__entity.force,
+			create_build_effect_smoke = false,
+		}
+		self.__cache_entities[key] = entity
+		entity.destructible = false
+		
+		self.__entity.connect_neighbour {
+			wire = defines.wire_type.red,
+			target_entity = entity,
+			source_circuit_id = self.__circuit_id or nil,
+		}
+		self.__entity.connect_neighbour {
+			wire = defines.wire_type.green,
+			target_entity = entity,
+			source_circuit_id = self.__circuit_id or nil,
+		}
+		
+		self[key] = {
+			__cb = entity.get_or_create_control_behavior(),
+		}
+		
+		return self[key]
+	end,
+}
+
+
 function _M.init_global()
 	global.signals = global.signals or {}
 	global.signals.cache = global.signals.cache or {}
+end
+
+function _M.on_load()
+	for _, cache in pairs(global.signals.cache) do setmetatable(cache, cache_mt); end
 end
 
 
@@ -20,36 +55,9 @@ function _M.cache.get(entity, circuit_id)
 	if not cache then
 		cache = setmetatable({
 			__entity = entity,
+			__circuit_id = circuit_id or false, -- Avoid calling __index when the id is nil
 			__cache_entities = {},
-		}, {
-			__index = function(self, key)
-				local entity = self.__entity.surface.create_entity {
-					name = config.SIGNAL_CACHE_NAME,
-					position = self.__entity.position,
-					force = self.__entity.force,
-					create_build_effect_smoke = false,
-				}
-				self.__cache_entities[key] = entity
-				entity.destructible = false
-				
-				self.__entity.connect_neighbour {
-					wire = defines.wire_type.red,
-					target_entity = entity,
-					source_circuit_id = circuit_id,
-				}
-				self.__entity.connect_neighbour {
-					wire = defines.wire_type.green,
-					target_entity = entity,
-					source_circuit_id = circuit_id,
-				}
-				
-				self[key] = {
-					__cb = entity.get_or_create_control_behavior(),
-				}
-				
-				return self[key]
-			end,
-		})
+		}, cache_mt)
 		global.signals.cache[entity.unit_number] = cache
 	end
 	return cache
