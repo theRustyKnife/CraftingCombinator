@@ -14,7 +14,7 @@ Date: 07. 03. 2020
     - Fixed a crash when removing an assembler after a recipe change with inserter clearing enabled (https://mods.factorio.com/mod/crafting_combinator/discussion/5e335d7032d7fc000dd540cc)
     - Fixed that crafting combinators couldn't clear the recipe
     - Module chest limits are now transfered when copypasting crafting combinator settings (https://mods.factorio.com/mod/crafting_combinator/discussion/5e589da29b6ee4000e568623)
-    - Fix combinators built by Konan's Construction Drones were broken (https://mods.factorio.com/mod/crafting_combinator/discussion/5e637a52c57759000e9f62d1)
+    - Fix combinators built by Klonan's Construction Drones were broken (https://mods.factorio.com/mod/crafting_combinator/discussion/5e637a52c57759000e9f62d1)
 ---------------------------------------------------------------------------------------------------
 Version: 0.14.0
 Date: 25. 01. 2020
