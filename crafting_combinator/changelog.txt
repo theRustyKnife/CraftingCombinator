@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.15.2
+Date: 27. 03. 2020
+  Bugfixes:
+    - Fixed crash caused by wrong signal cache initialization (https://mods.factorio.com/mod/crafting_combinator/discussion/5e7e24f6f2e203000b7e420b)
+---------------------------------------------------------------------------------------------------
 Version: 0.15.1
 Date: 21. 03. 2020
   Bugfixes:
