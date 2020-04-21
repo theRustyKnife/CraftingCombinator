@@ -36,8 +36,9 @@ local function is_ignored(name)
 end
 
 local function is_hidden(recipe) -- Just end me please.
-	if recipe.normal then return recipe.normal.hidden
-	else return recipe.hidden; end
+	local function is_true(hidden) return hidden == true or hidden == 'true'; end
+	if recipe.normal then return is_true(recipe.normal.hidden)
+	else return is_true(recipe.hidden); end
 end
 
 local function needs_signal(recipe)
