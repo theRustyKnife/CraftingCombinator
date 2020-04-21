@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.15.3
+Date: 21. 04. 2020
+  Bugfixes:
+    - Fixed a crash caused by factorio considering "false" to be false in some cases (https://mods.factorio.com/mod/crafting_combinator/discussion/5e9ca2a64ed777000b234cc3)
+    - Fixed a possible crash while migrating from 0.14 to 0.15 (https://mods.factorio.com/mod/crafting_combinator/discussion/5e9f19f2c60fdc000ee64c82)
+---------------------------------------------------------------------------------------------------
 Version: 0.15.2
 Date: 27. 03. 2020
   Bugfixes:
