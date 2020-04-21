@@ -20,7 +20,9 @@ local function enable_recipes()
 	end
 end
 
-local function on_load()
+local function on_load(forced)
+	if not forced and next(late_migrations.__migrations) ~= nil then return; end
+	
 	cc_control.on_load()
 	rc_control.on_load()
 	signals.on_load()
@@ -42,12 +44,13 @@ script.on_init(function()
 	cc_control.init_global()
 	rc_control.init_global()
 	signals.init_global()
-	on_load()
+	on_load(true)
 end)
 script.on_load(on_load)
 
 script.on_configuration_changed(function(changes)
 	late_migrations(changes)
+	on_load(true)
 	enable_recipes()
 end)
 
