@@ -125,6 +125,20 @@ function _M:update(forced)
 	else self:find_ingredients_and_products(forced); end
 end
 
+
+local DUMMY_SIGNAL = {type = 'virtual', name = config.TIME_SIGNAL_NAME}
+local param_table = {enabled = true}
+local param_cache = {}
+local function make_params(size)
+	local params = param_cache[size]
+	if not params then
+		params = {enabled = true, parameters = {}}
+		for i = 1, size do params.parameters[i] = {index = i}; end
+		param_cache[size] = params
+	end
+	return params, params.parameters
+end
+
 function _M:find_recipe()
 	local changed, recipes, count, signal = recipe_selector.get_recipes(
 		self.entity, defines.circuit_connector_id.combinator_input,
@@ -136,25 +150,28 @@ function _M:find_recipe()
 	self.last_signal = signal
 	self.last_count = count
 	
-	local params = {}
+	local result_parameters, params = make_params(table_size(recipes))
 	local index = 1
+	local slots = _M.get_rc_slot_count()
 	
 	count = self.settings.multiply_by_input and count or 1
 	local round = self.settings.mode == 'use' and math.floor or math.ceil
-	for _, recipe in pairs(recipes) do
+	for i, recipe in pairs(recipes) do
+		local param = params[i]
 		if not recipe.recipe.hidden and recipe.recipe.enabled then
-			local recipe_count = self.settings.divide_by_output and round(count/recipe.amount) or count
-			table.insert(params, {
-				signal = recipe_selector.get_signal(recipe.recipe.name),
-				count = self.settings.differ_output and index or recipe_count,
-				index = index,
-			})
+			param.signal = recipe_selector.get_signal(recipe.recipe.name)
+			param.count = self.settings.differ_output and index or (self.settings.divide_by_output and round(count/recipe.amount) or count)
+			param.index = index
 			index = index + 1
-			if index > _M.get_rc_slot_count() then break; end
+		elseif slots > index then
+			param.signal = DUMMY_SIGNAL
+			param.count = 0
+			param.index = slots
+			slots = slots - 1
 		end
 	end
 	
-	self.control_behavior.parameters = {enabled = true, parameters = params}
+	self.control_behavior.parameters = result_parameters
 end
 
 function _M:find_ingredients_and_products()
@@ -185,11 +202,11 @@ function _M:find_ingredients_and_products()
 				* (tonumber(ing.probability) or 1)
 			)
 			
-			table.insert(params, {
+			params[i] = {
 				signal = {type = ing.type, name = ing.name},
 				count = self.settings.differ_output and i or util.simulate_overflow(amount),
 				index = i,
-			})
+			}
 		end
 		
 		table.insert(params, {
