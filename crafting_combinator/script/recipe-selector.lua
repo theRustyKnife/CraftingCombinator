@@ -65,11 +65,17 @@ function _M.get_recipes(entity, circuit_id, mode, last_signal, last_count)
 end
 
 
+local signal_cache = {}
 function _M.get_signal(recipe)
-	return {
-		name = recipe,
-		type = (game.item_prototypes[recipe] and 'item') or (game.fluid_prototypes[recipe] and 'fluid') or 'virtual'
-	}
+	local signal = signal_cache[recipe]
+	if not signal then
+		signal = {
+			name = recipe,
+			type = (game.item_prototypes[recipe] and 'item') or (game.fluid_prototypes[recipe] and 'fluid') or 'virtual'
+		}
+		signal_cache[recipe] = signal
+	end
+	return signal
 end
 
 
