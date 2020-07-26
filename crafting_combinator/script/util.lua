@@ -84,7 +84,7 @@ function _M.direction:vector() return _M.position(table.unpack(_M.direction.VECT
 
 function _M.direction:rotate(degrees)
 	local round = degrees > 0 and math.floor or math.ceil
-	steps = round((degrees % 360) / 45)
+	local steps = round((degrees % 360) / 45)
 	return _M.direction(self.direction + steps)
 end
 
