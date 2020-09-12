@@ -156,4 +156,27 @@ function _M.get_highest(entity, circuit_id, update_count)
 end
 
 
+function _M.watch_highest_presence(entity, circuit_id)
+	local highest = _M.get_highest(entity, circuit_id)
+	local cache = _M.cache.get(entity, circuit_id)
+	
+	if not highest then
+		cache.signal_present.valid = false
+	else
+		cache.signal_present.valid = true
+		cache.signal_present.__cb.circuit_condition = {condition = {
+			comparator = '>',
+			first_signal = highest.signal,
+			constant = 0,
+		}}
+	end
+	
+	return highest
+end
+function _M.signal_present(entity, circuit_id)
+	local cache = _M.cache.get(entity, circuit_id)
+	return cache.signal_present.valid and not cache.signal_present.__cb.disabled
+end
+
+
 return _M

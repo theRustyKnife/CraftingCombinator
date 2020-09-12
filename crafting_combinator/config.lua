@@ -19,6 +19,7 @@ return {
 		discard_items = false,
 		discard_fluids = true,
 		empty_inserters = true,
+		craft_until_zero = false,
 		read_recipe = true,
 		read_speed = false,
 		read_bottleneck = false,

@@ -32,6 +32,7 @@ _M.settings_parser = settings_parser {
 	discard_items = {'d', 'bool'},
 	discard_fluids = {'f', 'bool'},
 	empty_inserters = {'i', 'bool'},
+	craft_until_zero = {'z', 'bool'},
 	read_recipe = {'r', 'bool'},
 	read_speed = {'s', 'bool'},
 	read_machine_status = {'st', 'bool'},
@@ -214,6 +215,7 @@ function _M:open(player_index)
 			gui.checkbox('discard-items', self.settings.discard_items),
 			gui.checkbox('discard-fluids', self.settings.discard_fluids),
 			gui.checkbox('empty-inserters', self.settings.empty_inserters),
+			gui.checkbox('craft-until-zero', self.settings.craft_until_zero, {tooltip = true}),
 			gui.checkbox('read-recipe', self.settings.read_recipe),
 			gui.checkbox('read-speed', self.settings.read_speed),
 			gui.checkbox('read-machine-status', self.settings.read_machine_status),
@@ -235,6 +237,9 @@ function _M:on_checked_changed(name, state, element)
 		end
 	end
 	if category == 'misc' then self.settings[name] = state; end
+	if name == 'craft_until_zero' and self.settings.craft_until_zero then
+		self.last_recipe = nil
+	end
 	
 	self:update_disabled_checkboxes(gui.get_root(element))
 	
@@ -245,6 +250,7 @@ function _M:update_disabled_checkboxes(root)
 	self:disable_checkbox(root, 'misc:discard-items', 'w')
 	self:disable_checkbox(root, 'misc:discard-fluids', 'w')
 	self:disable_checkbox(root, 'misc:empty-inserters', 'w')
+	self:disable_checkbox(root, 'misc:craft-until-zero', 'w')
 	self:disable_checkbox(root, 'misc:read-recipe', 'r')
 	self:disable_checkbox(root, 'misc:read-speed', 'r')
 	self:disable_checkbox(root, 'misc:read-machine-status', 'r')
@@ -303,9 +309,19 @@ function _M:read_machine_status(params)
 end
 
 function _M:set_recipe()
-	local changed, recipe = recipe_selector.get_recipe(self.entity, nil, self.last_recipe and self.last_recipe.name)
-	if changed then self.last_recipe = recipe
-	else recipe = self.last_recipe; end
+	local changed, recipe
+	if self.settings.craft_until_zero then
+		if not self.last_recipe or not signals.signal_present(self.entity) then
+			local highest = signals.watch_highest_presence(self.entity)
+			if highest then recipe = self.entity.force.recipes[highest.signal.name]
+			else recipe = nil; end
+			self.last_recipe = recipe
+		else recipe = self.last_recipe; end
+	else
+		changed, recipe = recipe_selector.get_recipe(self.entity, nil, self.last_recipe and self.last_recipe.name)
+		if changed then self.last_recipe = recipe
+		else recipe = self.last_recipe; end
+	end
 	
 	if recipe and (recipe.hidden or not recipe.enabled) then recipe = nil; end
 	
