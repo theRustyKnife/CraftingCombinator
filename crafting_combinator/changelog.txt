@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.16.0
+Date: 15. 10. 2020
+  Features:
+    - Added an option to keep crafting the same thing until the signal reaches 0 (https://mods.factorio.com/mod/crafting_combinator/discussion/5f4b7d64a4c4c962d8ae1ab8)
+  Changes:
+    - Added additional overflow chest positions so it can now be placed diagonally behind the combinator (https://github.com/theRustyKnife/CraftingCombinator/issues/63)
+---------------------------------------------------------------------------------------------------
 Version: 0.15.3
 Date: 21. 04. 2020
   Bugfixes:
