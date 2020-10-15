@@ -10,12 +10,14 @@ local _M = {}
 local combinator_mt = {__index = _M}
 
 
-local CHEST_POSITION_NAMES = {'behind', 'left', 'right'}
+local CHEST_POSITION_NAMES = {'behind', 'left', 'right', 'behind-left', 'behind-right'}
 local CHEST_POSITIONS = {}; for key, name in pairs(CHEST_POSITION_NAMES) do CHEST_POSITIONS[name] = key; end
 local CHEST_DIRECTIONS = {
 	[CHEST_POSITIONS.behind] = 180,
 	[CHEST_POSITIONS.right] = 90,
 	[CHEST_POSITIONS.left] = -90,
+	[CHEST_POSITIONS['behind-right']] = 135,
+	[CHEST_POSITIONS['behind-left']] = -135,
 }
 
 local STATUS_SIGNALS = {}
