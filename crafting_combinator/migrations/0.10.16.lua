@@ -1,3 +1,5 @@
+if not late_migrations then return end
+
 late_migrations['0.10.16'] = function()
 	local config = require 'config'
 	local cc_control = require 'script.cc'

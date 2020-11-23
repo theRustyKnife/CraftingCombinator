@@ -1,3 +1,5 @@
+if not late_migrations then return end
+
 late_migrations['0.15.0'] = function(changes)
 	local cc_control = require 'script.cc'
 	local rc_control = require 'script.rc'

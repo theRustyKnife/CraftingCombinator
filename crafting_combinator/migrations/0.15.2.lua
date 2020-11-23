@@ -1,3 +1,5 @@
+if not late_migrations then return end
+
 late_migrations['0.15.2'] = function()
 	local signals = require 'script.signals'
 	
