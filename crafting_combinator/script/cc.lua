@@ -196,7 +196,7 @@ function _M:update()
 		end
 	end
 	
-	self.control_behavior.parameters = {enabled = true, parameters = params}
+	self.control_behavior.parameters = params
 end
 
 

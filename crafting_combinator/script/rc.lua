@@ -127,16 +127,15 @@ end
 
 
 local DUMMY_SIGNAL = {type = 'virtual', name = config.TIME_SIGNAL_NAME}
-local param_table = {enabled = true}
 local param_cache = {}
 local function make_params(size)
 	local params = param_cache[size]
 	if not params then
-		params = {enabled = true, parameters = {}}
-		for i = 1, size do params.parameters[i] = {index = i}; end
+		params = {}
+		for i = 1, size do params[i] = {index = i}; end
 		param_cache[size] = params
 	end
-	return params, params.parameters
+	return params
 end
 
 function _M:find_recipe()
@@ -150,7 +149,7 @@ function _M:find_recipe()
 	self.last_signal = signal
 	self.last_count = count
 	
-	local result_parameters, params = make_params(table_size(recipes))
+	local params = make_params(table_size(recipes))
 	local index = 1
 	local slots = _M.get_rc_slot_count()
 	
@@ -171,7 +170,7 @@ function _M:find_recipe()
 		end
 	end
 	
-	self.control_behavior.parameters = result_parameters
+	self.control_behavior.parameters = params
 end
 
 function _M:find_ingredients_and_products()
@@ -216,7 +215,7 @@ function _M:find_ingredients_and_products()
 		})
 	end
 	
-	self.control_behavior.parameters = {enabled = true, parameters = params}
+	self.control_behavior.parameters = params
 end
 
 
@@ -256,7 +255,7 @@ function _M:find_machines()
 			end
 		end
 	end
-	self.control_behavior.parameters = {enabled = true, parameters = params}
+	self.control_behavior.parameters = params
 end
 
 
