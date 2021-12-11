@@ -38,6 +38,7 @@ _M.settings_parser = settings_parser {
 	read_recipe = {'r', 'bool'},
 	read_speed = {'s', 'bool'},
 	read_machine_status = {'st', 'bool'},
+	wait_for_output_to_clear = {'wo', 'bool'},
 }
 
 
@@ -214,6 +215,7 @@ function _M:open(player_index)
 		},
 		gui.section {
 			name = 'misc',
+			gui.checkbox('wait-for-output-to-clear', self.settings.wait_for_output_to_clear, {tooltip = true}),
 			gui.checkbox('discard-items', self.settings.discard_items),
 			gui.checkbox('discard-fluids', self.settings.discard_fluids),
 			gui.checkbox('empty-inserters', self.settings.empty_inserters),
@@ -253,6 +255,7 @@ function _M:update_disabled_checkboxes(root)
 	self:disable_checkbox(root, 'misc:discard-fluids', 'w')
 	self:disable_checkbox(root, 'misc:empty-inserters', 'w')
 	self:disable_checkbox(root, 'misc:craft-until-zero', 'w')
+	self:disable_checkbox(root, 'misc:wait-for-output-to-clear', 'w')
 	self:disable_checkbox(root, 'misc:read-recipe', 'r')
 	self:disable_checkbox(root, 'misc:read-speed', 'r')
 	self:disable_checkbox(root, 'misc:read-machine-status', 'r')
@@ -331,9 +334,11 @@ function _M:set_recipe()
 	
 	-- Move items if necessary
 	if a_recipe and ((not recipe) or recipe ~= a_recipe) then
-		if not self:move_items() then return self:on_chest_full(); end
+		local success, error = self:move_items()
+		if not success then return self:on_chest_full(error); end
 		if self.settings.empty_inserters then
-			if not self:empty_inserters() then return self:on_chest_full(); end
+			success, error = self:empty_inserters()
+			if not success then return self:on_chest_full(error); end
 			
 			local tick = game.tick + config.INSERTER_EMPTY_DELAY
 			global.cc.inserter_empty_queue[tick] = global.cc.inserter_empty_queue[tick] or {}
@@ -407,7 +412,12 @@ function _M:insert_items()
 end
 
 function _M:move_items()
+	if self.settings.wait_for_output_to_clear and not self.inventories.assembler.output.is_empty() then
+		return false, 'waiting-for-output'
+	end
+	
 	if self.settings.discard_items then return true; end
+	
 	local target = self:get_chest_inventory()
 	
 	-- Compensate for half-finished crafts
@@ -416,13 +426,13 @@ function _M:move_items()
 		local success = true
 		for _, ing in pairs(self.assembler.get_recipe().ingredients) do
 			if ing.type == 'item' then
-				if not target then return false; end
+				if not target then return false, 'no-chest'; end
 				local r = target.insert{name = ing.name, count = ing.amount}
 				if r < ing.amount then success = false; end
 			end
 		end
 		self.assembler.crafting_progress = 0
-		if not success then return false; end
+		if not success then return false, 'chest-full'; end
 	end
 	
 	-- Clear the assembler inventories
@@ -432,11 +442,11 @@ function _M:move_items()
 		for i=1, #inventory do
 			local stack = inventory[i]
 			if stack.valid_for_read then
-				if not target then return false; end
+				if not target then return false, 'no-chest'; end
 				local r = target.insert(stack)
 				if r < stack.count then
 					stack.count = stack.count - r -- Make sure the items don't get duplicated
-					return false
+					return false, 'chest-full'
 				end
 				inventory[i].clear()
 			end
@@ -446,7 +456,7 @@ function _M:move_items()
 	return true
 end
 
-function _M:on_chest_full()
+function _M:on_chest_full(error)
 	-- Prevent the assembler from crafting any more shit
 	self.assembler.active = false
 	if game.tick - self.last_flying_text_tick >= config.FLYING_TEXT_INTERVAL then
@@ -454,7 +464,7 @@ function _M:on_chest_full()
 		self.entity.surface.create_entity {
 			name = 'flying-text',
 			position = self.entity.position,
-			text = {'crafting_combinator_gui.chest-full'},
+			text = {'crafting_combinator_gui.switching-stuck:'..(error or 'chest-full')},
 			color = {255, 0, 0},
 		}
 	end
@@ -470,11 +480,11 @@ function _M:empty_inserters()
 		if inserter.drop_target == self.assembler then
 			local stack = inserter.held_stack
 			if stack.valid_for_read and not self.settings.discard_items then
-				if not target then return false; end
+				if not target then return false, 'no-chest'; end
 				local r = target.insert(stack)
 				if r < stack.count then
 					stack.count = stack.count - r
-					return false
+					return false, 'chest-full'
 				end
 				stack.clear()
 			else stack.clear(); end
