@@ -51,8 +51,6 @@ return {
 	
 	-- Recipes matching any of these strings will not get a virtual recipe
 	RECIPES_TO_IGNORE = {
-		'^compress%-',
-		'^uncompress%-',
 		'angels%-void',
 	},
 	
