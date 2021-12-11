@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.16.2
+Date: 11. 12. 2021
+  Bugfixes:
+    - Added a missing nil check in 0.15.0 migration (https://github.com/theRustyKnife/CraftingCombinator/issues/65)
+    - Removed compress- and uncompress- recipes from ignored recipes (https://mods.factorio.com/mod/crafting_combinator/discussion/60ba6570e68acfeb9e94800b, https://mods.factorio.com/mod/crafting_combinator/discussion/618f5a790a659cc2d1677ba2)
+  Features:
+    - Added an option to wait until the output inventory is empty (https://mods.factorio.com/mod/crafting_combinator/discussion/603a569520a18b2fb3442ecc)
+---------------------------------------------------------------------------------------------------
 Version: 0.16.1
 Date: 05. 12. 2020
   Changes:
