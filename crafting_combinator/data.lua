@@ -37,7 +37,10 @@ rc.name = config.RC_NAME
 rc.minable.result = rc.name
 rc.energy_source = { type = 'void' }
 rc.energy_usage_per_tick = '1W'
---TODO: Graphics
+for direction, definition in pairs(rc.multiply_symbol_sprites) do
+	definition.hr_version.filename = '__crafting_combinator__/graphics/hr-combinator-displays.png'
+	rc.multiply_symbol_sprites[direction] = definition.hr_version
+end
 
 local rc_item = table.deepcopy(data.raw['item']['arithmetic-combinator'])
 rc_item.name = rc.name
