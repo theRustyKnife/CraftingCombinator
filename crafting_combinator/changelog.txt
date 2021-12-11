@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.16.3
+Date: 11. 12. 2021
+  Changes:
+    - Added custom symbol sprite for recipe combinator, courtesy of sticklord (https://forums.factorio.com/viewtopic.php?p=555453#p555453)
+---------------------------------------------------------------------------------------------------
 Version: 0.16.2
 Date: 11. 12. 2021
   Bugfixes:
