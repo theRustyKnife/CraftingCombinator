@@ -7,7 +7,7 @@ late_migrations['0.15.0'] = function(changes)
 	
 	
 	local change = changes.mod_changes['crafting_combinator']
-	if not change.old_version then return; end
+	if not change or not change.old_version then return; end
 	
 	local message = {'crafting_combinator.0-15-0-compatibility-warning', change.old_version, change.new_version}
 	log(message)
