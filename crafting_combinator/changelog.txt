@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.17.0
+Date: 11. 23. 2021
+  Features:
+    - Crafting combinator can now read and output ingredients of set recipe (new setting)
+    - Crafting combinator can now read from rocket silos
+    - Crafting combinator can now read product and ingredients for machines that have fixed (static) recipes (like a rocket silo and modded assemblers)
+---------------------------------------------------------------------------------------------------
 Version: 0.16.3
 Date: 11. 12. 2021
   Changes:

@@ -8,7 +8,7 @@ local cc = table.deepcopy(data.raw['constant-combinator']['constant-combinator']
 cc.name = config.CC_NAME
 cc.icon = '__crafting_combinator__/graphics/icon-crafting-combinator.png'
 cc.icon_size = 32
-cc.item_slot_count = 3
+cc.item_slot_count = 255
 cc.minable.result = cc.name
 table.insert(cc.flags, 'not-deconstructable')
 
