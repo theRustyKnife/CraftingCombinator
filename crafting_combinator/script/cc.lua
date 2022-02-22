@@ -39,6 +39,7 @@ _M.settings_parser = settings_parser {
 	read_speed = {'s', 'bool'},
 	read_machine_status = {'st', 'bool'},
 	wait_for_output_to_clear = {'wo', 'bool'},
+	read_ingredients = {'ing', 'bool'},
 }
 
 
@@ -194,6 +195,7 @@ function _M:update()
 			if self.settings.read_recipe then self:read_recipe(params); end
 			if self.settings.read_speed then self:read_speed(params); end
 			if self.settings.read_machine_status then self:read_machine_status(params); end
+			if self.settings.read_ingredients then self:read_ingredients(params); end
 		end
 	end
 	
@@ -223,6 +225,7 @@ function _M:open(player_index)
 			gui.checkbox('read-recipe', self.settings.read_recipe),
 			gui.checkbox('read-speed', self.settings.read_speed),
 			gui.checkbox('read-machine-status', self.settings.read_machine_status),
+			gui.checkbox('read-ingredients', self.settings.read_ingredients),
 		}
 	}):open(player_index)
 	
@@ -259,6 +262,7 @@ function _M:update_disabled_checkboxes(root)
 	self:disable_checkbox(root, 'misc:read-recipe', 'r')
 	self:disable_checkbox(root, 'misc:read-speed', 'r')
 	self:disable_checkbox(root, 'misc:read-machine-status', 'r')
+	self:disable_checkbox(root, 'misc:read-ingredients', 'r')
 end
 
 function _M:disable_checkbox(root, name, mode)
@@ -311,6 +315,21 @@ function _M:read_machine_status(params)
 		count = 1,
 		index = 3,
 	})
+end
+
+function _M:read_ingredients(params)
+	local recipe = self.assembler.get_recipe()
+	if recipe then
+        local append_index = 4
+		for k, v in pairs(recipe.ingredients) do
+			table.insert(params, {
+				signal = recipe_selector.get_signal(v.name),
+				count = v.amount,
+                index = append_index,
+			})
+			append_index = append_index + 1
+		end
+	end
 end
 
 function _M:set_recipe()
@@ -496,9 +515,9 @@ end
 function _M:find_assembler(assembler_to_ignore)
 	self.assembler = self.entity.surface.find_entities_filtered {
 		position = util.position(self.entity.position):shift(self.entity.direction, config.ASSEMBLER_DISTANCE),
-		type = 'assembling-machine',
-	}[1]
-	if self.assembler and (self.assembler == assembler_to_ignore or self.assembler.prototype.fixed_recipe) then
+		type = {'assembling-machine', 'rocket-silo'},
+	}[1] 
+	if self.assembler and (self.assembler == assembler_to_ignore) then
 		self.assembler = nil
 	end
 	
