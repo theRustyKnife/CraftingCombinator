@@ -6,7 +6,7 @@ local config = require 'config'
 -- Crafting Combinator
 local cc = table.deepcopy(data.raw['constant-combinator']['constant-combinator'])
 cc.name = config.CC_NAME
-cc.icon = '__crafting_combinator__/graphics/icon-crafting-combinator.png'
+cc.icon = '__crafting-combinator-extended__/graphics/icon-crafting-combinator.png'
 cc.icon_size = 32
 cc.item_slot_count = 255
 cc.minable.result = cc.name
@@ -14,7 +14,7 @@ table.insert(cc.flags, 'not-deconstructable')
 
 for _, image in pairs(cc.sprites) do
 	local im = image.layers[1]
-	im.filename = '__crafting_combinator__/graphics/entities.png'
+	im.filename = '__crafting-combinator-extended__/graphics/entities.png'
 	im.y = 0
 	im.hr_version = nil
 end
@@ -38,7 +38,7 @@ rc.minable.result = rc.name
 rc.energy_source = { type = 'void' }
 rc.energy_usage_per_tick = '1W'
 for direction, definition in pairs(rc.multiply_symbol_sprites) do
-	definition.hr_version.filename = '__crafting_combinator__/graphics/hr-combinator-displays.png'
+	definition.hr_version.filename = '__crafting-combinator-extended__/graphics/hr-combinator-displays.png'
 	rc.multiply_symbol_sprites[direction] = definition.hr_version
 end
 
@@ -56,7 +56,7 @@ table.insert(data.raw['technology']['circuit-network'].effects, {type = 'unlock-
 
 
 local trans = {
-	filename = '__crafting_combinator__/graphics/trans.png',
+	filename = '__crafting-combinator-extended__/graphics/trans.png',
 	width = 1,
 	height = 1,
 }
@@ -169,7 +169,7 @@ data:extend {
 		type = 'item-group',
 		name = config.GROUP_NAME,
 		order = 'fb',
-		icon = '__crafting_combinator__/graphics/recipe-book.png',
+		icon = '__crafting-combinator-extended__/graphics/recipe-book.png',
 		icon_size = 64,
 	},
 	{
@@ -195,7 +195,7 @@ data:extend {
 	{
 		type = 'virtual-signal',
 		name = config.SPEED_SIGNAL_NAME,
-		icon = '__crafting_combinator__/graphics/speed-icon.png',
+		icon = '__crafting-combinator-extended__/graphics/speed-icon.png',
 		subgroup = 'crafting_combinator:signals',
 		order = 'b[crafting-speed]',
 		icon_size = 32,
