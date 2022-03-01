@@ -23,6 +23,7 @@ return {
 		read_recipe = true,
 		read_speed = false,
 		read_bottleneck = false,
+		read_ingredients = false,
 	},
 	RC_DEFAULT_SETTINGS = {
 		mode = 'ing',
