@@ -5,6 +5,7 @@ local recipe_selector = require 'script.recipe-selector'
 local config = require 'config'
 local signals = require 'script.signals'
 
+local table = table
 
 local _M = {}
 local combinator_mt = {__index = _M}
@@ -60,6 +61,7 @@ end
 
 function _M.create(entity)
 	local combinator = setmetatable({
+		entityUID = entity.unit_number,
 		entity = entity,
 		control_behavior = entity.get_or_create_control_behavior(),
 		module_chest = entity.surface.create_entity {
@@ -74,6 +76,8 @@ function _M.create(entity)
 		last_flying_text_tick = -config.FLYING_TEXT_INTERVAL,
 		enabled = true,
 		last_recipe = false,
+		last_assembler_recipe = false,
+		last_combinator_mode = 'w'
 	}, combinator_mt)
 	
 	combinator.module_chest.destructible = false
@@ -182,22 +186,34 @@ function _M.update_chests(surface, chest, ignore)
 	for _, entity in pairs(combinators) do global.cc.data[entity.unit_number]:find_chest(ignore and chest or nil); end
 end
 
+local params = {data = {}}
+function params:clear()
+	for i = 1, #self.data do self.data[i] = nil end
+end
+
 function _M:update()
-	local params = {}
 	if self.enabled and self.assembler and self.assembler.valid then
 		self.assembler.active = true
-		
+
 		if self.settings.mode == 'w' then
+			if self.last_combinator_mode ~= "w" then
+				params:clear()
+				self.control_behavior.parameters = params.data
+				self.last_combinator_mode = "w"
+			end
 			self:set_recipe()
 		end
 		if self.settings.mode == 'r' then
-			if self.settings.read_recipe then self:read_recipe(params); end
-			if self.settings.read_speed then self:read_speed(params); end
-			if self.settings.read_machine_status then self:read_machine_status(params); end
+			if self.last_combinator_mode ~= "r" then
+				self.last_combinator_mode = "r"
+			end
+			params:clear()
+			if self.settings.read_recipe then self:read_recipe(params.data); end
+			if self.settings.read_speed then self:read_speed(params.data); end
+			if self.settings.read_machine_status then self:read_machine_status(params.data); end
+			self.control_behavior.parameters = params.data
 		end
 	end
-	
-	self.control_behavior.parameters = params
 end
 
 
@@ -316,26 +332,48 @@ end
 function _M:set_recipe()
 	local changed, recipe
 	if self.settings.craft_until_zero then
-		if not self.last_recipe or not signals.signal_present(self.entity) then
-			local highest = signals.watch_highest_presence(self.entity)
+		if not self.last_recipe or not signals.signal_present(self.entity, nil, self.entityUID) then
+			local highest = signals.watch_highest_presence(self.entity, nil, self.entityUID)
 			if highest then recipe = self.entity.force.recipes[highest.signal.name]
 			else recipe = nil; end
 			self.last_recipe = recipe
 		else recipe = self.last_recipe; end
 	else
-		changed, recipe = recipe_selector.get_recipe(self.entity, nil, self.last_recipe and self.last_recipe.name)
-		if changed then self.last_recipe = recipe
-		else recipe = self.last_recipe; end
+		changed, recipe = recipe_selector.get_recipe(self.entity, nil, self.last_recipe and self.last_recipe.name, nil, self.entityUID)
+		if changed then
+			self.last_recipe = recipe
+		else
+			recipe = self.last_recipe
+		end
 	end
 	
 	if recipe and (recipe.hidden or not recipe.enabled) then recipe = nil; end
+
+	-- If no recipe selected and no last_assembler_recipe cached then return. This bypasses the need
+	-- to call get_recipe() for every update. However, manually set assemblers when no recipe is
+	-- selected will not be automatically cleared by cc due to this return behaviour.
+	if (not recipe) and (not self.last_assembler_recipe) then return true end
 	
-	local a_recipe = self.assembler.get_recipe()
+	-- Get current assembler recipe
+	local current_assembler_recipe = self.assembler.get_recipe()
+
+	-- If selected recipe is same as current_assembler_recipe then return
+	if (recipe == current_assembler_recipe) then return true end
 	
-	-- Move items if necessary
-	if a_recipe and ((not recipe) or recipe ~= a_recipe) then
+	-- Tag to indicate a new recipe has to be set, when false it indicates recipe has to be cleared
+	local isSetNewRecipe = false
+
+	-- set_recipe proper:
+	-- Switch 1: Assembler has a current recipe, and requires a change of recipe
+	if current_assembler_recipe and ((not recipe) or recipe ~= current_assembler_recipe) then
+
+		if recipe then isSetNewRecipe = true end
+
+		-- Move items if necessary
 		local success, error = self:move_items()
+
 		if not success then return self:on_chest_full(error); end
+
 		if self.settings.empty_inserters then
 			success, error = self:empty_inserters()
 			if not success then return self:on_chest_full(error); end
@@ -349,21 +387,34 @@ function _M:set_recipe()
 		if self.settings.discard_fluids then
 			for i=1, #self.assembler.fluidbox do self.assembler.fluidbox[i] = nil; end
 		end
-	end
-	
-	if recipe ~= a_recipe then
-		 -- Move modules if necessary
+
+		-- Move modules if necessary
 		if recipe then self:move_modules(recipe); end
+
+	-- Switch 2: Assembler does not have a recipe, and requires setting a new recipe
+	elseif (not current_assembler_recipe) and recipe then
+		isSetNewRecipe = true
+	end
+
+	-- Finally attempt to switch the recipe
+	self.assembler.set_recipe(recipe)
+
+	-- Check if assembler successfully switched recipe
+	local new_assembler_recipe = self.assembler.get_recipe()
 		
-		-- Finally attempt to switch the recipe
-		self.assembler.set_recipe(recipe)
-		local new_recipe = self.assembler.get_recipe()
-		if new_recipe and new_recipe ~= recipe then self.assembler.set_recipe(nil); end --TODO: Some notification?
+	if new_assembler_recipe and new_assembler_recipe ~= recipe then
+		self.assembler.set_recipe(nil) -- failsafe for setting the wrong/forbidden recipe??
+		--TODO: Some notification?
+		self.last_assembler_recipe = false
+	else
+		self.last_assembler_recipe = new_assembler_recipe
 	end
 	
-	-- Move modules and items back into the machine
-	self:insert_modules()
-	self:insert_items()
+	if isSetNewRecipe then
+		-- Move modules and items back into the machine
+		self:insert_modules()
+		self:insert_items()
+	end
 	
 	return true
 end
@@ -376,7 +427,14 @@ function _M:move_modules(recipe)
 		if stack.valid_for_read then
 			local limitations = util.module_limitations()[stack.name]
 			--TODO: Deal with not enough space in the chest
-			if limitations and not limitations[recipe.name] then target.insert(stack); end
+			if limitations and not limitations[recipe.name] then
+				local r = target.insert(stack)
+				if r < stack.count then
+					stack.count = stack.count - r
+				else
+					stack.clear()
+				end
+			end
 		end
 	end
 end
