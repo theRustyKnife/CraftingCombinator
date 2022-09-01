@@ -65,6 +65,7 @@ end
 
 function _M.create(entity)
 	local combinator = setmetatable({
+		entityUID = entity.unit_number,
 		entity = entity,
 		output_proxy = entity.surface.create_entity {
 			name = config.RC_PROXY_NAME,
@@ -76,7 +77,7 @@ function _M.create(entity)
 		settings = _M.settings_parser:read_or_default(entity, util.deepcopy(config.RC_DEFAULT_SETTINGS)),
 		last_signal = false,
 		last_name = false,
-		last_count = false,
+		last_count = false
 	}, combinator_mt)
 	
 	entity.connect_neighbour {
@@ -142,7 +143,7 @@ function _M:find_recipe()
 	local changed, recipes, count, signal = recipe_selector.get_recipes(
 		self.entity, defines.circuit_connector_id.combinator_input,
 		self.settings.mode == 'rec' and 'products' or 'ingredients',
-		self.last_signal, self.settings.multiply_by_input and self.last_count or nil
+		self.last_signal, self.settings.multiply_by_input and self.last_count or nil, self.entityUID
 	)
 	
 	if not changed then return; end
@@ -178,7 +179,8 @@ function _M:find_ingredients_and_products()
 		self.entity,
 		defines.circuit_connector_id.combinator_input,
 		self.last_name,
-		self.settings.multiply_by_input and self.last_count or nil
+		self.settings.multiply_by_input and self.last_count or nil,
+		self.entityUID
 	)
 	
 	if not changed then return; end
@@ -224,7 +226,8 @@ function _M:find_machines()
 		self.entity,
 		defines.circuit_connector_id.combinator_input,
 		self.last_name,
-		self.settings.multiply_by_input and self.last_count or nil
+		self.settings.multiply_by_input and self.last_count or nil,
+		self.entityUID
 	)
 	
 	if not changed then return; end
