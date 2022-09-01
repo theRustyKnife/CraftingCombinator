@@ -50,15 +50,15 @@ end
 
 _M.cache = {}
 
-function _M.cache.get(entity, circuit_id)
-	local cache = global.signals.cache[entity.unit_number]
+function _M.cache.get(entity, circuit_id, entityUID)
+	local cache = global.signals.cache[entityUID]
 	if not cache then
 		cache = setmetatable({
 			__entity = entity,
 			__circuit_id = circuit_id or false, -- Avoid calling __index when the id is nil
 			__cache_entities = {},
 		}, cache_mt)
-		global.signals.cache[entity.unit_number] = cache
+		global.signals.cache[entityUID] = cache
 	end
 	return cache
 end
@@ -97,24 +97,26 @@ function _M.get_merged_signal(entity, signal, circuit_id)
 end
 
 
-function _M.get_highest(entity, circuit_id, update_count)
-	local cache = _M.cache.get(entity, circuit_id)
+function _M.get_highest(entity, circuit_id, update_count, entityUID)
+	local cache = _M.cache.get(entity, circuit_id, entityUID)
+
+	local highestValue = cache.highest.value
 	
 	if cache.highest.valid
 		and not cache.highest.__cb.disabled
-		and (not cache.highest.value or not cache.highest_present.__cb.disabled)
+		and (not highestValue or not cache.highest_present.__cb.disabled)
 	then
-		if update_count and cache.highest.value and cache.highest_count.__cb.disabled then
-			local count = _M.get_merged_signal(entity, cache.highest.value.signal, circuit_id)
+		if update_count and highestValue and cache.highest_count.__cb.disabled then
+			local count = _M.get_merged_signal(entity, highestValue.signal, circuit_id)
 			
-			cache.highest.value.count = count
+			highestValue.count = count
 			cache.highest_count.__cb.circuit_condition = {condition = {
 				comparator = '=',
-				first_signal = cache.highest.value.signal,
+				first_signal = highestValue.signal,
 				constant = count,
 			}}
 		end
-		return cache.highest.value
+		return highestValue
 	end
 	
 	local highest = nil
@@ -156,9 +158,9 @@ function _M.get_highest(entity, circuit_id, update_count)
 end
 
 
-function _M.watch_highest_presence(entity, circuit_id)
-	local highest = _M.get_highest(entity, circuit_id)
-	local cache = _M.cache.get(entity, circuit_id)
+function _M.watch_highest_presence(entity, circuit_id, entityUID)
+	local highest = _M.get_highest(entity, circuit_id, nil, entityUID)
+	local cache = _M.cache.get(entity, circuit_id, entityUID)
 	
 	if not highest then
 		cache.signal_present.valid = false
@@ -173,8 +175,8 @@ function _M.watch_highest_presence(entity, circuit_id)
 	
 	return highest
 end
-function _M.signal_present(entity, circuit_id)
-	local cache = _M.cache.get(entity, circuit_id)
+function _M.signal_present(entity, circuit_id, entityUID)
+	local cache = _M.cache.get(entity, circuit_id, entityUID)
 	return cache.signal_present.valid and not cache.signal_present.__cb.disabled
 end
 
