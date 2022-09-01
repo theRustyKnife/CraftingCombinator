@@ -4,8 +4,8 @@ local signals = require 'script.signals'
 local _M = {}
 
 
-function _M.get_recipe(entity, circuit_id, last_name, last_count)
-	local highest = signals.get_highest(entity, circuit_id, last_count ~= nil)
+function _M.get_recipe(entity, circuit_id, last_name, last_count, entityUID)
+	local highest = signals.get_highest(entity, circuit_id, last_count ~= nil, entityUID)
 	
 	if not highest then
 		if last_name == nil then return false; end
@@ -27,8 +27,8 @@ local get_recipes_cache = {
 		fluid = {},
 	},
 }
-function _M.get_recipes(entity, circuit_id, mode, last_signal, last_count)
-	local highest = signals.get_highest(entity, circuit_id, last_count ~= nil)
+function _M.get_recipes(entity, circuit_id, mode, last_signal, last_count, entityUID)
+	local highest = signals.get_highest(entity, circuit_id, last_count ~= nil, entityUID)
 	
 	if not highest or highest.signal.type == 'virtual' then
 		if last_signal == nil then return false; end
