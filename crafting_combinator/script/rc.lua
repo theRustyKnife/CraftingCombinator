@@ -16,6 +16,7 @@ _M.settings_parser = settings_parser {
 	divide_by_output = {'o', 'bool'},
 	differ_output = {'d', 'bool'},
 	time_multiplier = {'t', 'number'},
+	all_inputs = {'a', 'bool'},
 }
 
 
@@ -78,7 +79,7 @@ function _M.create(entity)
 		last_name = false,
 		last_count = false,
 	}, combinator_mt)
-	
+
 	entity.connect_neighbour {
 		wire = defines.wire_type.red,
 		target_entity = combinator.output_proxy,
@@ -91,7 +92,7 @@ function _M.create(entity)
 	}
 	combinator.output_proxy.destructible = false
 	combinator.control_behavior = combinator.output_proxy.get_or_create_control_behavior()
-	
+
 	global.rc.data[entity.unit_number] = combinator
 	table.insert(global.rc.ordered, combinator)
 end
@@ -99,11 +100,11 @@ end
 function _M.destroy(entity)
 	local unit_number = entity.unit_number
 	local combinator = global.rc.data[unit_number]
-	
+
 	combinator.output_proxy.destroy()
 	settings_parser.destroy(entity)
 	signals.cache.drop(entity)
-	
+
 	global.rc.data[unit_number] = nil
 	for k, v in pairs(global.rc.ordered) do
 		if v.entity.unit_number == unit_number then
@@ -119,7 +120,7 @@ function _M:update(forced)
 		self.last_name = false
 		self.last_count = false
 	end
-	
+
 	if self.settings.mode == 'rec' or self.settings.mode == 'use' then self:find_recipe()
 	elseif self.settings.mode == 'mac' then self:find_machines(forced)
 	else self:find_ingredients_and_products(forced); end
@@ -144,15 +145,17 @@ function _M:find_recipe()
 		self.settings.mode == 'rec' and 'products' or 'ingredients',
 		self.last_signal, self.settings.multiply_by_input and self.last_count or nil
 	)
-	
+
+	log(serpent.block(recipes))
+
 	if not changed then return; end
 	self.last_signal = signal
 	self.last_count = count
-	
+
 	local params = make_params(table_size(recipes))
 	local index = 1
 	local slots = _M.get_rc_slot_count()
-	
+
 	count = self.settings.multiply_by_input and count or 1
 	local round = self.settings.mode == 'use' and math.floor or math.ceil
 	for i, recipe in pairs(recipes) do
@@ -169,52 +172,85 @@ function _M:find_recipe()
 			slots = slots - 1
 		end
 	end
-	
+
 	self.control_behavior.parameters = params
 end
 
 function _M:find_ingredients_and_products()
-	local changed, recipe, input_count = recipe_selector.get_recipe(
-		self.entity,
-		defines.circuit_connector_id.combinator_input,
-		self.last_name,
-		self.settings.multiply_by_input and self.last_count or nil
-	)
-	
-	if not changed then return; end
-	
-	self.last_name = recipe and recipe.name
-	self.last_count = input_count
-	
-	if recipe and (recipe.hidden or not recipe.enabled) then recipe = nil; end
-	
-	local params = {}
-	
-	if recipe then
-		local crafting_multiplier = self.settings.multiply_by_input and input_count or 1
-		for i, ing in pairs(
-					self.settings.mode == 'prod' and recipe.products or
-					self.settings.mode == 'ing' and recipe.ingredients or {}
-				) do
-			local amount = math.ceil(
-				tonumber(ing.amount or ing.amount_min or ing.amount_max) * crafting_multiplier
-				* (tonumber(ing.probability) or 1)
-			)
-			
-			params[i] = {
-				signal = {type = ing.type, name = ing.name},
-				count = self.settings.differ_output and i or util.simulate_overflow(amount),
-				index = i,
-			}
-		end
-		
-		table.insert(params, {
-			signal = {type = 'virtual', name = config.TIME_SIGNAL_NAME},
-			count = util.simulate_overflow(math.floor(tonumber(recipe.energy) * self.settings.time_multiplier * crafting_multiplier)),
-			index = _M.get_rc_slot_count(),
-		})
+	local changed, recipes, input_count, input_signal
+	if self.settings.all_inputs then
+		changed, recipes, last_signals = recipe_selector.get_all_recipes(
+			self.entity,
+			defines.circuit_connector_id.combinator_input,
+			nil
+--			self.last_signals
+		)
+		if not changed then return ; end
+		self.last_signals = last_signals
+	else
+		local changed, recipe, input_count = recipe_selector.get_recipe(
+			self.entity,
+			defines.circuit_connector_id.combinator_input,
+			self.last_name,
+			self.settings.multiply_by_input and self.last_count or nil
+		)
+		if recipe and (recipe.hidden or not recipe.enabled) then recipe = nil; end
+		recipes={{recipe=recipe}}
+
+		if not changed then return; end
+
+		self.last_name = recipe and recipe.name
+		self.last_count = input_count
+		self.last_signal = input_signal
 	end
-	
+
+	local params = {}
+
+	local ingredients = {}
+	local time_signal = 0
+
+	local crafting_multiplier = self.settings.multiply_by_input and input_count or 1
+	for i, c_recipe in pairs(recipes) do
+		local recipe = c_recipe.recipe
+		log(string.format("Loop recipe: %s, %d", serpent.block(recipe.name), recipe.energy))
+		if recipe and recipe.energy then
+			for i, ing in pairs(
+						self.settings.mode == 'prod' and recipe.products or
+						self.settings.mode == 'ing' and recipe.ingredients or {}
+					) do
+				local amount = math.ceil(
+					tonumber(ing.amount or ing.amount_min or ing.amount_max) * crafting_multiplier
+					* (tonumber(ing.probability) or 1)
+				)
+
+				if ing.type == "item" then
+					ingredients[ing.name] = (ingredients[ing.name] or 0) + (self.settings.differ_output and i or util.simulate_overflow(amount))
+				end
+			end
+		end
+		time_signal = time_signal + (
+			util.simulate_overflow(math.floor(tonumber(recipe.energy) *
+			(self.settings.time_multiplier or 1)
+			* crafting_multiplier))
+		)
+	end
+
+	local i = 1
+	for name, count in pairs(ingredients) do
+		params[i] = {
+			signal = {type="item", name=name},
+			count = count,
+			index = i
+		}
+		i = i + 1
+	end
+
+	table.insert(params, {
+		signal = {type = 'virtual', name = config.TIME_SIGNAL_NAME},
+		count = time_signal,
+		index = _M.get_rc_slot_count(),
+	})
+
 	self.control_behavior.parameters = params
 end
 
@@ -226,14 +262,14 @@ function _M:find_machines()
 		self.last_name,
 		self.settings.multiply_by_input and self.last_count or nil
 	)
-	
+
 	if not changed then return; end
-	
+
 	self.last_name = recipe and recipe.name
 	self.last_count = input_count
-	
+
 	if recipe and (recipe.hidden or not recipe.enabled) then recipe = nil; end
-	
+
 	if _M.item_map == nil then _M.build_machine_cache(); end
 
 	local params = {}
@@ -275,9 +311,10 @@ function _M:open(player_index)
 			gui.checkbox('divide-by-output', self.settings.divide_by_output, {tooltip=true}),
 			gui.checkbox('differ-output', self.settings.differ_output, {tooltip=true}),
 			gui.number_picker('time-multiplier', self.settings.time_multiplier),
+			gui.checkbox('all-inputs', self.settings.all_inputs, {tooltip=true}),
 		}
 	}):open(player_index)
-	
+
 	self:update_disabled_checkboxes(root)
 end
 
@@ -293,9 +330,9 @@ function _M:on_checked_changed(name, state, element)
 		end
 	end
 	if category == 'misc' then self.settings[name] = state; end
-	
+
 	self:update_disabled_checkboxes(gui.get_root(element))
-	
+
 	self.settings_parser:update(self.entity, self.settings)
 	self:update(true)
 end
