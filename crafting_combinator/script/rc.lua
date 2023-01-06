@@ -195,7 +195,7 @@ function _M:find_ingredients_and_products()
 			self.settings.multiply_by_input and self.last_count or nil
 		)
 		if recipe and (recipe.hidden or not recipe.enabled) then recipe = nil; end
-		recipes={{recipe=recipe}}
+		recipes={{recipe=recipe, count=input_count}}
 
 		if not changed then return; end
 
@@ -209,30 +209,35 @@ function _M:find_ingredients_and_products()
 	local ingredients = {}
 	local time_signal = 0
 
-	local crafting_multiplier = self.settings.multiply_by_input and input_count or 1
 	for i, c_recipe in pairs(recipes) do
+		local crafting_multiplier = self.settings.multiply_by_input and c_recipe.count or 1
 		local recipe = c_recipe.recipe
-		log(string.format("Loop recipe: %s, %d", serpent.block(recipe.name), recipe.energy))
-		if recipe and recipe.energy then
-			for i, ing in pairs(
-						self.settings.mode == 'prod' and recipe.products or
-						self.settings.mode == 'ing' and recipe.ingredients or {}
-					) do
-				local amount = math.ceil(
-					tonumber(ing.amount or ing.amount_min or ing.amount_max) * crafting_multiplier
-					* (tonumber(ing.probability) or 1)
-				)
+		if recipe then
+			log(string.format("Recipe: %s", serpent.block(recipe)))
+			log(string.format("Loop recipe: %s, %d", serpent.block(recipe.name), recipe.energy))
+			if recipe and recipe.energy then
+				for i, ing in pairs(
+							self.settings.mode == 'prod' and recipe.products or
+							self.settings.mode == 'ing' and recipe.ingredients or {}
+						) do
+					log(string.format("Ingredient %s with amount %d and multiplier %d",
+						ing.name, ing.amount, crafting_multiplier))
+					local amount = math.ceil(
+						tonumber(ing.amount or ing.amount_min or ing.amount_max) * crafting_multiplier
+						* (tonumber(ing.probability) or 1)
+					)
 
-				if ing.type == "item" then
-					ingredients[ing.name] = (ingredients[ing.name] or 0) + (self.settings.differ_output and i or util.simulate_overflow(amount))
+					if ing.type == "item" then
+						ingredients[ing.name] = (ingredients[ing.name] or 0) + (self.settings.differ_output and i or util.simulate_overflow(amount))
+					end
 				end
 			end
+			time_signal = time_signal + (
+				util.simulate_overflow(math.floor(tonumber(recipe.energy) *
+				(self.settings.time_multiplier or 1)
+				* crafting_multiplier))
+			)
 		end
-		time_signal = time_signal + (
-			util.simulate_overflow(math.floor(tonumber(recipe.energy) *
-			(self.settings.time_multiplier or 1)
-			* crafting_multiplier))
-		)
 	end
 
 	local i = 1
