@@ -8,11 +8,21 @@ function _M.get_recipe(entity, circuit_id, last_name, last_count)
 	local highest = signals.get_highest(entity, circuit_id, last_count ~= nil)
 
 	if not highest then
-		if last_name == nil then return false; end
+		if last_name == nil then
+			return false
+		end
 		return true, nil, 0
 	end
 
-	if last_name == highest.signal.name and (last_count == nil or last_count == highest.count) then return false; end
+	local name = highest.signal.name
+	if name ~= "solder" and name ~= "basic-electronic-components" and name ~= "basic-circuit-board" then
+		log(string.format("Highest: %s", serpent.block(highest)))
+	end
+
+	if last_name == highest.signal.name and (last_count == nil or last_count == highest.count) then
+		return false
+	end
+
 	return true, entity.force.recipes[highest.signal.name], highest.count
 end
 
@@ -47,9 +57,7 @@ function _M.get_all_recipes(entity, circuit_id, last_signals)
 	local recipes = {}
 
 	for i, signal in pairs(all_signals) do
-		log(string.format("Collected signal: %s, %s", serpent.block(signal), signal.signal.name))
 		local recipe = entity.force.recipes[signal.signal.name]
-		log(string.format("Collected recipe: %s", serpent.block(recipe)))
 		table.insert(recipes, {count=signal.count, recipe=recipe})
 	end
 	return true, recipes, all_signals
@@ -57,11 +65,9 @@ end
 
 function _M.get_recipes(entity, circuit_id, mode, last_signal, last_count)
 	local highest = signals.get_highest(entity, circuit_id, last_count ~= nil)
-	log(serpent.block(highest))
 
 	if not highest or highest.signal.type == 'virtual' then
 		if last_signal == nil then
-			log("Returning false 1")
 			return false
 		end
 		return true, {}, 0, nil
@@ -72,7 +78,6 @@ function _M.get_recipes(entity, circuit_id, mode, last_signal, last_count)
 		and last_signal.type == highest.signal.type
 		and (last_count == nil or last_count == highest.count)
 	then
-		log("Returning false 2")
 		return false
 	end
 

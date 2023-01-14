@@ -199,6 +199,7 @@ function _M:update()
 		end
 	end
 
+	log(string.format("CC Output params: %s", serpent.block(params)))
 	self.control_behavior.parameters = params
 end
 
@@ -323,16 +324,18 @@ function _M:read_required_ingredients(params)
 		local inventory = self.assembler.get_inventory(defines.inventory.assembling_machine_input)
 		local signal_index = 4
 		for ii, ing in pairs(recipe.ingredients) do
-			local count = ing.amount - inventory.get_item_count(ing.name)
-			if count > 0 then
-				local signal = {
-					signal = { type='item', name=ing.name },
-					count = count,
-					index = #params + 1
-				}
-				table.insert(params, signal)
-				signal_index = signal_index + 1
-				log(string.format("Outputting signal %s", serpent.block(signal)))
+			log(string.format("Requirement: %s", serpent.block(ing)))
+			if ing.type == "item" then
+				local count = ing.amount - inventory.get_item_count(ing.name)
+				if count > 0 then
+					local signal = {
+						signal = { type='item', name=ing.name },
+						count = count,
+						index = #params + 1
+					}
+					table.insert(params, signal)
+					signal_index = signal_index + 1
+				end
 			end
 		end
 	end

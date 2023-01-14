@@ -146,8 +146,6 @@ function _M:find_recipe()
 		self.last_signal, self.settings.multiply_by_input and self.last_count or nil
 	)
 
-	log(serpent.block(recipes))
-
 	if not changed then return; end
 	self.last_signal = signal
 	self.last_count = count
@@ -213,15 +211,11 @@ function _M:find_ingredients_and_products()
 		local crafting_multiplier = self.settings.multiply_by_input and c_recipe.count or 1
 		local recipe = c_recipe.recipe
 		if recipe then
-			log(string.format("Recipe: %s", serpent.block(recipe)))
-			log(string.format("Loop recipe: %s, %d", serpent.block(recipe.name), recipe.energy))
 			if recipe and recipe.energy then
 				for i, ing in pairs(
 							self.settings.mode == 'prod' and recipe.products or
 							self.settings.mode == 'ing' and recipe.ingredients or {}
 						) do
-					log(string.format("Ingredient %s with amount %d and multiplier %d",
-						ing.name, ing.amount, crafting_multiplier))
 					local amount = math.ceil(
 						tonumber(ing.amount or ing.amount_min or ing.amount_max) * crafting_multiplier
 						* (tonumber(ing.probability) or 1)
