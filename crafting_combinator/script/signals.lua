@@ -17,7 +17,7 @@ local cache_mt = {
 		}
 		self.__cache_entities[key] = entity
 		entity.destructible = false
-		
+
 		self.__entity.connect_neighbour {
 			wire = defines.wire_type.red,
 			target_entity = entity,
@@ -28,11 +28,11 @@ local cache_mt = {
 			target_entity = entity,
 			source_circuit_id = self.__circuit_id or nil,
 		}
-		
+
 		self[key] = {
 			__cb = entity.get_or_create_control_behavior(),
 		}
-		
+
 		return self[key]
 	end,
 }
@@ -99,14 +99,14 @@ end
 
 function _M.get_highest(entity, circuit_id, update_count)
 	local cache = _M.cache.get(entity, circuit_id)
-	
+
 	if cache.highest.valid
 		and not cache.highest.__cb.disabled
 		and (not cache.highest.value or not cache.highest_present.__cb.disabled)
 	then
 		if update_count and cache.highest.value and cache.highest_count.__cb.disabled then
 			local count = _M.get_merged_signal(entity, cache.highest.value.signal, circuit_id)
-			
+
 			cache.highest.value.count = count
 			cache.highest_count.__cb.circuit_condition = {condition = {
 				comparator = '=',
@@ -116,14 +116,14 @@ function _M.get_highest(entity, circuit_id, update_count)
 		end
 		return cache.highest.value
 	end
-	
+
 	local highest = nil
 	for _, signal in pairs(_M.get_merged_signals(entity, circuit_id)) do
 		if highest == nil or signal.count > highest.count then highest = signal; end
 	end
-	
+
 	cache.highest.valid = true
-	
+
 	if highest then
 		cache.highest.value = highest
 		cache.highest.__cb.circuit_condition = {condition = {
@@ -131,13 +131,13 @@ function _M.get_highest(entity, circuit_id, update_count)
 			first_signal = _M.EVERYTHING,
 			second_signal = highest.signal,
 		}}
-		
+
 		cache.highest_present.__cb.circuit_condition = {condition = {
 			comparator = '≠',
 			first_signal = highest.signal,
 			constant = 0,
 		}}
-		
+
 		cache.highest_count.__cb.circuit_condition = {condition = {
 			comparator = '=',
 			first_signal = highest.signal,
@@ -151,7 +151,7 @@ function _M.get_highest(entity, circuit_id, update_count)
 			constant = 0,
 		}}
 	end
-	
+
 	return highest
 end
 
@@ -159,7 +159,7 @@ end
 function _M.watch_highest_presence(entity, circuit_id)
 	local highest = _M.get_highest(entity, circuit_id)
 	local cache = _M.cache.get(entity, circuit_id)
-	
+
 	if not highest then
 		cache.signal_present.valid = false
 	else
@@ -170,7 +170,7 @@ function _M.watch_highest_presence(entity, circuit_id)
 			constant = 0,
 		}}
 	end
-	
+
 	return highest
 end
 function _M.signal_present(entity, circuit_id)

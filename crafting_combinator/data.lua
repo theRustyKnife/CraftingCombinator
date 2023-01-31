@@ -8,7 +8,7 @@ local cc = table.deepcopy(data.raw['constant-combinator']['constant-combinator']
 cc.name = config.CC_NAME
 cc.icon = '__crafting_combinator__/graphics/icon-crafting-combinator.png'
 cc.icon_size = 32
-cc.item_slot_count = 3
+cc.item_slot_count = 40
 cc.minable.result = cc.name
 table.insert(cc.flags, 'not-deconstructable')
 
@@ -93,7 +93,7 @@ data:extend {
 		inventory_size = config.MODULE_CHEST_SIZE,
 		picture = trans,
 		minable = {mining_time = 0.2, result = cc.name},
-		
+
 		-- Disguise the chest as the combinator itself, so it looks right in deconstruction planner filters
 		localised_name = {'entity-name.crafting_combinator:crafting-combinator'},
 		icons = icons.of(cc),
@@ -119,15 +119,15 @@ data:extend {
 		sprite = trans,
 		icon = '__base__/graphics/icons/blueprint.png',
 		icon_size = 32,
-		
+
 		minable = {
 			result = config.SETTINGS_ENTITY_NAME,
 			mining_time = 0,
 		},
-		
+
 		energy_source = { type = 'void' },
 		energy_usage_per_tick = '1W',
-		
+
 		instruments = {},
 		maximum_polyphony = 0,
 	},
@@ -146,7 +146,7 @@ data:extend {
 		},
 		activity_led_sprites = trans,
 		activity_led_light_offsets = {{0, 0}, {0, 0}, {0, 0}, {0, 0}},
-		
+
 		circuit_wire_connection_points = {con_point, con_point, con_point, con_point},
 		draw_circuit_wires = false,
 	},
@@ -158,13 +158,13 @@ data:extend {
 		circuit_wire_max_distance = 3,
 		circuit_wire_connection_points = {con_point, con_point, con_point, con_point},
 		draw_circuit_wires = false,
-		
+
 		picture_on = trans,
 		picture_off = trans,
 		energy_source = {type = 'void'},
 		energy_usage_per_tick = '1W',
 	},
-	
+
 	{
 		type = 'item-group',
 		name = config.GROUP_NAME,
@@ -200,4 +200,19 @@ data:extend {
 		order = 'b[crafting-speed]',
 		icon_size = 32,
 	},
+}
+
+data:extend {
+	{
+		type = "recipe",
+		name = "resin",
+		category = "crafting-machine",
+		subgroup = "bob-resource",
+		energy_required = 1,
+		ingredients = {
+		  { "wood", 1 },
+		},
+		result = "resin",
+		allow_decomposition = false,
+	  },
 }

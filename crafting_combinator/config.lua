@@ -12,7 +12,7 @@ return {
 	GROUP_NAME = 'crafting_combinator:virtual-recipes',
 	RECIPE_SUBGROUP_PREFIX = 'crafting_combinator:virtual-recipe-subgroup:',
 	UNSORTED_RECIPE_SUBGROUP = 'crafting_combinator:virtual-recipe-subgroup:unsorted',
-	
+
 	CC_DEFAULT_SETTINGS = {
 		chest_position = 1, -- 1 = Behind, 2 = Left, 3 = Right
 		mode = 'w',
@@ -30,32 +30,33 @@ return {
 		divide_by_output = false,
 		differ_output = false,
 		time_multiplier = 10,
+		all_inputs = false,
 	},
-	
+
 	ASSEMBLER_DISTANCE = 1,
 	ASSEMBLER_SEARCH_DISTANCE = 2,
 	CHEST_DISTANCE = 1,
 	CHEST_SEARCH_DISTANCE = 2,
 	INSERTER_SEARCH_RADIUS = 3,
-	
+
 	REFRESH_RATE_CC = 60,
 	REFRESH_RATE_RC = 60,
-	
+
 	INSERTER_EMPTY_DELAY = 60,
-	
+
 	MODULE_CHEST_SIZE = 100,
-	
+
 	RC_SLOT_COUNT = 40,
 	-- This is the number of extra slots on top of the max ingredient count
 	RC_SLOT_RESERVE = 5, -- 5 is arbitrary, but large enough
-	
+
 	-- Recipes matching any of these strings will not get a virtual recipe
 	RECIPES_TO_IGNORE = {
 		'angels%-void',
 	},
-	
+
 	FLYING_TEXT_INTERVAL = 180,
-	
+
 	MACHINE_STATUS_SIGNALS = {
 		working = 'signal-green',
 		no_power = 'signal-red',
